@@ -1,0 +1,20 @@
+name: Scaffold checks
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  scaffold:
+    name: scaffold
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.14.0'
+      - run: node scripts/doctor.mjs
+      - run: node scripts/check-scaffold.mjs
+      # Business lint/typecheck/contracts/integration/e2e/build are not implemented.
+      # RB-02 and RB-13 must replace this scaffold-only gate with real checks.

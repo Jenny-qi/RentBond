@@ -1,0 +1,16 @@
+# TEMPLATE ONLY. Replace handles and rename this file to CODEOWNERS.
+# Later, more specific rules override earlier rules.
+* @member-e
+/README.md @member-a
+/docs/ @member-a
+/fixtures/ @member-a @member-e
+/contracts/ @member-b @member-e
+/deployments/ @member-b @member-e
+/apps/web/ @member-c
+/apps/web/src/app/api/ @member-d
+/apps/web/src/server/ @member-d
+/infra/ @member-d @member-e
+/apps/worker/ @member-e @member-d
+/packages/shared/ @member-e @member-b @member-d
+/tests/ @member-e
+/.github/ @member-e

@@ -1,0 +1,342 @@
+我觉得你这个担心是对的，而且从你们现在 v1.2 的文档来看，你们其实已经自己意识到这个问题了：文档明确写了“押金上链、部分释放、人工处理及超时退款都有先例”，所以 RentBond **不能再把“链上押金托管”本身当作核心创新**。
+
+更合适的方向不是继续堆功能，而是把创新点从“**Blockchain Escrow**”改成“**Programmable Partial Settlement / 可编程争议结算**”。
+
+你们现在最值得保留、也最容易讲清楚的场景，就是你最后说的这个：
+
+> 房东提出多项扣款 → 租客逐项同意/争议 → 已同意部分立即结算 → 未申索部分立即返还 → 只有真正有争议的金额继续锁定。
+
+这其实已经在你们 PRD 里存在了。比如 1000 MockUSD 的案例：房东提出清洁费 100、桌面损坏 200；租客接受 100、争议 200，那么 700 先归租客，100 归房东，只有 200 留在争议流程。 文档里的规则也明确规定，在 claim window 关闭后，`D-C` 直接分给租客，而不是整笔押金继续被冻结。
+
+**这应该直接升格成你们整个 Demo 的核心，而不是 61 页 PRD 里的一个流程细节。**
+
+### 你们真正应该回答的是：“为什么不能用普通数据库？”
+
+不要回答：
+
+> 因为 blockchain transparent / immutable / decentralized。
+
+这种回答很容易被评委继续追问。
+
+你们可以回答成：
+
+> 普通租房平台也可以做 dispute UI，但最终控制钱的仍然是平台、支付商或者房东。RentBond 的不同之处不是“把数据库换成区块链”，而是把**双方事先接受的结算权限直接绑定到资金本身**。
+>
+> 房东不能因为自己控制后台就把 1000 全部扣掉，RentBond 平台自己也不能改数据库后把钱转走。系统只能按照事先接受的规则释放：
+>
+> * 未申索的钱 → 租客；
+> * 租客认可的钱 → 房东；
+> * 有争议的钱 → 继续锁定。
+
+你们自己的文档其实已经把这个区别写得很好：PostgreSQL 完全可以实现协作界面，但实际支付仍然需要某个主体掌握付款权限；智能合约则约束已经进入合约的资产，使平台数据库和房东都不能单方面改变分配规则。
+
+所以你们千万别讲：
+
+**“Blockchain makes rental deposits better.”**
+
+而应该讲：
+
+**“Only the disputed amount should be disputed.”**
+
+这个一句话反而非常适合 Demo。
+
+---
+
+## 我会把 RentBond 收窄成这一版
+
+### RentBond = Deposit Split Settlement Protocol
+
+用户甚至不用看到“Protocol”。
+
+前台就三个核心动作：
+
+**1. Landlord requests deductions**
+
+```text
+Deposit                    $1,000
+
+Cleaning                     $100
+Desk damage                  $200
+
+Total requested              $300
+```
+
+**2. Tenant reviews each item**
+
+```text
+Cleaning          $100      ✓ Accept
+
+Desk damage       $200      ⚠ Dispute
+Reason:
+"The scratch was already present at move-in."
+```
+
+然后用户点击：
+
+**Submit response**
+
+不要让用户看到：
+
+* Gas
+* approve
+* termsHash
+* resolverRegistry
+* chainId
+* wallet address
+* state machine
+* serviceProfileHash
+
+这些都是你们工程实现，而不是产品。
+
+---
+
+### 3. 页面立刻出现一个非常有冲击力的资金拆分
+
+```text
+Your $1,000 deposit
+
+$700     Returning to tenant
+$100     Approved for landlord
+$200     Locked in dispute
+```
+
+这就是你们 Demo 最重要的一屏。
+
+甚至做成：
+
+```text
+$1,000
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+$700   Unclaimed → Tenant
+█████████████████████
+
+$100   Accepted → Landlord
+███
+
+$200   Disputed → Locked
+██████
+```
+
+评委两秒就知道你们干了什么。
+
+你们文档第 30 页那张资金状态图实际上已经是这个思想：**已分配资金不受争议影响，只有待争议金额继续走处理流程。**
+
+---
+
+# 这样之后，你们的“创新点”会明显比现在清楚
+
+我建议不要宣传成：
+
+> Blockchain rental deposit platform
+
+而宣传成：
+
+> **Partial-dispute settlement for rental deposits.**
+
+或者更产品一点：
+
+> **Don't freeze the whole deposit for one disputed charge.**
+
+再或者：
+
+> **Dispute $200, not $1,000.**
+
+这个其实很适合作为 Hackathon 首页 Hero。
+
+比如：
+
+**RentBond**
+
+### Dispute $200, not your entire $1,000 deposit.
+
+Landlords submit deductions item by item.
+Tenants accept what they agree with.
+Undisputed funds are released immediately.
+Only disputed funds stay locked.
+
+**Powered by Monad settlement contracts.**
+
+这样区块链退到后台去了，反而更符合 Consumer Products & Payments 的产品感。
+
+---
+
+## 你们现在最应该砍掉什么
+
+你们现在 PRD 的工程设计其实已经相当完整，但作为 Hackathon Demo **明显有过度设计风险**。
+
+例如现在 P0 有：
+
+> 账户创建、登录、服务方预授权、交接资料、失联处理、逐项扣款、主处理人、备用处理人、导出、异常状态……
+
+而角色目前有：
+
+**Tenant / Landlord / Primary Resolver / Fallback Resolver / Operator / Worker**。
+
+从严谨的产品规格角度没有错，但从比赛 Demo 来说，容易变成：
+
+> “你们做了一个非常复杂的租房纠纷系统。”
+
+而不是：
+
+> “哇，这个资金结算机制很聪明。”
+
+我建议比赛主 Demo 只展示三个角色：
+
+**Tenant / Landlord / Resolver**
+
+备用 Resolver、service profile、超时恢复、Worker、各种异常路径全部保留在技术实现和 appendix 中，不要进入主 Demo。
+
+---
+
+# Wallet / Gas 也应该彻底“消失”
+
+这一点你说得非常关键。
+
+其实你们 PRD 已经把“普通用户不用学习 wallet 和 gas”设为 P0，而且准备使用 passkey + 测试 MON 补给。
+
+但我会再往前推进一步：
+
+用户心智应该变成：
+
+```text
+Sign up
+↓
+Review deposit
+↓
+Accept / Dispute
+↓
+See money released
+```
+
+而不是：
+
+```text
+Connect wallet
+↓
+Switch network
+↓
+Get test MON
+↓
+Sign transaction
+↓
+Approve ERC20
+↓
+Fund
+```
+
+技术上当然还是：
+
+```text
+passkey
+↓
+wallet
+↓
+approve
+↓
+fund
+↓
+Monad
+```
+
+只是全部藏在产品层下面。
+
+甚至你们 Demo 时都不用说：
+
+> “Please connect your wallet.”
+
+而可以说：
+
+> **Continue with passkey**
+
+之后需要链上操作时：
+
+> **Confirm $1,000 deposit**
+
+底下小字：
+
+> Secured by Monad
+
+这就够了。
+
+---
+
+# 最关键的一点：创新性不要靠“更多技术”
+
+你们现在真正需要加强的不是：
+
+* AI 仲裁
+* NFT 房屋证据
+* ZK Proof
+* DAO 仲裁
+* DeFi 收益
+* Reputation token
+
+这些东西反而容易把 RentBond 做散。
+
+你们需要的是一个非常容易被记住的**mechanism innovation**：
+
+### 当前常见心智
+
+```text
+Deposit: $1,000
+
+Dispute exists
+        ↓
+整个 $1,000 的退款流程卡住
+```
+
+### RentBond
+
+```text
+Deposit: $1,000
+
+No claim       Accepted       Disputed
+  $700           $100           $200
+    ↓              ↓              ↓
+ Tenant         Landlord         Lock
+```
+
+这就是整个产品。
+
+而且你们文档已经提供了一个很好的技术支撑：平台没有 owner withdraw，不能升级旧租约、不能任意修改受益人，这让这种预先承诺的资金规则不仅仅是 UI。
+
+---
+
+## 最后我建议你们把整个项目的定位从：
+
+**“基于 Monad 的跨境租房押金托管与争议解决平台”**
+
+改成：
+
+### **RentBond — Programmable Deposit Settlement**
+
+> A rental deposit settlement layer that releases undisputed funds immediately and locks only the amount actually under dispute.
+
+中文可以说：
+
+> **RentBond 是一个可编程押金结算工具。房东逐项提出扣款，租客逐项确认；无争议资金立即释放，只有真正存在争议的金额继续锁定。**
+
+这样评委问：
+
+**“Why blockchain?”**
+
+你们有答案。
+
+问：
+
+**“What's innovative?”**
+
+你们有答案。
+
+问：
+
+**“Show me.”**
+
+你们只需要演示：
+
+**$1000 → $700 / $100 / $200**
+
+而不是给评委解释半天四方签名、Resolver Registry 和几十个状态。
+
+所以我会建议：**保留你们现在这份 v1.2 作为完整工程规格，但另外做一份极度收窄的 Hackathon MVP Spec。** 当前这份文档作为底层设计很好，比赛展示层则应该只围绕“逐项扣款 + 部分即时释放 + 争议金额锁定 + 后台链上执行”四件事。这样不是把项目做简单了，而是把真正值得记住的创新点提了出来。

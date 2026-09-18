@@ -1,0 +1,23 @@
+{
+  "fixtureOnly": true,
+  "description": "Fictional international student settling remotely; deposit funded before departure",
+  "asset": "MockUSD",
+  "cashValue": false,
+  "decimals": 6,
+  "depositBaseUnits": "1000000000",
+  "claims": [
+    { "id": 0, "category": "cleaning", "amountBaseUnits": "100000000", "response": "Accepted" },
+    { "id": 1, "category": "desk_damage", "amountBaseUnits": "200000000", "response": "Disputed" }
+  ],
+  "afterClaimWindowClosed": {
+    "unallocated": "200000000",
+    "tenantCredit": "700000000",
+    "landlordCredit": "100000000",
+    "tenantWithdrawn": "0",
+    "landlordWithdrawn": "0"
+  },
+  "expectedFinalAllocation": {
+    "validDecision": { "tenant": "850000000", "landlord": "150000000" },
+    "serviceTimeout": { "tenant": "900000000", "landlord": "100000000" }
+  }
+}

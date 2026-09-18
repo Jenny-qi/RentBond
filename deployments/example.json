@@ -1,0 +1,18 @@
+{
+  "templateOnly": true,
+  "environment": "testnet",
+  "chainId": null,
+  "sourceCommit": null,
+  "deployedAt": null,
+  "timingProfile": null,
+  "schemaVersion": null,
+  "contracts": {
+    "MockUSD": null,
+    "ResolverRegistry": null,
+    "LeaseFactory": null
+  },
+  "leases": [],
+  "deploymentTransactions": [],
+  "deploymentBlocks": [],
+  "abiDigest": null
+}
