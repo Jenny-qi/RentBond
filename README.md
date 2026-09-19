@@ -6,7 +6,7 @@
 >
 > RentBond helps international students and small landlords settle rental deposits remotely. Once the claim window closes, undisputed funds become claimable while disputed deductions follow the agreed resolution process.
 
-**当前状态：五人协作开发启动框架，尚未实现业务应用或部署合约。** 已包含需求、目录边界、任务、接口约定、验收清单及 GitHub 协作模板。骨架检查通过不代表产品已完成。
+**当前状态：成员 C 的可运行前端与显式虚构演示已实现；真实合约、后端与完整账户恢复验收尚待联调。** 页面、Mera 账户适配、金额工具及前端测试已加入。请先看 [成员 C 交付与接入指南](docs/member-c-delivery.md)，不要把演示结果当成链上验收。
 
 ## 产品面向谁
 
@@ -29,7 +29,7 @@ Alice 是国际学生，退租后已回国。她与房东在入住前确认了�
 | 已认可扣款 → 房东 | 100 MockUSD | 可领取 |
 | 争议部分 | 200 MockUSD | 待处理，尚未分配 |
 
-若有效处理结果支持其中 50 给房东，最终租客 850、房东 150；若主备处理均超时，按事先接受的退出政策最终租客 900、房东 100。领取交易确认后才显示“已领取”。上述为**虚构案例与验收目标**，不是已完成的测试。
+若有效处理结果支持其中 50 给房东，最终租客 850、房东 150；若主备处理均超时，按事先接受的退出政策最终租客 900、房东 100。领取交易确认后才显示“已领取”。上述为**虚构案例**，本次前端模拟测试覆盖此流程；真实链上验收尚未运行。
 
 主 Demo 展示 Tenant / Landlord / Resolver 三种角色。备用处理、服务预授权、超时退出、Worker 和故障恢复保留在完整实现及技术附录中。详见 [MVP 规格](docs/MVP-SPEC.md) 与 [Demo 脚本](docs/contest/demo.md)。
 
@@ -84,57 +84,34 @@ RentBond/
 3. 阅读 [架构](docs/architecture.md) 和 [接口约定](docs/interfaces/README.md)，先确认交接再并行实现。
 4. 按 [CONTRIBUTING](CONTRIBUTING.md) 建分支；PR 写需求编号、实际测试结果和交接影响。
 
-## 当前能运行的检查
+## 启动成员 C 前端
 
-当前骨架仅依赖 Node.js **24.14.0**，无第三方 npm 包。这里固定的是本次检查使用的版本，后续 SDK 的兼容性须在 RB-02 验证。无需先安装应用依赖。
+需要 Node.js 24.14+（小于 25）及 pnpm 11.19.0，依赖精确版本已锁定。
 
 ```sh
-node scripts/doctor.mjs
-node scripts/check-scaffold.mjs
+pnpm install --frozen-lockfile
+pnpm dev
 ```
 
-已有 pnpm 时可运行 `pnpm doctor` 与 `pnpm check`。`doctor` 只检查骨架运行环境；`check` 检查本地文档链接、JSON、需求覆盖及目录。业务环境诊断、lint、类型检查与业务测试尚未实现。
+打开 http://127.0.0.1:3000，点击“体验部分结算”进入明确标注的纯内存演示。使用上方场景和角色选择器检查入金、逐项回应、主备处理、超时退出、和解与领取。刷新会清空演示数据；不需要钱包、数据库或 RPC。
 
-根目录预留 pnpm workspace。RB-02 要固定 packageManager、依赖精确版本与真实生成的 `pnpm-lock.yaml`，不能把“安装最新版”作为长期说明。详见 [依赖矩阵](docs/dependency-matrix.md)。
-
-### 后续完整启动目标
-
-**下列业务命令尚未实现；目前执行会明确报错并指出责任 Issue。** 实现后须由另一位成员从新 clone 验证，再更新本节。
+默认真实模式在 API 缺失时显示未接入，不自动加载虚构租约。账户页包含真实 Mera 调用，但同地址跨设备恢复、SIWE、费用补给仍需真机及 D 的服务验证。前端配置路径为 `apps/web/.env.local`，模板见 [web 环境模板](apps/web/.env.example)。
 
 ```sh
-pnpm install --frozen-lockfile   # RB-02 提交锁文件后使用
 pnpm doctor
-pnpm infra:up
-pnpm db:migrate
-pnpm chain:local                 # 独立终端 1，常驻
-pnpm contracts:deploy:local      # 新终端，等待本地链就绪
-pnpm fixtures:seed
-pnpm dev                         # 独立终端 2，常驻
-pnpm worker:dev                  # 独立终端 3，常驻
-pnpm check
-pnpm test:contracts
-pnpm test:integration
-pnpm test:e2e
-pnpm build
+pnpm check                 # 文档骨架、TypeScript、19 个逻辑用例
+pnpm build                 # Next.js 生产构建
+pnpm --filter @rentbond/web exec playwright install chromium
+pnpm test:web:e2e          # 8 个桌面/移动端浏览器用例
 ```
 
-从 `.env.example` 配置服务环境，实际加载路径由 RB-02 固定。密钥、私有文件和真实合同不进入 Git。测试网部署命令 `pnpm contracts:deploy:testnet` 同样待实现，不能缺配置时回退主网。
+`test:web:e2e` 是前端模拟验收；完整链上 `test:e2e` 仍为明确失败的占位。`infra:up`、`db:migrate`、`chain:local`、合约部署/测试、`fixtures:seed`、`worker:dev` 和 `test:integration` 也待各负责人实现。真实部署与私有存储未完成。
 
-## 上传 GitHub
+## GitHub 协作
 
-在 GitHub 创建空仓库，使用 Git 提交本目录，可保留 `.github/` 等隐藏文件。下面由你替换实际仓库地址后执行；本次没有创建远端或推送。
+仓库为 [Jenny-qi/RentBond](https://github.com/Jenny-qi/RentBond)。从主分支创建功能分支，提交 PR，请相应模块负责人审阅后合并，详见 [CONTRIBUTING](CONTRIBUTING.md)。本次 C 交付分支为 `feat/RB-08-member-c-frontend`，涉及共享金额与基础构建的交接见交付指南。
 
-```sh
-git init -b main
-git add .
-git diff --cached --stat
-git diff --cached
-git commit -m "chore: initialize RentBond collaboration scaffold"
-git remote add origin <你的GitHub仓库URL>
-git push -u origin main
-```
-
-提交前检查差异中没有密钥和私人资料。A 邀请成员，按 [GitHub 设置清单](docs/github-setup.md) 配置分支保护、任务看板和真实 CODEOWNERS。仓库内的模板不会自动设置远端规则。
+不要把 `node_modules`、`.next`、`.pnpm-store`、`.env.local` 或真实材料上传 GitHub。锁文件必须提交，团队使用 frozen install 复现。A 按 [GitHub 设置清单](docs/github-setup.md) 配置分支保护及真实 CODEOWNERS；仓库模板不会自动设置远端规则。
 
 ## 文档导航
 
@@ -150,4 +127,4 @@ git push -u origin main
 
 ## 已知限制
 
-业务应用、合约、钱包兼容、私有权限、停运恢复和链上交易证据均未完成，AT01—AT52 初始均为 `Not started`。原 PRD 中的比赛日期和供应商能力是历史来源，正式资格、团队人数和截止时区待核对。项目未选择对外开源许可证；发布前由团队决定并记录第三方许可。
+前端独立阶段已交付；真实合约、钱包真机兼容、私有权限、停运恢复和链上交易证据未完成。完整 AT 运行结果仍为 `Not run`，前端测试单独记录。原 PRD 中的比赛日期和供应商能力是历史来源，正式资格、团队人数和截止时区待核对。项目未选择对外开源许可证；发布前由团队决定并记录第三方许可。

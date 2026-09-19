@@ -4,7 +4,7 @@ import { resolve, dirname, relative, extname } from 'node:path';
 const root = process.cwd();
 const errors = [];
 const files = [];
-const ignored = new Set(['.git', 'node_modules', '.next', 'dist', 'out', 'cache']);
+const ignored = new Set(['.git', 'node_modules', '.pnpm-store', '.next', 'dist', 'out', 'cache', 'test-results', 'playwright-report']);
 function walk(dir) {
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     if (ignored.has(entry.name)) continue;
@@ -24,6 +24,7 @@ for (const file of ['README.md', 'AGENTS.md', 'CONTRIBUTING.md', '.env.example',
   'infra/README.md', 'tests/README.md']) requireFile(file);
 
 for (const file of files) {
+  if (!['.json', '.md'].includes(extname(file))) continue;
   const text = readFileSync(file, 'utf8');
   if (extname(file) === '.json') {
     try { JSON.parse(text); } catch (e) { errors.push(`${relative(root,file)}: ${e.message}`); }

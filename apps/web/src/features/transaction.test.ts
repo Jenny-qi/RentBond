@@ -1,0 +1,8 @@
+import {it,expect,vi} from 'vitest';
+import {executeConfirmed,type TxTransport,type TxUpdate} from './transaction';
+function setup(){const events:TxUpdate[]=[];const tx:TxTransport={chainId:vi.fn(async()=>10143),simulate:vi.fn(async()=>{}),send:vi.fn(async()=>'0xexample'),confirm:vi.fn(async()=>'success' as const)};return {events,tx,update:(s:TxUpdate)=>events.push(s)};}
+it('错误链在发送之前拒绝',async()=>{const {tx,events,update}=setup();await executeConfirmed(tx,1,new AbortController().signal,update);expect(tx.send).not.toHaveBeenCalled();expect(events.at(-1)?.state).toBe('failed');});
+it('取消确认不调用send',async()=>{const {tx,events,update}=setup();const c=new AbortController();c.abort();await executeConfirmed(tx,10143,c.signal,update);expect(tx.send).not.toHaveBeenCalled();expect(events.at(-1)?.state).toBe('cancelled');});
+it('收到hash必须等待确认，超时不能诱导重复支付',async()=>{const {tx,events,update}=setup();tx.confirm=async()=>{throw new Error('timeout');};await executeConfirmed(tx,10143,new AbortController().signal,update);expect(events.map(e=>e.state)).toEqual(['awaiting-signature','submitted','confirming','confirming']);expect(events.at(-1)?.hash).toBe('0xexample');});
+it('只有确认策略给成功才显示confirmed',async()=>{const {tx,events,update}=setup();await executeConfirmed(tx,10143,new AbortController().signal,update);expect(events.at(-1)?.state).toBe('confirmed');});
+it('交易广播后取消不声称回滚',async()=>{const {tx,events,update}=setup();const c=new AbortController();tx.send=async()=>{c.abort();return '0xalready-sent';};await executeConfirmed(tx,10143,c.signal,update);expect(events.at(-1)).toMatchObject({state:'confirmed',hash:'0xalready-sent'});});
