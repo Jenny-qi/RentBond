@@ -1,0 +1,22 @@
+{
+  "name": "@rentbond/worker",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Independent Node.js event sync and deadline worker for RentBond",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "dev": "node scripts/not-implemented.mjs worker:dev RB-12",
+    "start": "node scripts/not-implemented.mjs worker:start RB-12",
+    "build": "node scripts/not-implemented.mjs worker:build RB-12",
+    "test": "node scripts/not-implemented.mjs test:worker RB-13"
+  },
+  "dependencies": {
+    "@rentbond/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "22.10.0"
+  }
+}

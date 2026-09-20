@@ -7,6 +7,8 @@
   "scripts": {
     "doctor": "node scripts/doctor.mjs",
     "check": "node scripts/check-scaffold.mjs",
+    "ts04": "node scripts/ts04-clone-verify.mjs",
+    "test:runner": "node tests/runner.ts",
     "infra:up": "node scripts/not-implemented.mjs infra:up RB-02",
     "db:migrate": "node scripts/not-implemented.mjs db:migrate RB-08",
     "chain:local": "node scripts/not-implemented.mjs chain:local RB-03",
@@ -16,8 +18,9 @@
     "dev": "node scripts/not-implemented.mjs dev RB-02",
     "worker:dev": "node scripts/not-implemented.mjs worker:dev RB-12",
     "test:contracts": "node scripts/not-implemented.mjs test:contracts RB-04",
-    "test:integration": "node scripts/not-implemented.mjs test:integration RB-13",
-    "test:e2e": "node scripts/not-implemented.mjs test:e2e RB-13",
+    "test:integration": "node tests/runner.ts integration",
+    "test:e2e": "node tests/runner.ts e2e",
+    "test:all": "node tests/runner.ts all",
     "build": "node scripts/not-implemented.mjs build RB-02"
   }
 }

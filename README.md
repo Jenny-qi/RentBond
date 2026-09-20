@@ -91,9 +91,20 @@ RentBond/
 ```sh
 node scripts/doctor.mjs
 node scripts/check-scaffold.mjs
+node scripts/ts04-clone-verify.mjs   # TS04：独立 clone 验证
 ```
 
-已有 pnpm 时可运行 `pnpm doctor` 与 `pnpm check`。`doctor` 只检查骨架运行环境；`check` 检查本地文档链接、JSON、需求覆盖及目录。业务环境诊断、lint、类型检查与业务测试尚未实现。
+已有 pnpm 时可运行 `pnpm doctor` 与 `pnpm check`。`doctor` 只检查骨架运行环境；`check` 检查本地文档链接、JSON、需求覆盖及目录；`ts04` 检查独立 clone 可复现性。业务环境诊断、lint、类型检查与业务测试尚未实现。
+
+**测试命令（RB-12/RB-13 后可运行）：**
+
+```sh
+node tests/runner.ts integration    # IT-01 — IT-08
+node tests/runner.ts e2e           # E2E-01 — E2E-08
+node tests/runner.ts all            # 全部
+pnpm test:integration              # 同上 via pnpm
+pnpm test:e2e                     # 同上 via pnpm
+```
 
 根目录预留 pnpm workspace。RB-02 要固定 packageManager、依赖精确版本与真实生成的 `pnpm-lock.yaml`，不能把“安装最新版”作为长期说明。详见 [依赖矩阵](docs/dependency-matrix.md)。
 

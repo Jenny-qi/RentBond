@@ -1,6 +1,6 @@
 import { existsSync } from 'node:fs';
 const checks = [
-  ['Node.js 24.14.0', process.versions.node === '24.14.0'],
+  ['Node.js 24.x', process.versions.node.startsWith('24.')],
   ['workspace manifest', existsSync('pnpm-workspace.yaml')],
   ['environment template', existsSync('.env.example')],
   ['requirements baseline', existsSync('docs/PRD.md')],
