@@ -9,19 +9,16 @@
  * Environment (from .env):
  *   RPC_URL, RPC_FALLBACK_URL, CHAIN_ID,
  *   FACTORY_ADDRESS, RESOLVER_REGISTRY_ADDRESS,
- *   DATABASE_URL, PERSISTENCE_PATH
+ *   DATABASE_URL, PERSISTENCE_PATH,
+ *   WORKER_BATCH_SIZE, WORKER_POLL_INTERVAL_MS
  *
  * E owns; B/D collaborate on event schema and projection mapping.
  */
-
-import { existsSync } from 'node:fs';
-import { readFileSync } from 'node:fs';
 
 interface WorkerConfig {
   rpcUrl: string;
   rpcFallbackUrl?: string;
   chainId: number;
-  deploymentBlock: bigint;
   factoryAddress: string;
   resolverRegistryAddress: string;
   persistencePath: string;
@@ -41,7 +38,6 @@ function loadConfig(): WorkerConfig {
     rpcUrl: missing('RPC_URL'),
     rpcFallbackUrl: process.env.RPC_FALLBACK_URL,
     chainId: Number(missing('CHAIN_ID')),
-    deploymentBlock: BigInt(missing('DEPLOYMENT_BLOCK') ?? '0'),
     factoryAddress: missing('FACTORY_ADDRESS'),
     resolverRegistryAddress: missing('RESOLVER_REGISTRY_ADDRESS'),
     persistencePath: missing('PERSISTENCE_PATH'),
@@ -56,7 +52,6 @@ async function main() {
   console.log('[worker] Starting RentBond Worker');
   console.log(`[worker] chain=${config.chainId} factory=${config.factoryAddress}`);
   console.log(`[worker] persistence=${config.persistencePath}`);
-  console.log('[worker] Full implementation pending RB-12');
 
   // TODO RB-12: initialize RPC provider, load ABI, start indexer loop
   // TODO RB-12: connect to persistence (DB or file-based queue)
@@ -72,11 +67,9 @@ async function main() {
     process.on('SIGINT', shutdown);
     process.on('SIGTERM', shutdown);
 
-    // Signal that worker loop is live (for health checks)
-    console.log('[worker] Loop placeholder — RB-12 required');
-    // Indefinite hold until signal:
+    // Indefinite hold until signal — prevents accidental early exit
     setTimeout(() => {
-      console.warn('[worker] Timeout — worker loop not implemented');
+      console.warn('[worker] Timeout — worker loop not implemented (RB-12 required)');
       resolve();
     }, 10_000);
   });
