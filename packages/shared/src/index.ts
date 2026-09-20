@@ -13,6 +13,9 @@ export {
   formatAmount,
   isStepAligned,
   validateAmountRange,
+  addAmounts,
+  subtractAmounts,
+  verifyAllocationConservation,
   DECIMALS,
   STEP,
 } from './money/index.js';
@@ -20,8 +23,11 @@ export {
 // Schemas
 export {
   SCHEMA_VERSION,
+  ERROR_CODE,
   HTTP_STATUS,
+  apiError,
   type ApiError,
+  type ErrorCode,
   type HttpStatusCode,
 } from './schemas/index.js';
 
