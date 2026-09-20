@@ -4,7 +4,7 @@
 
 | 组件 | 基线选择 | 精确版本/状态 | 验证责任与证据 |
 | --- | --- | --- | --- |
-| Node.js | 骨架运行时 | 24.14.0；.nvmrc/package.json 固定 | E；本次本地脚本检查 |
+| Node.js | 骨架运行时 | 24.x（最小 24.14.0）；doctor.mjs 检查 24.x | E；scripts/doctor.mjs 本地验证 |
 | pnpm | monorepo 管理 | 待 RB-02 固定 packageManager 和 lockfile | E；新 clone frozen install |
 | Next.js / React / TypeScript | App Router 网页及 API | 待固定 | C/D；构建与路由 |
 | viem / wagmi | 链交互与读取 | 待兼容验证 | B/C；正确网络和错误路径 |

@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 env:
-  NODE_VERSION: '24.14.0'
+  NODE_VERSION: '24.x'
 
 jobs:
   doctor:
@@ -43,11 +43,9 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
       - run: pnpm install --frozen-lockfile
         env:
-          # RB-02 will populate .npmrc with token; ci has no secrets
           NPM_CONFIG_AUDIT: false
       - run: pnpm typecheck
-        # RB-02 replaces this with actual typecheck command
-        run: echo "TODO: typecheck not implemented (RB-02)"
+        # Implemented by RB-02; until then prints a clear not-implemented error
 
   test-contracts:
     name: Contract tests
@@ -58,7 +56,7 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
       - run: pnpm test:contracts
-        # Replaced by RB-04 after contracts are implemented
+        # Implemented by RB-04; scaffold CI does not gate on this yet
 
   test-integration:
     name: Integration tests
@@ -68,7 +66,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-      - run: node tests/runner.ts integration
+      - run: node tests/runner.mjs integration
         # Runs after RB-12
 
   test-e2e:
@@ -79,5 +77,5 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-      - run: node tests/runner.ts e2e
+      - run: node tests/runner.mjs e2e
         # Runs after RB-12/RB-13
