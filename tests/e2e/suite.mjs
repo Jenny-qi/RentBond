@@ -6,16 +6,12 @@
  * These are NOT runnable yet — run after RB-12 / RB-13.
  *
  * Target: mobile width (375px) and keyboard navigation.
+ *
+ * @typedef {{ id: string, description: string, requires: string[], run: () => Promise<{passed: boolean, evidence: string}> }} E2ETest
  */
 
-export interface E2ETest {
-  id: string;
-  description: string;
-  requires: string[];
-  run(): Promise<{ passed: boolean; evidence: string }>;
-}
-
-export const e2eTests: E2ETest[] = [
+/** @type {E2ETest[]} */
+export const e2eTests = [
   {
     id: 'E2E-01',
     description: 'Full flow: invite → fund → checkout → claims → 700/100/200 split → withdraw',

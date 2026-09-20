@@ -28,13 +28,19 @@ export {
 // Types
 export {
   LEASE_STATUS,
-  CLAIM_STATUS,
+  CLAIM_RESPONSE,
   TX_STATUS,
   CASE_STATUS,
   ROLE,
   type AllocationSnapshot,
   type ClaimItem,
   type LeaseSummary,
+  type LeaseState,
+  type LeaseStatus,
+  type ClaimResponse,
+  type TxStatus,
+  type CaseStatus,
+  type Role,
 } from './types/index.js';
 
 // Primitives

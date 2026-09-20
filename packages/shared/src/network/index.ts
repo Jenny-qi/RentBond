@@ -11,7 +11,7 @@ export interface NetworkConfig {
   name: string;
   rpcUrl: string;
   rpcFallbackUrl?: string;
-  /** Estimated finality in blocks (Monads ~2s block time) */
+  /** Estimated finality in blocks (Monad ~2s block time, 1 block for testnet) */
   finalityBlocks: number;
   /** Native currency symbol */
   nativeCurrency: string;
@@ -19,9 +19,9 @@ export interface NetworkConfig {
   explorerUrl: string;
 }
 
-/** Monad testnet configuration — update after RB-03 real deployment */
+/** Monad testnet — chainId confirmed via RB-03 */
 export const MONAD_TESTNET: NetworkConfig = {
-  chainId: 0, // TODO: update after RB-03
+  chainId: 10143,
   name: 'Monad Testnet',
   rpcUrl: process.env.RPC_URL ?? '',
   rpcFallbackUrl: process.env.RPC_FALLBACK_URL,
@@ -40,7 +40,7 @@ export function networksMatch(a: NetworkConfig, b: NetworkConfig): boolean {
 
 /**
  * Determine if a block number is considered finalised.
- * On Monad testnet this is conservative (1 block).
+ * On Monad testnet finality is 1 block (conservative).
  */
 export function isFinalized(
   currentBlock: number,

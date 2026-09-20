@@ -37,6 +37,7 @@ const REQUIRED_FILES = [
   'apps/worker/README.md',
   'contracts/README.md',
   'packages/shared/README.md',
+  'packages/shared/package.json',
   'infra/README.md',
   'tests/README.md',
   'fixtures/alice-partial-settlement.json',
@@ -45,8 +46,9 @@ const REQUIRED_FILES = [
 const REQUIRED_COMMANDS = [
   { cmd: 'node scripts/doctor.mjs', since: 'scaffold' },
   { cmd: 'node scripts/check-scaffold.mjs', since: 'scaffold' },
-  { cmd: 'node tests/runner.ts integration', since: 'RB-12' },
-  { cmd: 'node tests/runner.ts e2e', since: 'RB-13' },
+  { cmd: 'node scripts/ts04-clone-verify.mjs', since: 'scaffold' },
+  { cmd: 'node tests/runner.mjs integration', since: 'RB-12' },
+  { cmd: 'node tests/runner.mjs e2e', since: 'RB-13' },
 ];
 
 const errors = [];
@@ -105,7 +107,7 @@ if (errors.length === 0) {
   console.log('  pnpm fixtures:seed             # after RB-08');
   console.log('  pnpm dev                       # after RB-02');
   console.log('  pnpm worker:dev                # after RB-12');
-  console.log('  node tests/runner.ts all       # after RB-13');
+  console.log('  node tests/runner.mjs all      # after RB-13');
 } else {
   console.log(`FAIL: ${errors.length} issue(s):`);
   errors.forEach(e => console.log(`  - ${e}`));

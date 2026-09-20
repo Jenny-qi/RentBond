@@ -4,8 +4,10 @@
   "private": true,
   "description": "Independent Node.js event sync and deadline worker for RentBond",
   "type": "module",
+  "main": "src/main.ts",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./main": "./src/main.ts"
   },
   "scripts": {
     "dev": "node scripts/not-implemented.mjs worker:dev RB-12",

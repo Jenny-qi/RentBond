@@ -4,29 +4,23 @@
  *
  * E owns; D provides permission test cases.
  * These are NOT runnable yet — run after RB-08 / RB-12 complete.
+ *
+ * @typedef {{ id: string, description: string, requires: string[], run: () => Promise<{passed: boolean, output: string}> }} IntegrationTest
  */
 
-export interface IntegrationTest {
-  id: string;
-  description: string;
-  /** PREREQUISITE: commands or conditions that must be met before running */
-  requires: string[];
-  run(): Promise<{ passed: boolean; output: string }>;
-}
-
-export const integrationTests: IntegrationTest[] = [
+/** @type {IntegrationTest[]} */
+export const integrationTests = [
   {
     id: 'IT-01',
     description: 'SIWE nonce replay is rejected',
     requires: ['RB-08'],
     async run() {
-      // TODO: implement after RB-08 SIWE is ready
       return { passed: false, output: 'Not implemented — RB-08 required' };
     },
   },
   {
     id: 'IT-02',
-    description: 'Cross-lease ACL: tenant cannot access another lease\'s documents',
+    description: "Cross-lease ACL: tenant cannot access another lease's documents",
     requires: ['RB-08'],
     async run() {
       return { passed: false, output: 'Not implemented — RB-08 required' };

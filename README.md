@@ -99,9 +99,9 @@ node scripts/ts04-clone-verify.mjs   # TS04：独立 clone 验证
 **测试命令（RB-12/RB-13 后可运行）：**
 
 ```sh
-node tests/runner.ts integration    # IT-01 — IT-08
-node tests/runner.ts e2e           # E2E-01 — E2E-08
-node tests/runner.ts all            # 全部
+node tests/runner.mjs integration  # IT-01 — IT-08
+node tests/runner.mjs e2e         # E2E-01 — E2E-08
+node tests/runner.mjs all          # 全部
 pnpm test:integration              # 同上 via pnpm
 pnpm test:e2e                     # 同上 via pnpm
 ```

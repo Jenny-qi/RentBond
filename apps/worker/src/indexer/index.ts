@@ -12,6 +12,26 @@
 
 import type { Address, Hash } from '@rentbond/shared';
 
+/** On-chain events emitted by DepositEscrow */
+export const CONTRACT_EVENTS = {
+  FUNDED: 'Funded',
+  CHECKOUT_REQUESTED: 'CheckoutRequested',
+  CHECKOUT_NEGATED: 'CheckoutNegated',
+  CLAIMS_SUBMITTED: 'ClaimsSubmitted',
+  CLAIMS_WINDOW_CLOSED: 'ClaimsWindowClosed',
+  CLAIM_RESPONSE_UPDATED: 'ClaimResponseUpdated',
+  CLAIM_WITHDRAWN: 'ClaimWithdrawn',
+  PRIMARY_DECISION_PROPOSED: 'PrimaryDecisionProposed',
+  PRIMARY_DECISION_CHALLENGED: 'PrimaryDecisionChallenged',
+  FALLBACK_DECISION_PROPOSED: 'FallbackDecisionProposed',
+  FALLBACK_DECISION_PROPOSED_TIMEOUT: 'FallbackDecisionProposedTimeout',
+  ESCROW_EXPIRED: 'EscrowExpired',
+  WITHDRAWN: 'Withdrawn',
+  SERVICE_AUTHORIZATION: 'ServiceAuthorization',
+} as const;
+export type ContractEventName =
+  (typeof CONTRACT_EVENTS)[keyof typeof CONTRACT_EVENTS];
+
 /** Unique idempotency key for a chain log event */
 export interface EventKey {
   chainId: number;
@@ -22,8 +42,8 @@ export interface EventKey {
 /** Stored event record with checkpoint */
 export interface StoredEvent extends EventKey {
   blockHash: Hash;
-  blockNumber: number;
-  eventName: string;
+  blockNumber: bigint;
+  eventName: ContractEventName;
   args: Record<string, unknown>;
   /** Whether this event has been processed into projection */
   processed: boolean;
@@ -32,11 +52,12 @@ export interface StoredEvent extends EventKey {
 
 /**
  * Indexer state — tracks the last synced block to support resume.
+ * Persisted after every successful sync batch.
  */
 export interface IndexerState {
   chainId: number;
   contractAddress: Address;
-  lastSyncedBlock: number;
+  lastSyncedBlock: bigint;
   lastSyncedBlockHash: Hash;
 }
 
@@ -45,15 +66,16 @@ export interface IndexerConfig {
   rpcFallbackUrl?: string;
   chainId: number;
   contractAddress: Address;
-  deploymentBlock: number;
+  deploymentBlock: bigint;
   /** ABI — must be generated from contract, never hand-written */
   abi: unknown[];
-  /** Persist queue (path to JSON file or DB connection) */
+  /** Path to JSON file or DB connection string for persistence */
   persistencePath: string;
 }
 
 /**
  * Build a deterministic idempotency key for a log event.
+ * Format: "{chainId}:{txHash}:{logIndex}"
  */
 export function eventKey(
   chainId: number,
@@ -61,4 +83,16 @@ export function eventKey(
   logIndex: number
 ): string {
   return `${chainId}:${txHash}:${logIndex}`;
+}
+
+/**
+ * Parse an idempotency key back into its components.
+ */
+export function parseEventKey(key: string): EventKey {
+  const [chainId, txHash, logIndex] = key.split(':');
+  return {
+    chainId: Number(chainId),
+    txHash: txHash as Hash,
+    logIndex: Number(logIndex),
+  };
 }

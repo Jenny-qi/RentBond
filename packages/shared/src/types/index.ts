@@ -20,14 +20,14 @@ export const LEASE_STATUS = {
 } as const;
 export type LeaseStatus = (typeof LEASE_STATUS)[keyof typeof LEASE_STATUS];
 
-/** Claim item status */
-export const CLAIM_STATUS = {
-  PENDING: 'PENDING',
-  ACCEPTED: 'ACCEPTED',
-  DISPUTED: 'DISPUTED',
-  WITHDRAWN: 'WITHDRAWN',
+/** Claim item status from tenant response */
+export const CLAIM_RESPONSE = {
+  PENDING: 'Pending',
+  ACCEPTED: 'Accepted',
+  DISPUTED: 'Disputed',
+  WITHDRAWN: 'Withdrawn',
 } as const;
-export type ClaimStatus = (typeof CLAIM_STATUS)[keyof typeof CLAIM_STATUS];
+export type ClaimResponse = (typeof CLAIM_RESPONSE)[keyof typeof CLAIM_RESPONSE];
 
 /** Transaction states — distinguish signing/pending/confirmed/failed */
 export const TX_STATUS = {
@@ -61,6 +61,10 @@ export type Role = (typeof ROLE)[keyof typeof ROLE];
 
 /** Deposit allocation snapshot after claim window closes */
 export interface AllocationSnapshot {
+  /** Chain ID for cross-network disambiguation */
+  chainId: number;
+  /** Contract address this snapshot refers to */
+  contractAddress: Address;
   unallocated: string; // base units string
   tenantCredit: string;
   landlordCredit: string;
@@ -70,6 +74,8 @@ export interface AllocationSnapshot {
   lastSyncedBlock: number;
   /** Whether this snapshot is confirmed on-chain */
   confirmed: boolean;
+  /** schemaVersion for cache invalidation */
+  schemaVersion: string;
 }
 
 /** Claim item submitted by landlord */
@@ -77,7 +83,7 @@ export interface ClaimItem {
   id: number; // 0-9
   category: string;
   amountBaseUnits: string;
-  response: 'Pending' | 'Accepted' | 'Disputed' | 'Withdrawn';
+  response: ClaimResponse;
 }
 
 /** Minimal lease info returned by /api/leases */
@@ -89,4 +95,22 @@ export interface LeaseSummary {
   hardEndAt: Timestamp;
   tenantAddress: Address;
   landlordAddress: Address;
+}
+
+/** On-chain lease state as projected from events */
+export interface LeaseState {
+  chainId: number;
+  address: Address;
+  status: LeaseStatus;
+  deposit: string;           // base units
+  tenant: Address;
+  landlord: Address;
+  resolver: Address;
+  fallback: Address;
+  serviceRegistry: Address;
+  claimsWindowEnd: Timestamp;
+  primaryDeadline: Timestamp;
+  fallbackDeadline: Timestamp;
+  hardEndAt: Timestamp;
+  allocation: AllocationSnapshot | null;
 }
