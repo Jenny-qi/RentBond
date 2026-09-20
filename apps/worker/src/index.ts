@@ -11,7 +11,7 @@
  *
  * Key invariants:
  * - Stopping the Worker does NOT freeze contract exit — the contract is trustless.
- * - Restarting the Worker must NOT double-allocate (idempotency via chainId/txHash/logIndex).
+ * - Restarting the Worker must NOT double-allocate (idempotency via chainId/contractAddress/txHash/logIndex).
  * - Task deadlines come from on-chain parameters, not wall-clock retry logic.
  */
 
