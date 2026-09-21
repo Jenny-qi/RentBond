@@ -1,163 +1,128 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.24;
 
-import {ResolverRegistry} from "../src/ResolverRegistry.sol";
 import {IResolverRegistry} from "../src/interfaces/IResolverRegistry.sol";
+import {MockUSD} from "../src/MockUSD.sol";
+import {ResolverRegistry} from "../src/ResolverRegistry.sol";
+import {RentBondTestBase, TestActor} from "./TestHelpers.sol";
 
-contract ResolverCaller {
-    ResolverRegistry internal immutable registry;
-
-    constructor(ResolverRegistry registry_) {
-        registry = registry_;
-    }
-
-    function accept(bytes32 profileId) external {
-        registry.acceptProfile(profileId);
-    }
-
-    function revoke(bytes32 profileId) external {
-        registry.revokeForNewFunding(profileId);
-    }
-
-    function tryAccept(bytes32 profileId) external returns (bool) {
-        try registry.acceptProfile(profileId) {
-            return true;
-        } catch {
-            return false;
-        }
-    }
-
-    function tryRevoke(bytes32 profileId) external returns (bool) {
-        try registry.revokeForNewFunding(profileId) {
-            return true;
-        } catch {
-            return false;
-        }
-    }
-}
-
-contract ResolverRegistryTest {
+contract ResolverRegistryTest is RentBondTestBase {
     ResolverRegistry private registry;
-    ResolverCaller private primary;
-    ResolverCaller private fallbackResolver;
-    ResolverCaller private stranger;
-
-    bytes32 private constant PROFILE_ID = keccak256("rentbond-profile-1");
-    bytes32 private constant SERVICE_HASH = keccak256("rentbond-service-v1");
-    bytes32 private constant TIMING_ID = keccak256("normal");
-    address private constant TOKEN = address(0x1234);
+    MockUSD private token;
+    TestActor private primary;
+    TestActor private fallbackResolver;
+    TestActor private stranger;
+    IResolverRegistry.ServiceProfile private profile;
 
     function setUp() public {
         registry = new ResolverRegistry();
-        primary = new ResolverCaller(registry);
-        fallbackResolver = new ResolverCaller(registry);
-        stranger = new ResolverCaller(registry);
+        token = new MockUSD(address(this));
+        primary = new TestActor();
+        fallbackResolver = new TestActor();
+        stranger = new TestActor();
+        profile = _profile(registry, address(primary), address(fallbackResolver), address(token), DEPOSIT);
     }
 
-    function testCreateAndAcceptMakesProfileEligible() public {
-        setUp();
-        registry.createProfile(_profile());
+    function testDeterministicProfileNeedsBothResolverAcceptances() public {
+        registry.createProfile(profile);
 
-        require(!registry.isProfileAccepted(PROFILE_ID), "accepted too early");
-        require(!_eligible(), "eligible before both accepts");
+        require(!registry.isProfileAccepted(profile.profileId), "accepted before signatures");
+        require(!_eligible(DEPOSIT), "eligible before signatures");
 
-        primary.accept(PROFILE_ID);
-        require(!_eligible(), "eligible after one accept");
+        primary.execute(address(registry), abi.encodeCall(registry.acceptProfile, (profile.profileId)));
+        require(!_eligible(DEPOSIT), "one signature was enough");
 
-        fallbackResolver.accept(PROFILE_ID);
-        require(registry.isProfileAccepted(PROFILE_ID), "not accepted");
-        require(_eligible(), "eligible after both accepts");
+        fallbackResolver.execute(address(registry), abi.encodeCall(registry.acceptProfile, (profile.profileId)));
+        require(registry.isProfileAccepted(profile.profileId), "both signatures missing");
+        require(_eligible(DEPOSIT), "accepted profile not eligible");
     }
 
-    function testOnlyListedResolversCanAcceptOrRevoke() public {
-        setUp();
-        registry.createProfile(_profile());
-
-        require(!stranger.tryAccept(PROFILE_ID), "stranger accepted");
-        require(!stranger.tryRevoke(PROFILE_ID), "stranger revoked");
+    function testTamperedProfileIdIsRejected() public {
+        profile.maxDeposit = DEPOSIT - 1e6;
+        require(!_tryCreate(profile), "profile content changed without changing id");
     }
 
-    function testEitherResolverCanCloseTheWholeProfile() public {
-        setUp();
-        registry.createProfile(_profile());
-        primary.accept(PROFILE_ID);
-        fallbackResolver.accept(PROFILE_ID);
-        require(_eligible(), "profile should be eligible");
+    function testTimingHashBindsDurationsAndTimeoutPolicy() public {
+        profile.timing.claim = 2 days;
+        profile.profileId = registry.computeProfileId(profile);
+        require(!_tryCreate(profile), "unbound timing accepted");
 
-        fallbackResolver.revoke(PROFILE_ID);
-        require(!_eligible(), "revoked profile remains eligible");
+        profile = _profile(registry, address(primary), address(fallbackResolver), address(token), DEPOSIT);
+        profile.timeoutPolicy = keccak256("landlord-wins-on-timeout");
+        profile.timingProfileId = registry.computeTimingProfileId(profile.timing, profile.timeoutPolicy);
+        profile.profileId = registry.computeProfileId(profile);
+        require(!_tryCreate(profile), "unsafe timeout policy accepted");
     }
 
-    function testEligibilityRejectsWrongScope() public {
-        setUp();
-        registry.createProfile(_profile());
-        primary.accept(PROFILE_ID);
-        fallbackResolver.accept(PROFILE_ID);
+    function testOnlyNamedResolversCanAcceptOrRevoke() public {
+        registry.createProfile(profile);
+        require(
+            !stranger.tryExecute(address(registry), abi.encodeCall(registry.acceptProfile, (profile.profileId))),
+            "stranger accepted"
+        );
+        require(
+            !stranger.tryExecute(address(registry), abi.encodeCall(registry.revokeForNewFunding, (profile.profileId))),
+            "stranger revoked"
+        );
+    }
 
-        IResolverRegistry.EligibilityTerms memory terms = _terms();
+    function testEitherResolverCanCloseNewFunding() public {
+        registry.createProfile(profile);
+        _acceptProfile(registry, profile.profileId, primary, fallbackResolver);
+        require(_eligible(DEPOSIT), "profile should be eligible");
 
+        fallbackResolver.execute(address(registry), abi.encodeCall(registry.revokeForNewFunding, (profile.profileId)));
+        require(!_eligible(DEPOSIT), "closed profile remains eligible");
+    }
+
+    function testEligibilityEnforcesBoundsAndBusinessStep() public {
+        registry.createProfile(profile);
+        _acceptProfile(registry, profile.profileId, primary, fallbackResolver);
+
+        require(!_eligible(DEPOSIT + 1e6), "over-limit deposit accepted");
+        require(!_eligible(DEPOSIT - 1), "sub-cent amount accepted");
+
+        IResolverRegistry.EligibilityTerms memory terms = _terms(DEPOSIT);
         terms.token = address(0x9999);
-        require(!registry.isEligible(PROFILE_ID, terms), "wrong token accepted");
+        require(!registry.isEligible(profile.profileId, terms), "wrong token accepted");
 
-        terms = _terms();
-        terms.depositAmount = 1001e6;
-        require(!registry.isEligible(PROFILE_ID, terms), "excess deposit accepted");
-
-        terms = _terms();
-        terms.serviceTermsHash = keccak256("wrong-service");
-        require(!registry.isEligible(PROFILE_ID, terms), "wrong service accepted");
-
-        terms = _terms();
-        terms.ruleVersion = 2;
-        require(!registry.isEligible(PROFILE_ID, terms), "wrong rule accepted");
-
-        terms = _terms();
-        terms.timingProfileId = keccak256("short-demo");
-        require(!registry.isEligible(PROFILE_ID, terms), "wrong timing accepted");
+        terms = _terms(DEPOSIT);
+        terms.serviceTermsHash = keccak256("other-service");
+        require(!registry.isEligible(profile.profileId, terms), "wrong service accepted");
     }
 
-    function testRepeatedAcceptIsRejected() public {
-        setUp();
-        registry.createProfile(_profile());
-        primary.accept(PROFILE_ID);
-        require(!primary.tryAccept(PROFILE_ID), "duplicate accepted");
+    function testResolversAndTimingMustBeValid() public {
+        profile.fallbackResolver = profile.primaryResolver;
+        profile.profileId = registry.computeProfileId(profile);
+        require(!_tryCreate(profile), "same resolver accepted twice");
+
+        profile = _profile(registry, address(primary), address(fallbackResolver), address(token), DEPOSIT);
+        profile.timing.fallbackEvidence = profile.timing.fallbackResolver;
+        profile.timingProfileId = registry.computeTimingProfileId(profile.timing, profile.timeoutPolicy);
+        profile.profileId = registry.computeProfileId(profile);
+        require(!_tryCreate(profile), "invalid fallback window accepted");
     }
 
-    function _eligible() private view returns (bool) {
-        return registry.isEligible(PROFILE_ID, _terms());
-    }
-
-    function _terms()
-        private
-        pure
-        returns (IResolverRegistry.EligibilityTerms memory terms)
-    {
+    function _terms(uint256 amount) private view returns (IResolverRegistry.EligibilityTerms memory terms) {
         terms = IResolverRegistry.EligibilityTerms({
-            token: TOKEN,
-            depositAmount: 100e6,
-            leaseEndAt: type(uint256).max,
-            ruleVersion: 1,
-            timingProfileId: TIMING_ID,
-            serviceTermsHash: SERVICE_HASH
+            token: address(token),
+            depositAmount: amount,
+            leaseEndAt: block.timestamp + 30 days,
+            ruleVersion: profile.ruleVersion,
+            timingProfileId: profile.timingProfileId,
+            serviceTermsHash: profile.serviceTermsHash
         });
     }
 
-    function _profile()
-        private
-        view
-        returns (IResolverRegistry.ServiceProfile memory profile)
-    {
-        profile = IResolverRegistry.ServiceProfile({
-            profileId: PROFILE_ID,
-            serviceTermsHash: SERVICE_HASH,
-            ruleVersion: 1,
-            primaryResolver: address(primary),
-            fallbackResolver: address(fallbackResolver),
-            token: TOKEN,
-            maxDeposit: 1000e6,
-            maxLeaseEnd: type(uint256).max,
-            acceptUntil: type(uint256).max,
-            timingProfileId: TIMING_ID
-        });
+    function _eligible(uint256 amount) private view returns (bool) {
+        return registry.isEligible(profile.profileId, _terms(amount));
+    }
+
+    function _tryCreate(IResolverRegistry.ServiceProfile memory candidate) private returns (bool success) {
+        try registry.createProfile(candidate) {
+            return true;
+        } catch {
+            return false;
+        }
     }
 }

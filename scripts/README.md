@@ -10,6 +10,8 @@ E 主责。所有脚本按职责分组；新增脚本须在本文件登记。
 | `check-scaffold.mjs` | 验证目录结构、Markdown 链接、JSON 语法、FR/AT/RB 行完整性 | 无 broken link、JSON 可解析、行数正确 |
 | `ts04-clone-verify.mjs` | TS04：模拟全新 clone，验证所有文档化命令可找到 | 23 个必需文件 + 5 个命令全部存在 |
 
+合约构建、测试和尺寸检查已经由根 `package.json` 提供：`npm run build:contracts`、`npm run test:contracts`、`npm run check:contract-sizes`。它们使用固定的 `@foundry-rs/forge@1.7.1`，不再是 RB-04 占位命令。
+
 ## 占位命令（RB-xx 实现前）
 
 | 脚本 | 责任 Issue | 行为 |
