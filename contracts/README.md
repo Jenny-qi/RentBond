@@ -1,9 +1,39 @@
 # 合约工程
 
-负责人 B。目标 Foundry + Solidity + 固定版本 OpenZeppelin。当前已加入 `ResolverRegistry`、`DepositEscrow`（入金、材料、交接、申索、Primary/Fallback、和解、hardEnd）和 `LeaseFactory` 及对应最小测试；MockUSD、部署脚本和 Foundry 实跑记录仍在后续阶段实现。
+负责人 B。当前分支已实现可运行的 Solidity/Foundry 合约，不再只是目录骨架；仍未在 Monad 测试网部署，也未经过独立安全审计。
 
-src/ 实现四类合约；test/ 覆盖权限/边界/fuzz/invariant；script/ 部署并生成记录。版本与 Monad 配置先在 RB-03 验证再固定。
+## 当前实现
 
-先通过最小资金试验，再实现 Registry/Factory/正式状态机。不得为了演示跳过 F、hardEndAt 或资金守恒。
+| 合约 | 作用 |
+| --- | --- |
+| `MockUSD` | 6 位小数、受限铸币的无现金价值测试资产 |
+| `ResolverRegistry` | 保存不可变服务方案；R/F 对同一方案分别预授权；任一方可停止其用于新租约/新入金 |
+| `LeaseFactory` | 从 Registry 复制服务快照并创建每租约独立 Escrow |
+| `DepositEscrowDeployer` | 将 Escrow 创建字节码与 Factory 分离，避免 Factory 超过 EVM 大小限制；无 owner 或提款权限 |
+| `DepositEscrow` | 条款接受、精确入金、交接、申索、部分分配、主备处理、和解、超时退出及固定受益人领取 |
 
-本地合约目录使用 `foundry.toml`，配置 Solidity 0.8.24、optimizer、OpenZeppelin 5.0.2 remapping 和 `src/`、`test/`、`script/` 路径。当前环境已用 solc 0.8.24 编译 Registry 源码和测试源码；Foundry 运行结果待在具备 `forge` 的开发环境中记录。
+关键规则：单 T/L、T/L/R/F 地址互异、固定 MockUSD、1—10,000 MockUSD、最小业务单位 0.01、最多 10 项申索、每租约不可升级、无管理员提款。`hardEndAt` 由服务方案的完整时间配置推导，不能由房东自行填写。默认正常配置为租约到期后最迟 37 天退出。
+
+## 本地验证
+
+从仓库根目录运行：
+
+```sh
+npm run build:contracts
+npm run test:contracts
+npm run check:contract-sizes
+```
+
+或在 `contracts/` 内运行固定工具版本：
+
+```sh
+npx --yes @foundry-rs/forge@1.7.1 build
+npx --yes @foundry-rs/forge@1.7.1 test -vv
+npx --yes @foundry-rs/forge@1.7.1 build --sizes --skip test --skip script
+```
+
+本地最后一次结果为 32/32 测试通过。测试涵盖 700/100/200、CHECKOUT 主备流程、证据版本、服务撤销、挑战、超时、旧和解失效、固定收款人及 hardEnd；这不是测试网验收或安全审计。
+
+生产合约的本地优化后 runtime 均低于 24,576-byte EIP-170 限制，其中最接近上限的是 `DepositEscrowDeployer`。配置固定 Solidity 0.8.24、optimizer runs 1、via-IR 和 OpenZeppelin ReentrancyGuard 5.0.2。
+
+部署流程见 [script/README.md](script/README.md)。真实部署前还必须完成 Monad chainId/RPC 核验、外部复核、部署记录、从固定构建导出 ABI，以及剩余边界/fuzz/invariant 测试。

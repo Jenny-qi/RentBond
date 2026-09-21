@@ -6,6 +6,7 @@ out = "out"
 cache_path = "cache"
 solc_version = "0.8.24"
 optimizer = true
-optimizer_runs = 200
+optimizer_runs = 1
+via_ir = true
 ffi = false
 remappings = ["@openzeppelin/=lib/openzeppelin-contracts/contracts/"]

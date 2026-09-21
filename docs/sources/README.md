@@ -12,7 +12,7 @@
 
 ## 分享对话
 
-用户给出的 [分享链接](https://chatgpt.com/share/6aacccce-5518-83e9-8462-d00939d945bb) 本次未成功读取。随后用户明确提供全部内容，附件保留为 [shared-discussion.txt](shared-discussion.txt)，并直接补充了首批国际学生用户定位。
+用户给出的 [分享链接](https://chatgpt.com/share/6aacccce-5518-83e9-8462-d00939d945bb) 本次未成功读取。随后用户明确提供全部内容，附件保留为 [shared-discussion.txt](shared-discussion.txt)。用户之后把定位扩展为跨境租客，首批场景包括国际学生、海外工作者和陪读／随迁家庭。
 
 正文附件主张：将部分争议结算作为核心；突出1,000→700/100/200；主Demo三角色；账户与Gas退到后台；完整v1.2留作底层工程规格。追加定位见 [positioning-addendum](positioning-addendum.md)。
 

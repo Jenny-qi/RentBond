@@ -16,5 +16,5 @@ jobs:
           node-version: '24.14.0'
       - run: node scripts/doctor.mjs
       - run: node scripts/check-scaffold.mjs
-      # Business lint/typecheck/contracts/integration/e2e/build are not implemented.
-      # RB-02 and RB-13 must replace this scaffold-only gate with real checks.
+      # Contract build/test/size checks run in ci.yml. Web typecheck,
+      # integration/e2e and full product build are not implemented yet.

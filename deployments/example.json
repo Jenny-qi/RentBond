@@ -4,11 +4,17 @@
   "chainId": null,
   "sourceCommit": null,
   "deployedAt": null,
-  "timingProfile": null,
+  "timingProfile": {
+    "timingProfileId": null,
+    "timeoutPolicy": null,
+    "serviceProfileId": null,
+    "durationsSeconds": null
+  },
   "schemaVersion": null,
   "contracts": {
     "MockUSD": null,
     "ResolverRegistry": null,
+    "DepositEscrowDeployer": null,
     "LeaseFactory": null
   },
   "leases": [],

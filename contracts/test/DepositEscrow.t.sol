@@ -2,385 +2,538 @@
 pragma solidity 0.8.24;
 
 import {DepositEscrow} from "../src/DepositEscrow.sol";
-import {IResolverRegistry} from "../src/interfaces/IResolverRegistry.sol";
-import {ResolverRegistry} from "../src/ResolverRegistry.sol";
+import {RentBondTestBase, TestActor} from "./TestHelpers.sol";
 
-interface Vm {
-    function warp(uint256 timestamp) external;
-}
-
-contract EscrowTestToken {
-    mapping(address account => uint256 balance) public balanceOf;
-    mapping(address owner => mapping(address spender => uint256 amount))
-        public allowance;
-
-    function mint(address account, uint256 amount) external {
-        balanceOf[account] += amount;
-    }
-
-    function approve(address spender, uint256 amount) external returns (bool) {
-        allowance[msg.sender][spender] = amount;
-        return true;
-    }
-
-    function transfer(address to, uint256 amount) external returns (bool) {
-        if (balanceOf[msg.sender] < amount) return false;
-        balanceOf[msg.sender] -= amount;
-        balanceOf[to] += amount;
-        return true;
-    }
-
-    function transferFrom(
-        address from,
-        address to,
-        uint256 amount
-    ) external returns (bool) {
-        if (balanceOf[from] < amount || allowance[from][msg.sender] < amount) {
-            return false;
-        }
-        allowance[from][msg.sender] -= amount;
-        balanceOf[from] -= amount;
-        balanceOf[to] += amount;
-        return true;
-    }
-}
-
-contract EscrowTestActor {
-    function acceptProfile(
-        ResolverRegistry registry,
-        bytes32 profileId
-    ) external {
-        registry.acceptProfile(profileId);
-    }
-
-    function revokeProfile(
-        ResolverRegistry registry,
-        bytes32 profileId
-    ) external {
-        registry.revokeForNewFunding(profileId);
-    }
-
-    function approveToken(
-        EscrowTestToken token,
-        address spender,
-        uint256 amount
-    ) external {
-        token.approve(spender, amount);
-    }
-
-    function acceptTerms(DepositEscrow escrow, bytes32 termsHash) external {
-        escrow.acceptTerms(termsHash);
-    }
-
-    function fund(DepositEscrow escrow, uint256 amount) external {
-        escrow.fund(amount);
-    }
-
-    function startSettlement(DepositEscrow escrow) external {
-        escrow.startScheduledSettlement();
-    }
-
-    function submitClaims(
-        DepositEscrow escrow,
-        DepositEscrow.ClaimInput[] calldata claims
-    ) external {
-        escrow.submitClaims(claims);
-    }
-
-    function respondClaim(
-        DepositEscrow escrow,
-        uint256 claimId,
-        bool accept,
-        bytes32 responseCommitment
-    ) external {
-        escrow.respondClaim(claimId, accept, responseCommitment);
-    }
-
-    function closeClaims(DepositEscrow escrow) external {
-        escrow.closeClaims();
-    }
-
-    function openClaimCase(DepositEscrow escrow) external {
-        escrow.openClaimCase();
-    }
-
-    function proposeDecision(
-        DepositEscrow escrow,
-        uint256 caseId,
-        DepositEscrow.DecisionInput[] calldata result,
-        bytes32 reasonsCommitment
-    ) external {
-        escrow.proposeDecision(caseId, result, reasonsCommitment);
-    }
-
-    function challenge(
-        DepositEscrow escrow,
-        uint256 caseId,
-        bytes32 commitment
-    ) external {
-        escrow.challenge(caseId, commitment);
-    }
-
-    function finalizePrimary(DepositEscrow escrow, uint256 caseId) external {
-        escrow.finalizePrimary(caseId);
-    }
-
-    function proposeSettlement(
-        DepositEscrow escrow,
-        uint256 tenantShare,
-        uint256 landlordShare,
-        uint256 revision,
-        uint256 validUntil,
-        bytes32 detailsHash
-    ) external returns (uint256) {
-        return escrow.proposeSettlement(
-            tenantShare,
-            landlordShare,
-            revision,
-            validUntil,
-            detailsHash
-        );
-    }
-
-    function confirmSettlement(DepositEscrow escrow, uint256 proposalId) external {
-        escrow.confirmSettlement(proposalId);
-    }
-
-    function tryFund(
-        DepositEscrow escrow,
-        uint256 amount
-    ) external returns (bool) {
-        try escrow.fund(amount) {
-            return true;
-        } catch {
-            return false;
-        }
-    }
-}
-
-contract DepositEscrowTest {
-    Vm private constant vm = Vm(
-        address(uint160(uint256(keccak256("hevm cheat code"))))
-    );
-    bytes32 private constant PROFILE_ID = keccak256("escrow-profile");
-    bytes32 private constant SERVICE_HASH = keccak256("escrow-service");
-    bytes32 private constant TERMS_HASH = keccak256("lease-terms");
-    bytes32 private constant TIMING_ID = keccak256("normal");
-    bytes32 private constant TIMEOUT_POLICY = keccak256("tenant-return");
-    uint256 private constant DEPOSIT = 1000e6;
-
+contract DepositEscrowTest is RentBondTestBase {
     function testExactFundingCreatesActiveEscrow() public {
-        (
-            ResolverRegistry registry,
-            EscrowTestToken token,
-            EscrowTestActor tenant,
-            DepositEscrow escrow
-        ) = _newEscrow();
+        EscrowFixture memory fixture = _newEscrow();
+        _fund(fixture);
 
-        tenant.acceptTerms(escrow, TERMS_HASH);
-        tenant.approveToken(token, address(escrow), DEPOSIT);
-        tenant.fund(escrow, DEPOSIT);
-
-        require(
-            uint256(escrow.phase()) == uint256(DepositEscrow.Phase.Active),
-            "not active"
-        );
-        DepositEscrow.Accounting memory accounting = escrow.getAccounting();
+        require(uint256(fixture.escrow.phase()) == uint256(DepositEscrow.Phase.Active), "not active");
+        DepositEscrow.Accounting memory accounting = fixture.escrow.getAccounting();
         require(accounting.fundedAmount == DEPOSIT, "funded mismatch");
         require(accounting.unallocated == DEPOSIT, "unallocated mismatch");
-        require(token.balanceOf(address(escrow)) == DEPOSIT, "token mismatch");
-        registry;
+        require(fixture.token.balanceOf(address(fixture.escrow)) == DEPOSIT, "token mismatch");
+        require(
+            !fixture.tenant.tryExecute(address(fixture.escrow), abi.encodeCall(fixture.escrow.fund, (DEPOSIT))),
+            "second funding succeeded"
+        );
+        require(fixture.token.balanceOf(address(fixture.escrow)) == DEPOSIT, "second funding changed balance");
     }
 
-    function testWrongAmountAndWrongCallerFail() public {
-        (
-            ResolverRegistry registry,
-            EscrowTestToken token,
-            EscrowTestActor tenant,
-            DepositEscrow escrow
-        ) = _newEscrow();
+    function testWrongAmountAndWrongCallerCannotFund() public {
+        EscrowFixture memory fixture = _newEscrow();
+        fixture.tenant.execute(address(fixture.escrow), abi.encodeCall(fixture.escrow.acceptTerms, (TERMS_HASH)));
+        fixture.tenant
+            .execute(address(fixture.token), abi.encodeCall(fixture.token.approve, (address(fixture.escrow), DEPOSIT)));
 
-        tenant.acceptTerms(escrow, TERMS_HASH);
-        tenant.approveToken(token, address(escrow), DEPOSIT);
-        require(!tenant.tryFund(escrow, DEPOSIT - 1), "wrong amount funded");
-
-        EscrowTestActor stranger = new EscrowTestActor();
-        require(!stranger.tryFund(escrow, DEPOSIT), "stranger funded");
-        registry;
+        require(
+            !fixture.tenant.tryExecute(address(fixture.escrow), abi.encodeCall(fixture.escrow.fund, (DEPOSIT - 1))),
+            "wrong amount funded"
+        );
+        TestActor stranger = new TestActor();
+        require(
+            !stranger.tryExecute(address(fixture.escrow), abi.encodeCall(fixture.escrow.fund, (DEPOSIT))),
+            "stranger funded"
+        );
     }
 
-    function testRevokedBeforeFundingFailsWithoutTransfer() public {
-        (
-            ResolverRegistry registry,
-            EscrowTestToken token,
-            EscrowTestActor tenant,
-            DepositEscrow escrow
-        ) = _newEscrow();
+    function testRevokedServiceCannotTakeTenantFunds() public {
+        EscrowFixture memory fixture = _newEscrow();
+        fixture.tenant.execute(address(fixture.escrow), abi.encodeCall(fixture.escrow.acceptTerms, (TERMS_HASH)));
+        fixture.tenant
+            .execute(address(fixture.token), abi.encodeCall(fixture.token.approve, (address(fixture.escrow), DEPOSIT)));
+        fixture.primary
+            .execute(
+                address(fixture.registry), abi.encodeCall(fixture.registry.revokeForNewFunding, (fixture.profileId))
+            );
 
-        tenant.acceptTerms(escrow, TERMS_HASH);
-        tenant.approveToken(token, address(escrow), DEPOSIT);
+        require(
+            !fixture.tenant.tryExecute(address(fixture.escrow), abi.encodeCall(fixture.escrow.fund, (DEPOSIT))),
+            "revoked service funded"
+        );
+        require(fixture.token.balanceOf(address(fixture.escrow)) == 0, "funds moved before eligibility check");
+    }
 
-        EscrowTestActor primary = _primary;
-        primary.revokeProfile(registry, PROFILE_ID);
+    function testFundingRejectsTamperedResolverSnapshot() public {
+        EscrowFixture memory fixture = _newEscrow();
+        DepositEscrow.Terms memory terms = fixture.escrow.getTerms();
+        terms.leaseId = keccak256("tampered-resolver-lease");
+        terms.primaryResolver = address(new TestActor());
+        DepositEscrow tamperedEscrow = new DepositEscrow(terms, address(this));
 
-        require(!tenant.tryFund(escrow, DEPOSIT), "revoked service funded");
-        require(token.balanceOf(address(escrow)) == 0, "fund transferred");
+        fixture.tenant.execute(address(tamperedEscrow), abi.encodeCall(tamperedEscrow.acceptTerms, (TERMS_HASH)));
+        fixture.tenant
+            .execute(address(fixture.token), abi.encodeCall(fixture.token.approve, (address(tamperedEscrow), DEPOSIT)));
+        require(
+            !fixture.tenant.tryExecute(address(tamperedEscrow), abi.encodeCall(tamperedEscrow.fund, (DEPOSIT))),
+            "tampered resolver snapshot funded"
+        );
+        require(fixture.token.balanceOf(address(tamperedEscrow)) == 0, "tampered escrow moved funds");
     }
 
     function testClaimsCloseTo700100200() public {
-        (
-            ResolverRegistry registry,
-            EscrowTestToken token,
-            EscrowTestActor tenant,
-            DepositEscrow escrow
-        ) = _newEscrow();
+        EscrowFixture memory fixture = _newEscrow();
+        _fund(fixture);
+        DepositEscrow.SettlementSchedule memory schedule = _startScheduledSettlement(fixture);
+        _submitDemoClaims(fixture);
+        _closeDemoClaims(fixture, schedule);
 
-        tenant.acceptTerms(escrow, TERMS_HASH);
-        tenant.approveToken(token, address(escrow), DEPOSIT);
-        tenant.fund(escrow, DEPOSIT);
-
-        DepositEscrow.Terms memory terms = escrow.getTerms();
-        vm.warp(terms.leaseEndAt + 1);
-        EscrowTestActor landlord = EscrowTestActor(terms.landlord);
-        landlord.startSettlement(escrow);
-
-        DepositEscrow.ClaimInput[] memory claims = new DepositEscrow.ClaimInput[](2);
-        claims[0] = DepositEscrow.ClaimInput(100e6, keccak256("cleaning"));
-        claims[1] = DepositEscrow.ClaimInput(200e6, keccak256("damage"));
-        landlord.submitClaims(escrow, claims);
-
-        vm.warp(terms.claimDeadline + 1);
-        landlord.closeClaims(escrow);
-        DepositEscrow.Accounting memory afterClose = escrow.getAccounting();
+        DepositEscrow.Accounting memory afterClose = fixture.escrow.getAccounting();
         require(afterClose.tenantCredit == 700e6, "tenant 700 missing");
         require(afterClose.landlordCredit == 0, "landlord allocated early");
-        require(afterClose.unallocated == 300e6, "unallocated mismatch");
+        require(afterClose.unallocated == 300e6, "claim balance mismatch");
 
-        tenant.respondClaim(escrow, 1, true, keccak256("accepted-cleaning"));
-        DepositEscrow.Accounting memory afterResponse = escrow.getAccounting();
+        _respondClaim(fixture, 1, true, keccak256("accepted-cleaning"));
+        DepositEscrow.Accounting memory afterResponse = fixture.escrow.getAccounting();
         require(afterResponse.tenantCredit == 700e6, "tenant changed");
         require(afterResponse.landlordCredit == 100e6, "landlord 100 missing");
-        require(afterResponse.unallocated == 200e6, "disputed 200 missing");
+        require(afterResponse.unallocated == 200e6, "dispute not isolated");
 
-        vm.warp(terms.responseDeadline + 1);
-        landlord.openClaimCase(escrow);
-        DepositEscrow.ActiveCase memory activeCase = escrow.getActiveCase();
+        vm.warp(schedule.responseDeadline);
+        fixture.escrow.openClaimCase();
+        DepositEscrow.ActiveCase memory activeCase = fixture.escrow.getActiveCase();
         require(activeCase.exists, "case missing");
+        require(activeCase.caseType == DepositEscrow.CaseType.Claims, "wrong case type");
         require(activeCase.disputedAmount == 200e6, "case amount mismatch");
-        require(
-            uint256(escrow.phase()) == uint256(DepositEscrow.Phase.ClaimCase),
-            "wrong claim case phase"
-        );
-        registry;
     }
 
-    function testPrimaryDecisionSplitsRemainingDispute() public {
-        (
-            ResolverRegistry registry,
-            EscrowTestToken token,
-            EscrowTestActor tenant,
-            DepositEscrow escrow
-        ) = _newEscrow();
-        tenant.acceptTerms(escrow, TERMS_HASH);
-        tenant.approveToken(token, address(escrow), DEPOSIT);
-        tenant.fund(escrow, DEPOSIT);
-
-        DepositEscrow.Terms memory terms = escrow.getTerms();
-        EscrowTestActor landlord = EscrowTestActor(terms.landlord);
-        vm.warp(terms.leaseEndAt + 1);
-        landlord.startSettlement(escrow);
-        DepositEscrow.ClaimInput[] memory claims = new DepositEscrow.ClaimInput[](2);
-        claims[0] = DepositEscrow.ClaimInput(100e6, keccak256("cleaning"));
-        claims[1] = DepositEscrow.ClaimInput(200e6, keccak256("damage"));
-        landlord.submitClaims(escrow, claims);
-        vm.warp(terms.claimDeadline + 1);
-        landlord.closeClaims(escrow);
-        tenant.respondClaim(escrow, 1, true, keccak256("accepted-cleaning"));
-        vm.warp(terms.responseDeadline + 1);
-        landlord.openClaimCase(escrow);
-        vm.warp(terms.evidenceDeadline + 1);
+    function testPrimaryDecisionSplitsOnlyRemainingDispute() public {
+        (EscrowFixture memory fixture, DepositEscrow.SettlementSchedule memory schedule) = _openDemoClaimCase();
+        DepositEscrow.ActiveCase memory activeCase = fixture.escrow.getActiveCase();
+        vm.warp(schedule.evidenceDeadline);
 
         DepositEscrow.DecisionInput[] memory result = new DepositEscrow.DecisionInput[](1);
-        result[0] = DepositEscrow.DecisionInput(2, 50e6);
-        _primary.proposeDecision(
-            escrow,
-            1,
-            result,
-            keccak256("primary-reasons")
-        );
-        vm.warp(terms.challengeDeadline + 1);
-        landlord.finalizePrimary(escrow, 1);
+        result[0] = DepositEscrow.DecisionInput({claimId: 2, landlordAmount: 50e6});
+        fixture.primary
+            .execute(
+                address(fixture.escrow),
+                abi.encodeCall(
+                    fixture.escrow.proposeDecision, (activeCase.caseId, result, keccak256("primary-reasons"))
+                )
+            );
 
-        DepositEscrow.Accounting memory accounting = escrow.getAccounting();
+        activeCase = fixture.escrow.getActiveCase();
+        vm.warp(activeCase.challengeDeadline);
+        fixture.escrow.finalizePrimary(activeCase.caseId);
+
+        DepositEscrow.Accounting memory accounting = fixture.escrow.getAccounting();
         require(accounting.tenantCredit == 850e6, "tenant split mismatch");
         require(accounting.landlordCredit == 150e6, "landlord split mismatch");
-        require(accounting.unallocated == 0, "unallocated remains");
-        registry;
+        require(accounting.unallocated == 0, "funds remain locked");
     }
 
-    EscrowTestActor private _primary;
+    function testDecisionVectorRequiresCanonicalClaimsAndCentStep() public {
+        EscrowFixture memory fixture = _newEscrow();
+        _fund(fixture);
+        DepositEscrow.SettlementSchedule memory schedule = _startScheduledSettlement(fixture);
+        _submitDemoClaims(fixture);
+        _closeDemoClaims(fixture, schedule);
+        vm.warp(schedule.responseDeadline);
+        fixture.escrow.openClaimCase();
+        DepositEscrow.ActiveCase memory activeCase = fixture.escrow.getActiveCase();
+        vm.warp(activeCase.evidenceDeadline);
 
-    function _newEscrow()
-        private
-        returns (
-            ResolverRegistry registry,
-            EscrowTestToken token,
-            EscrowTestActor tenant,
-            DepositEscrow escrow
-        )
-    {
-        registry = new ResolverRegistry();
-        token = new EscrowTestToken();
-        tenant = new EscrowTestActor();
-        EscrowTestActor landlord = new EscrowTestActor();
-        _primary = new EscrowTestActor();
-        EscrowTestActor fallbackResolver = new EscrowTestActor();
-
-        registry.createProfile(
-            IResolverRegistry.ServiceProfile({
-                profileId: PROFILE_ID,
-                serviceTermsHash: SERVICE_HASH,
-                ruleVersion: 1,
-                primaryResolver: address(_primary),
-                fallbackResolver: address(fallbackResolver),
-                token: address(token),
-                maxDeposit: DEPOSIT,
-                maxLeaseEnd: type(uint256).max,
-                acceptUntil: type(uint256).max,
-                timingProfileId: TIMING_ID
-            })
+        DepositEscrow.DecisionInput[] memory reversed = new DepositEscrow.DecisionInput[](2);
+        reversed[0] = DepositEscrow.DecisionInput(2, 50e6);
+        reversed[1] = DepositEscrow.DecisionInput(1, 50e6);
+        require(
+            !fixture.primary
+                .tryExecute(
+                    address(fixture.escrow),
+                    abi.encodeCall(fixture.escrow.proposeDecision, (activeCase.caseId, reversed, keccak256("reversed")))
+                ),
+            "reordered claims accepted"
         );
-        _primary.acceptProfile(registry, PROFILE_ID);
-        fallbackResolver.acceptProfile(registry, PROFILE_ID);
 
-        uint256 nowAtSetup = block.timestamp;
-        DepositEscrow.Terms memory terms = DepositEscrow.Terms({
-            leaseId: keccak256(abi.encode(address(tenant), block.number)),
-            tenant: address(tenant),
-            landlord: address(landlord),
-            primaryResolver: address(_primary),
-            fallbackResolver: address(fallbackResolver),
-            token: address(token),
-            depositAmount: DEPOSIT,
-            leaseEndAt: nowAtSetup + 2 days,
-            hardEndAt: nowAtSetup + 19 days,
-            timeoutPolicy: TIMEOUT_POLICY,
-            termsHash: TERMS_HASH,
-            ruleVersion: 1,
-            timingProfileId: TIMING_ID,
-            serviceProfileId: PROFILE_ID,
-            serviceTermsHash: SERVICE_HASH,
-            registryAddress: address(registry),
-            acceptDeadline: nowAtSetup + 1 days,
-            claimDeadline: nowAtSetup + 3 days,
-            responseDeadline: nowAtSetup + 4 days,
-            evidenceDeadline: nowAtSetup + 5 days,
-            primaryDeadline: nowAtSetup + 6 days,
-            challengeDeadline: nowAtSetup + 9 days,
-            fallbackDeadline: nowAtSetup + 16 days,
-            exitNoticeDeadline: nowAtSetup + 19 days
-        });
-        escrow = new DepositEscrow(terms);
-        token.mint(address(tenant), DEPOSIT);
+        DepositEscrow.DecisionInput[] memory fractional = new DepositEscrow.DecisionInput[](2);
+        fractional[0] = DepositEscrow.DecisionInput(1, 50e6 + 1);
+        fractional[1] = DepositEscrow.DecisionInput(2, 50e6);
+        require(
+            !fixture.primary
+                .tryExecute(
+                    address(fixture.escrow),
+                    abi.encodeCall(
+                        fixture.escrow.proposeDecision, (activeCase.caseId, fractional, keccak256("fractional"))
+                    )
+                ),
+            "fractional result accepted"
+        );
+    }
+
+    function testCheckoutDisagreementCreatesResolvableCase() public {
+        EscrowFixture memory fixture = _newEscrow();
+        _fund(fixture);
+        bytes32 evidenceHash = keccak256("checkout-condition");
+        fixture.tenant.execute(address(fixture.escrow), abi.encodeCall(fixture.escrow.requestCheckout, (evidenceHash)));
+        fixture.landlord
+            .execute(address(fixture.escrow), abi.encodeCall(fixture.escrow.respondCheckout, (false, evidenceHash)));
+        fixture.escrow.openCheckoutCase();
+
+        DepositEscrow.ActiveCase memory activeCase = fixture.escrow.getActiveCase();
+        require(activeCase.caseType == DepositEscrow.CaseType.Checkout, "checkout case missing");
+        vm.warp(activeCase.evidenceDeadline);
+        fixture.primary
+            .execute(
+                address(fixture.escrow),
+                abi.encodeCall(
+                    fixture.escrow.proposeCheckoutDecision, (activeCase.caseId, true, keccak256("handover-valid"))
+                )
+            );
+        activeCase = fixture.escrow.getActiveCase();
+        vm.warp(activeCase.challengeDeadline);
+        fixture.escrow.finalizePrimary(activeCase.caseId);
+
+        DepositEscrow.SettlementSchedule memory schedule = fixture.escrow.getSettlementSchedule();
+        require(schedule.started, "early settlement not started");
+        require(schedule.startedAt < fixture.escrow.getTerms().leaseEndAt, "early checkout did not rebase deadlines");
+        require(uint256(fixture.escrow.phase()) == uint256(DepositEscrow.Phase.ClaimsOpen), "claims did not open");
+    }
+
+    function testMutualCheckoutStartsClaimsAtConfirmationTime() public {
+        EscrowFixture memory fixture = _newEscrow();
+        _fund(fixture);
+        bytes32 evidenceHash = keccak256("agreed-checkout");
+        fixture.tenant.execute(address(fixture.escrow), abi.encodeCall(fixture.escrow.requestCheckout, (evidenceHash)));
+        uint256 confirmedAt = block.timestamp;
+        fixture.landlord
+            .execute(address(fixture.escrow), abi.encodeCall(fixture.escrow.respondCheckout, (true, evidenceHash)));
+
+        DepositEscrow.SettlementSchedule memory schedule = fixture.escrow.getSettlementSchedule();
+        require(schedule.startedAt == confirmedAt, "wrong early start");
+        require(
+            schedule.claimDeadline == confirmedAt + uint256(fixture.escrow.getTerms().timing.claim),
+            "claim window not rebased"
+        );
+    }
+
+    function testCheckoutPrimaryTimeoutUsesFallbackResolver() public {
+        EscrowFixture memory fixture = _newEscrow();
+        _fund(fixture);
+        fixture.tenant
+            .execute(
+                address(fixture.escrow), abi.encodeCall(fixture.escrow.requestCheckout, (keccak256("checkout-timeout")))
+            );
+        DepositEscrow.CheckoutRequest memory checkout = fixture.escrow.getCheckout();
+        vm.warp(checkout.responseDeadline);
+        fixture.escrow.openCheckoutCase();
+
+        DepositEscrow.ActiveCase memory activeCase = fixture.escrow.getActiveCase();
+        vm.warp(activeCase.primaryDeadline);
+        fixture.escrow.escalateTimeout(activeCase.caseId);
+        activeCase = fixture.escrow.getActiveCase();
+        vm.warp(activeCase.fallbackStartAt + uint256(fixture.escrow.getTerms().timing.fallbackEvidence));
+        fixture.fallbackResolver
+            .execute(
+                address(fixture.escrow),
+                abi.encodeCall(
+                    fixture.escrow.resolveFallbackCheckout, (activeCase.caseId, false, keccak256("not-ended"))
+                )
+            );
+
+        checkout = fixture.escrow.getCheckout();
+        require(checkout.resolved && !checkout.agreed, "fallback not applied");
+        require(uint256(fixture.escrow.phase()) == uint256(DepositEscrow.Phase.Active), "lease did not resume");
+    }
+
+    function testServiceTimeoutReturnsUnawardedDisputeToTenant() public {
+        (EscrowFixture memory fixture, DepositEscrow.SettlementSchedule memory schedule) = _openDemoClaimCase();
+        schedule;
+        DepositEscrow.ActiveCase memory activeCase = fixture.escrow.getActiveCase();
+
+        fixture.escrow.withdrawFor(address(fixture.tenant));
+        fixture.escrow.withdrawFor(address(fixture.landlord));
+        require(fixture.token.balanceOf(address(fixture.tenant)) == 700e6, "undisputed tenant funds unavailable");
+        require(fixture.token.balanceOf(address(fixture.landlord)) == 100e6, "accepted landlord funds unavailable");
+
+        vm.warp(activeCase.primaryDeadline);
+        fixture.escrow.escalateTimeout(activeCase.caseId);
+
+        activeCase = fixture.escrow.getActiveCase();
+        vm.warp(activeCase.fallbackDeadline);
+        fixture.escrow.markServiceTimeout(activeCase.caseId);
+        activeCase = fixture.escrow.getActiveCase();
+        require(activeCase.phase == DepositEscrow.CasePhase.ExitPending, "exit notice missing");
+        vm.warp(activeCase.timeoutAt);
+        fixture.escrow.finalizeTimeout(activeCase.caseId);
+
+        DepositEscrow.Accounting memory accounting = fixture.escrow.getAccounting();
+        require(accounting.tenantCredit == 200e6, "tenant timeout mismatch");
+        require(accounting.landlordCredit == 0, "landlord paid twice");
+        require(accounting.tenantWithdrawn == 700e6, "tenant history lost");
+        require(accounting.landlordWithdrawn == 100e6, "landlord history lost");
+        require(accounting.unallocated == 0, "timeout left funds locked");
+    }
+
+    function testChallengeIrrevocablyMovesCaseToFallback() public {
+        (EscrowFixture memory fixture, DepositEscrow.SettlementSchedule memory schedule) = _openDemoClaimCase();
+        schedule;
+        DepositEscrow.ActiveCase memory activeCase = fixture.escrow.getActiveCase();
+        vm.warp(activeCase.evidenceDeadline);
+        DepositEscrow.DecisionInput[] memory primaryResult = new DepositEscrow.DecisionInput[](1);
+        primaryResult[0] = DepositEscrow.DecisionInput(2, 50e6);
+        fixture.primary
+            .execute(
+                address(fixture.escrow),
+                abi.encodeCall(
+                    fixture.escrow.proposeDecision, (activeCase.caseId, primaryResult, keccak256("challenged-primary"))
+                )
+            );
+        fixture.tenant
+            .execute(
+                address(fixture.escrow),
+                abi.encodeCall(fixture.escrow.challenge, (activeCase.caseId, keccak256("challenge-reason")))
+            );
+        require(fixture.escrow.getActiveCase().decisionHash == bytes32(0), "challenged decision remained active");
+        require(
+            fixture.escrow.getActiveCase().challengeCommitment == keccak256("challenge-reason"),
+            "challenge reason was not recorded"
+        );
+        require(
+            !fixture.landlord
+                .tryExecute(
+                    address(fixture.escrow), abi.encodeCall(fixture.escrow.finalizePrimary, (activeCase.caseId))
+                ),
+            "challenged primary finalized"
+        );
+
+        activeCase = fixture.escrow.getActiveCase();
+        DepositEscrow.DecisionInput[] memory fallbackResult = new DepositEscrow.DecisionInput[](1);
+        fallbackResult[0] = DepositEscrow.DecisionInput(2, 0);
+        require(
+            !fixture.fallbackResolver
+                .tryExecute(
+                    address(fixture.escrow),
+                    abi.encodeCall(
+                        fixture.escrow.resolveFallback, (activeCase.caseId, fallbackResult, keccak256("too-early"))
+                    )
+                ),
+            "fallback skipped evidence window"
+        );
+        vm.warp(activeCase.fallbackStartAt + uint256(fixture.escrow.getTerms().timing.fallbackEvidence));
+        fixture.fallbackResolver
+            .execute(
+                address(fixture.escrow),
+                abi.encodeCall(
+                    fixture.escrow.resolveFallback, (activeCase.caseId, fallbackResult, keccak256("fallback-final"))
+                )
+            );
+        DepositEscrow.Accounting memory accounting = fixture.escrow.getAccounting();
+        require(accounting.tenantCredit == 900e6, "fallback tenant mismatch");
+        require(accounting.landlordCredit == 100e6, "primary result revived");
+    }
+
+    function testLandlordCanWaiveUnallocatedClaimAfterClose() public {
+        EscrowFixture memory fixture = _newEscrow();
+        _fund(fixture);
+        DepositEscrow.SettlementSchedule memory schedule = _startScheduledSettlement(fixture);
+        _submitDemoClaims(fixture);
+        _closeDemoClaims(fixture, schedule);
+        fixture.landlord.execute(address(fixture.escrow), abi.encodeCall(fixture.escrow.waiveClaim, (2)));
+        _respondClaim(fixture, 1, true, keccak256("accepted-cleaning"));
+
+        DepositEscrow.Accounting memory accounting = fixture.escrow.getAccounting();
+        require(accounting.tenantCredit == 900e6, "waiver not returned");
+        require(accounting.landlordCredit == 100e6, "accepted claim missing");
+        require(accounting.unallocated == 0, "waiver remains locked");
+    }
+
+    function testEvidenceVersionsCannotOverwriteHistory() public {
+        EscrowFixture memory fixture = _newEscrow();
+        _fund(fixture);
+        bytes32 bundleId = keccak256("inspection-bundle");
+        bytes32 first = keccak256("version-one");
+        bytes32 second = keccak256("version-two");
+        fixture.tenant
+            .execute(address(fixture.escrow), abi.encodeCall(fixture.escrow.recordEvidence, (bundleId, 1, first)));
+        fixture.tenant
+            .execute(address(fixture.escrow), abi.encodeCall(fixture.escrow.recordEvidence, (bundleId, 2, second)));
+        fixture.landlord
+            .execute(
+                address(fixture.escrow),
+                abi.encodeCall(fixture.escrow.acknowledgeEvidence, (address(fixture.tenant), 1, bundleId, first, true))
+            );
+        require(
+            !fixture.tenant
+                .tryExecute(
+                    address(fixture.escrow),
+                    abi.encodeCall(fixture.escrow.recordEvidence, (bundleId, 2, keccak256("overwrite")))
+                ),
+            "same evidence version overwritten"
+        );
+        require(
+            !fixture.landlord
+                .tryExecute(
+                    address(fixture.escrow),
+                    abi.encodeCall(
+                        fixture.escrow.acknowledgeEvidence, (address(fixture.tenant), 3, bundleId, second, false)
+                    )
+                ),
+            "nonexistent evidence acknowledged"
+        );
+
+        DepositEscrow.EvidenceRecord memory v1 = fixture.escrow.getEvidence(address(fixture.tenant), bundleId, 1);
+        DepositEscrow.EvidenceRecord memory v2 = fixture.escrow.getEvidence(address(fixture.tenant), bundleId, 2);
+        require(v1.commitment == first && v1.acknowledged, "v1 overwritten");
+        require(v2.commitment == second && !v2.acknowledged, "v2 corrupted");
+        require(
+            fixture.escrow.getLatestEvidenceVersion(address(fixture.tenant), bundleId) == 2, "latest version mismatch"
+        );
+    }
+
+    function testStateChangeInvalidatesPendingSettlement() public {
+        EscrowFixture memory fixture = _newEscrow();
+        _fund(fixture);
+        DepositEscrow.Accounting memory accounting = fixture.escrow.getAccounting();
+        bytes memory result = fixture.tenant
+            .execute(
+                address(fixture.escrow),
+                abi.encodeCall(
+                    fixture.escrow.proposeSettlement,
+                    (800e6, 200e6, accounting.revision, block.timestamp + 1 days, keccak256("mutual-split"))
+                )
+            );
+        uint256 proposalId = abi.decode(result, (uint256));
+        require(proposalId != 0, "proposal missing");
+
+        fixture.tenant
+            .execute(
+                address(fixture.escrow),
+                abi.encodeCall(fixture.escrow.requestCheckout, (keccak256("new-checkout-state")))
+            );
+        require(fixture.escrow.getSettlementProposal().proposalId == 0, "stale proposal survived");
+        require(
+            !fixture.landlord
+                .tryExecute(address(fixture.escrow), abi.encodeCall(fixture.escrow.confirmSettlement, (proposalId))),
+            "stale proposal confirmed"
+        );
+    }
+
+    function testMutualSettlementNeedsOtherParticipantConfirmation() public {
+        EscrowFixture memory fixture = _newEscrow();
+        _fund(fixture);
+        DepositEscrow.Accounting memory accounting = fixture.escrow.getAccounting();
+        bytes memory result = fixture.tenant
+            .execute(
+                address(fixture.escrow),
+                abi.encodeCall(
+                    fixture.escrow.proposeSettlement,
+                    (800e6, 200e6, accounting.revision, block.timestamp + 1 days, keccak256("settlement"))
+                )
+            );
+        uint256 proposalId = abi.decode(result, (uint256));
+        require(
+            !fixture.tenant
+                .tryExecute(address(fixture.escrow), abi.encodeCall(fixture.escrow.confirmSettlement, (proposalId))),
+            "proposer self-confirmed"
+        );
+        fixture.landlord
+            .execute(address(fixture.escrow), abi.encodeCall(fixture.escrow.confirmSettlement, (proposalId)));
+
+        accounting = fixture.escrow.getAccounting();
+        require(accounting.tenantCredit == 800e6, "tenant settlement mismatch");
+        require(accounting.landlordCredit == 200e6, "landlord settlement mismatch");
+    }
+
+    function testHardEndAndPublicWithdrawalCannotRedirectFunds() public {
+        EscrowFixture memory fixture = _newEscrow();
+        _fund(fixture);
+        DepositEscrow.Terms memory terms = fixture.escrow.getTerms();
+        vm.warp(terms.hardEndAt);
+        fixture.escrow.expireEscrow();
+        fixture.escrow.expireEscrow();
+
+        DepositEscrow.Accounting memory accounting = fixture.escrow.getAccounting();
+        require(accounting.tenantCredit == DEPOSIT, "hard-end return missing");
+        require(accounting.unallocated == 0, "hard-end funds locked");
+
+        TestActor stranger = new TestActor();
+        require(
+            !stranger.tryExecute(
+                address(fixture.escrow), abi.encodeCall(fixture.escrow.withdrawFor, (address(stranger)))
+            ),
+            "stranger became beneficiary"
+        );
+        stranger.execute(address(fixture.escrow), abi.encodeCall(fixture.escrow.withdrawFor, (address(fixture.tenant))));
+        require(fixture.token.balanceOf(address(fixture.tenant)) == DEPOSIT, "public executor redirected payout");
+        fixture.escrow.withdrawFor(address(fixture.tenant));
+    }
+
+    function testDirectExtraTokenTransferNeverChangesRegisteredDeposit() public {
+        EscrowFixture memory fixture = _newEscrow();
+        _fund(fixture);
+        fixture.token.mint(address(this), 1e6);
+        fixture.token.transfer(address(fixture.escrow), 1e6);
+
+        DepositEscrow.Accounting memory accounting = fixture.escrow.getAccounting();
+        require(accounting.fundedAmount == DEPOSIT, "funded amount inflated");
+        require(accounting.unallocated == DEPOSIT, "accounting inflated");
+
+        vm.warp(fixture.escrow.getTerms().hardEndAt);
+        fixture.escrow.expireEscrow();
+        fixture.escrow.withdrawFor(address(fixture.tenant));
+        require(fixture.token.balanceOf(address(fixture.escrow)) == 1e6, "extra token became withdrawable deposit");
+    }
+
+    function testFundedEscrowKeepsSnapshotAfterProfileRevocation() public {
+        EscrowFixture memory fixture = _newEscrow();
+        _fund(fixture);
+        fixture.primary
+            .execute(
+                address(fixture.registry), abi.encodeCall(fixture.registry.revokeForNewFunding, (fixture.profileId))
+            );
+
+        DepositEscrow.SettlementSchedule memory schedule = _startScheduledSettlement(fixture);
+        vm.warp(schedule.claimDeadline);
+        fixture.escrow.closeClaims();
+        require(fixture.escrow.getAccounting().tenantCredit == DEPOSIT, "funded lease changed after revocation");
+    }
+
+    function testClaimCountAndAmountsAreBounded() public {
+        EscrowFixture memory fixture = _newEscrow();
+        _fund(fixture);
+        _startScheduledSettlement(fixture);
+
+        DepositEscrow.ClaimInput[] memory tooMany = new DepositEscrow.ClaimInput[](11);
+        for (uint256 i = 0; i < tooMany.length; i++) {
+            tooMany[i] = DepositEscrow.ClaimInput({amount: 1e6, commitment: keccak256(abi.encode(i))});
+        }
+        require(
+            !fixture.landlord
+            .tryExecute(address(fixture.escrow), abi.encodeCall(fixture.escrow.submitClaims, (tooMany))),
+            "more than ten claims accepted"
+        );
+
+        DepositEscrow.ClaimInput[] memory fractional = new DepositEscrow.ClaimInput[](1);
+        fractional[0] = DepositEscrow.ClaimInput({amount: 1e6 + 1, commitment: keccak256("fractional-claim")});
+        require(
+            !fixture.landlord
+                .tryExecute(address(fixture.escrow), abi.encodeCall(fixture.escrow.submitClaims, (fractional))),
+            "fractional claim accepted"
+        );
+
+        DepositEscrow.ClaimInput[] memory overDeposit = new DepositEscrow.ClaimInput[](2);
+        overDeposit[0] = DepositEscrow.ClaimInput({amount: 600e6, commitment: keccak256("over-one")});
+        overDeposit[1] = DepositEscrow.ClaimInput({amount: 500e6, commitment: keccak256("over-two")});
+        require(
+            !fixture.landlord
+                .tryExecute(address(fixture.escrow), abi.encodeCall(fixture.escrow.submitClaims, (overDeposit))),
+            "claims over deposit accepted"
+        );
+        require(fixture.escrow.getClaimCount() == 0, "partial claim list saved");
+    }
+
+    function _openDemoClaimCase()
+        private
+        returns (EscrowFixture memory fixture, DepositEscrow.SettlementSchedule memory schedule)
+    {
+        fixture = _newEscrow();
+        _fund(fixture);
+        schedule = _startScheduledSettlement(fixture);
+        _submitDemoClaims(fixture);
+        _closeDemoClaims(fixture, schedule);
+        _respondClaim(fixture, 1, true, keccak256("accepted-cleaning"));
+        vm.warp(schedule.responseDeadline);
+        fixture.escrow.openClaimCase();
     }
 }

@@ -1,27 +1,27 @@
 # RentBond — Programmable Deposit Settlement
 
-**面向跨境租房的国际学生，尤其解决退租后远程处理押金扣款和争议的问题。** 房东逐项提出扣款，租客逐项确认；申索窗口关闭后，无争议部分先分配，争议部分继续锁定并进入处理流程。
+**面向在海外租房并需要远程处理押金结算的人群，包括国际学生、海外工作者和陪读／随迁家庭。** 房东逐项提出扣款，租客逐项确认；申索窗口关闭后，无争议部分先分配，争议部分继续锁定并进入处理流程。
 
 > **Dispute 200, not your entire 1,000 deposit.**
 >
-> RentBond helps international students and small landlords settle rental deposits remotely. Once the claim window closes, undisputed funds become claimable while disputed deductions follow the agreed resolution process.
+> RentBond helps cross-border renters and small landlords settle rental deposits remotely. Once the claim window closes, undisputed funds become claimable while disputed deductions follow the agreed resolution process.
 
-**当前状态：五人协作开发启动框架，尚未实现业务应用或部署合约。** 已包含需求、目录边界、任务、接口约定、验收清单及 GitHub 协作模板。骨架检查通过不代表产品已完成。
+**当前状态：合约模块已有本地实现和 32 个通过的 Foundry 测试；网页、后端、Worker、账户体验和 Monad 测试网部署仍未完成。** 文档和骨架检查不能替代独立审查、跨层验收或真实链上证据。
 
 ## 产品面向谁
 
 | 用户 | 第一版定位 |
 | --- | --- |
-| Primary user | 跨境租房、即将退租或已离境，需要远程结算押金的国际学生租客 |
-| 初始画像假设 | 18–28 岁、初次或前几次海外租房；年龄是研究画像，不是代码准入限制 |
-| Adoption-side user | 经常出租给国际学生的私人房东及小型物业管理方 |
-| 暂不优先 | 已有成熟系统的大型机构学生公寓；不泛化为“所有留学生” |
+| Primary user | 跨境租房、即将退租或已离境，需要远程结算押金的海外租客 |
+| 首批场景 | 国际学生、海外工作者、陪读／随迁家庭；这些是获客场景，不是代码准入限制 |
+| Adoption-side user | 经常服务跨境租客的私人房东及小型物业管理方 |
+| 暂不优先 | 已有成熟押金系统的大型机构公寓；不泛化为所有租房交易 |
 
 用户需要在**入金前双方接受规则并将押金存入合约**。RentBond 无法追回已交给房东的旧押金；“已离境”描述结算时的场景，不代表可以事后单方迁入旧押金。当前定位是首批用户假设，尚无真实采用数据。
 
 ## 核心 Demo：1,000 → 700 / 100 / 200
 
-Alice 是国际学生，退租后已回国。她与房东在入住前确认了押金规则并存入 **1,000 MockUSD**。房东申索清洁 100、桌面损坏 200；Alice 认可清洁费，对原有划痕提出异议。
+Alice 是跨境租客，退租后已离开当地。她与房东在入住前确认了押金规则并存入 **1,000 MockUSD**。房东申索清洁 100、桌面损坏 200；Alice 认可清洁费，对原有划痕提出异议。
 
 | 申索窗口关闭后的资金 | 数额 | 状态 |
 | --- | ---: | --- |
@@ -29,7 +29,7 @@ Alice 是国际学生，退租后已回国。她与房东在入住前确认了�
 | 已认可扣款 → 房东 | 100 MockUSD | 可领取 |
 | 争议部分 | 200 MockUSD | 待处理，尚未分配 |
 
-若有效处理结果支持其中 50 给房东，最终租客 850、房东 150；若主备处理均超时，按事先接受的退出政策最终租客 900、房东 100。领取交易确认后才显示“已领取”。上述为**虚构案例与验收目标**，不是已完成的测试。
+若有效处理结果支持其中 50 给房东，最终租客 850、房东 150；若主备处理均超时，按事先接受的退出政策最终租客 900、房东 100。领取交易确认后才显示“已领取”。上述仍是**虚构案例，不是真实用户数据**；对应本地合约流程测试已通过，但尚无 Monad 测试网交易。
 
 主 Demo 展示 Tenant / Landlord / Resolver 三种角色。备用处理、服务预授权、超时退出、Worker 和故障恢复保留在完整实现及技术附录中。详见 [MVP 规格](docs/MVP-SPEC.md) 与 [Demo 脚本](docs/contest/demo.md)。
 
@@ -86,17 +86,20 @@ RentBond/
 
 ## 当前能运行的检查
 
-当前骨架仅依赖 Node.js **24.14.0**，无第三方 npm 包。这里固定的是本次检查使用的版本，后续 SDK 的兼容性须在 RB-02 验证。无需先安装应用依赖。
+骨架检查依赖 Node.js **24.14.0**。合约命令通过 npx 使用固定的 `@foundry-rs/forge@1.7.1`；网页依赖和锁文件仍待 RB-02 固定。
 
 ```sh
 node scripts/doctor.mjs
 node scripts/check-scaffold.mjs
 node scripts/ts04-clone-verify.mjs   # TS04：独立 clone 验证
+npm run build:contracts
+npm run test:contracts
+npm run check:contract-sizes
 ```
 
-已有 pnpm 时可运行 `pnpm doctor` 与 `pnpm check`。`doctor` 只检查骨架运行环境；`check` 检查本地文档链接、JSON、需求覆盖及目录；`ts04` 检查独立 clone 可复现性。业务环境诊断、lint、类型检查与业务测试尚未实现。
+已有 pnpm 时可运行 `pnpm doctor` 与 `pnpm check`。`doctor` 只检查骨架运行环境；`check` 检查本地文档链接、JSON、需求覆盖及目录；`ts04` 目前仍是骨架级 clone 检查。合约测试已经实现；网页 lint、类型检查和跨层业务测试尚未实现。
 
-**测试命令（RB-12/RB-13 后可运行）：**
+**跨层测试命令（RB-12/RB-13 后可运行）：**
 
 ```sh
 node tests/runner.mjs integration  # IT-01 — IT-08
@@ -110,7 +113,7 @@ pnpm test:e2e                     # 同上 via pnpm
 
 ### 后续完整启动目标
 
-**下列业务命令尚未实现；目前执行会明确报错并指出责任 Issue。** 实现后须由另一位成员从新 clone 验证，再更新本节。
+除 `test:contracts` 外，下列应用/基础设施命令仍未实现；占位命令会明确报错并指出责任 Issue。实现后须由另一位成员从新 clone 验证，再更新本节。
 
 ```sh
 pnpm install --frozen-lockfile   # RB-02 提交锁文件后使用
@@ -123,7 +126,7 @@ pnpm fixtures:seed
 pnpm dev                         # 独立终端 2，常驻
 pnpm worker:dev                  # 独立终端 3，常驻
 pnpm check
-pnpm test:contracts
+npm run test:contracts            # 已实现
 pnpm test:integration
 pnpm test:e2e
 pnpm build
@@ -131,18 +134,19 @@ pnpm build
 
 从 `.env.example` 配置服务环境，实际加载路径由 RB-02 固定。密钥、私有文件和真实合同不进入 Git。测试网部署命令 `pnpm contracts:deploy:testnet` 同样待实现，不能缺配置时回退主网。
 
-## 上传 GitHub
+## GitHub 协作
 
-在 GitHub 创建空仓库，使用 Git 提交本目录，可保留 `.github/` 等隐藏文件。下面由你替换实际仓库地址后执行；本次没有创建远端或推送。
+仓库已经存在。每位成员从最新 `main` 创建自己的功能分支，通过 PR 合并，不要在 GitHub 网页和本地同时改同一文件：
 
 ```sh
-git init -b main
-git add .
-git diff --cached --stat
+git switch main
+git pull --ff-only
+git switch -c <type/member-topic>
+# 修改并运行对应测试
+git add <本任务文件>
 git diff --cached
-git commit -m "chore: initialize RentBond collaboration scaffold"
-git remote add origin <你的GitHub仓库URL>
-git push -u origin main
+git commit -m "<type>: <summary>"
+git push -u origin HEAD
 ```
 
 提交前检查差异中没有密钥和私人资料。A 邀请成员，按 [GitHub 设置清单](docs/github-setup.md) 配置分支保护、任务看板和真实 CODEOWNERS。仓库内的模板不会自动设置远端规则。
@@ -161,4 +165,4 @@ git push -u origin main
 
 ## 已知限制
 
-业务应用、合约、钱包兼容、私有权限、停运恢复和链上交易证据均未完成，AT01—AT52 初始均为 `Not started`。原 PRD 中的比赛日期和供应商能力是历史来源，正式资格、团队人数和截止时区待核对。项目未选择对外开源许可证；发布前由团队决定并记录第三方许可。
+合约已有本地实现，但仍缺完整边界/fuzz/invariant、独立安全复核与 Monad 部署证据；网页、钱包兼容、私有权限、Worker 和停运恢复尚未完成。AT 状态在固定 commit 与独立复核前不能写成 Verified。原 PRD 中的比赛日期和供应商能力是历史来源，正式资格、团队人数和截止时区仍待核对。项目未选择对外开源许可证；发布前由团队决定并记录第三方许可。

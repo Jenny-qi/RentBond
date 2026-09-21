@@ -35,6 +35,7 @@ jobs:
 
   typecheck:
     name: Type check
+    if: ${{ false }} # Enable with RB-02 when app dependencies and lockfile exist.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -55,11 +56,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-      - run: pnpm test:contracts
-        # Implemented by RB-04; scaffold CI does not gate on this yet
+      - run: npm run build:contracts
+      - run: npm run test:contracts
+      - run: npm run check:contract-sizes
 
   test-integration:
     name: Integration tests
+    if: ${{ false }} # Enable with RB-12.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -71,6 +74,7 @@ jobs:
 
   test-e2e:
     name: E2E tests
+    if: ${{ false }} # Enable with RB-12/RB-13.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

@@ -2,6 +2,7 @@
 pragma solidity 0.8.24;
 
 import {IResolverRegistry} from "./interfaces/IResolverRegistry.sol";
+import {RentBondRules} from "./RentBondRules.sol";
 
 /// @title ResolverRegistry
 /// @notice Stores immutable resolver service profiles and controls their use for
@@ -15,10 +16,10 @@ contract ResolverRegistry is IResolverRegistry {
     /// @notice Creates an immutable service profile draft.
     /// @dev Anyone may submit a profile. It is not eligible until both listed
     ///      resolvers accept the exact profile.
-    function createProfile(
-        ServiceProfile calldata profile
-    ) external override {
-        if (profile.profileId == bytes32(0)) revert InvalidProfileId();
+    function createProfile(ServiceProfile calldata profile) external override {
+        if (profile.profileId == bytes32(0) || profile.profileId != _computeProfileId(profile)) {
+            revert InvalidProfileId();
+        }
         if (_statuses[profile.profileId].exists) {
             revert ProfileAlreadyExists(profile.profileId);
         }
@@ -32,7 +33,7 @@ contract ResolverRegistry is IResolverRegistry {
             revert ResolversMustDiffer();
         }
         if (profile.token == address(0)) revert InvalidToken();
-        if (profile.maxDeposit == 0) revert InvalidDepositLimit();
+        if (!RentBondRules.validDeposit(profile.maxDeposit)) revert InvalidDepositLimit();
         if (profile.maxLeaseEnd <= block.timestamp) revert InvalidLeaseEnd();
         if (profile.acceptUntil <= block.timestamp) {
             revert InvalidAcceptanceDeadline();
@@ -40,14 +41,17 @@ contract ResolverRegistry is IResolverRegistry {
         if (profile.timingProfileId == bytes32(0)) {
             revert InvalidTimingProfile();
         }
+        if (!RentBondRules.validTiming(profile.timing)) {
+            revert InvalidTimingConfig();
+        }
+        if (profile.timeoutPolicy != RentBondRules.TIMEOUT_RETURN_UNAWARDED_TO_TENANT) revert InvalidTimeoutPolicy();
+        if (profile.timingProfileId != RentBondRules.timingProfileId(profile.timing, profile.timeoutPolicy)) {
+            revert InvalidTimingProfile();
+        }
 
         _profiles[profile.profileId] = profile;
-        _statuses[profile.profileId] = ProfileStatus({
-            exists: true,
-            primaryAccepted: false,
-            fallbackAccepted: false,
-            closedForNewFunding: false
-        });
+        _statuses[profile.profileId] =
+            ProfileStatus({exists: true, primaryAccepted: false, fallbackAccepted: false, closedForNewFunding: false});
 
         emit ProfileCreated(
             profile.profileId,
@@ -59,8 +63,22 @@ contract ResolverRegistry is IResolverRegistry {
             profile.maxDeposit,
             profile.maxLeaseEnd,
             profile.acceptUntil,
-            profile.timingProfileId
+            profile.timingProfileId,
+            profile.timeoutPolicy
         );
+    }
+
+    function computeProfileId(ServiceProfile calldata profile) external pure override returns (bytes32) {
+        return _computeProfileId(profile);
+    }
+
+    function computeTimingProfileId(TimingConfig calldata timing, bytes32 timeoutPolicy)
+        external
+        pure
+        override
+        returns (bytes32)
+    {
+        return RentBondRules.timingProfileId(timing, timeoutPolicy);
     }
 
     /// @notice Records acceptance by the resolver named in the profile.
@@ -93,10 +111,7 @@ contract ResolverRegistry is IResolverRegistry {
         ServiceProfile storage profile = _requireProfile(profileId);
         ProfileStatus storage status = _statuses[profileId];
 
-        if (
-            msg.sender != profile.primaryResolver &&
-            msg.sender != profile.fallbackResolver
-        ) {
+        if (msg.sender != profile.primaryResolver && msg.sender != profile.fallbackResolver) {
             revert NotResolver();
         }
         if (status.closedForNewFunding) revert ProfileClosed(profileId);
@@ -109,10 +124,7 @@ contract ResolverRegistry is IResolverRegistry {
     /// @dev This view returns false instead of reverting so Factory/Escrow can
     ///      use it as a precondition query. Mutating callers should still
     ///      enforce their own custom errors for user-facing failure reasons.
-    function isEligible(
-        bytes32 profileId,
-        EligibilityTerms calldata terms
-    ) external view override returns (bool) {
+    function isEligible(bytes32 profileId, EligibilityTerms calldata terms) external view override returns (bool) {
         ServiceProfile storage profile = _profiles[profileId];
         ProfileStatus storage status = _statuses[profileId];
 
@@ -123,22 +135,17 @@ contract ResolverRegistry is IResolverRegistry {
         if (terms.serviceTermsHash != profile.serviceTermsHash) return false;
         if (terms.ruleVersion != profile.ruleVersion) return false;
         if (terms.timingProfileId != profile.timingProfileId) return false;
-        if (terms.depositAmount == 0 || terms.depositAmount > profile.maxDeposit) {
+        if (!RentBondRules.validDeposit(terms.depositAmount) || terms.depositAmount > profile.maxDeposit) {
             return false;
         }
-        if (
-            terms.leaseEndAt <= block.timestamp ||
-            terms.leaseEndAt > profile.maxLeaseEnd
-        ) {
+        if (terms.leaseEndAt <= block.timestamp || terms.leaseEndAt > profile.maxLeaseEnd) {
             return false;
         }
 
         return true;
     }
 
-    function getProfile(
-        bytes32 profileId
-    )
+    function getProfile(bytes32 profileId)
         external
         view
         override
@@ -149,18 +156,32 @@ contract ResolverRegistry is IResolverRegistry {
         if (!status.exists) revert ProfileNotFound(profileId);
     }
 
-    function isProfileAccepted(
-        bytes32 profileId
-    ) external view override returns (bool) {
+    function isProfileAccepted(bytes32 profileId) external view override returns (bool) {
         ProfileStatus storage status = _statuses[profileId];
         if (!status.exists) return false;
         return status.primaryAccepted && status.fallbackAccepted;
     }
 
-    function _requireProfile(
-        bytes32 profileId
-    ) internal view returns (ServiceProfile storage profile) {
+    function _requireProfile(bytes32 profileId) internal view returns (ServiceProfile storage profile) {
         if (!_statuses[profileId].exists) revert ProfileNotFound(profileId);
         return _profiles[profileId];
+    }
+
+    function _computeProfileId(ServiceProfile calldata profile) internal pure returns (bytes32) {
+        return keccak256(
+            abi.encode(
+                profile.serviceTermsHash,
+                profile.ruleVersion,
+                profile.primaryResolver,
+                profile.fallbackResolver,
+                profile.token,
+                profile.maxDeposit,
+                profile.maxLeaseEnd,
+                profile.acceptUntil,
+                profile.timingProfileId,
+                profile.timeoutPolicy,
+                profile.timing
+            )
+        );
     }
 }
