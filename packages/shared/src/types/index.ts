@@ -6,26 +6,34 @@
 
 import type { Address, Hash, Timestamp } from './primitives.js';
 
-/** Lease lifecycle states */
+/**
+ * Lease lifecycle states — mirrors DepositEscrow.Phase enum from B's contract.
+ *
+ * Source: contracts/src/DepositEscrow.sol enum Phase
+ */
 export const LEASE_STATUS = {
-  DRAFT: 'DRAFT',
-  INVITED: 'INVITED',
+  AWAITING_ACCEPTANCE: 'AWAITING_ACCEPTANCE',
+  AWAITING_FUNDING: 'AWAITING_FUNDING',
   ACTIVE: 'ACTIVE',
   CHECKOUT_REQUESTED: 'CHECKOUT_REQUESTED',
-  CHECKOUT_NEGATED: 'CHECKOUT_NEGATED',
+  CHECKOUT_CASE: 'CHECKOUT_CASE',
   CLAIMS_OPEN: 'CLAIMS_OPEN',
-  DISPUTE: 'DISPUTE',
+  CLAIMS_REVIEW: 'CLAIMS_REVIEW',
+  CLAIM_CASE: 'CLAIM_CASE',
+  EXIT_PENDING: 'EXIT_PENDING',
+  CANCELLED: 'CANCELLED',
   ALLOCATED: 'ALLOCATED',
   CLOSED: 'CLOSED',
 } as const;
 export type LeaseStatus = (typeof LEASE_STATUS)[keyof typeof LEASE_STATUS];
 
-/** Claim item status from tenant response */
+/** Claim item status — mirrors DepositEscrow.ClaimStatus from B's contract */
 export const CLAIM_RESPONSE = {
   PENDING: 'Pending',
   ACCEPTED: 'Accepted',
   DISPUTED: 'Disputed',
-  WITHDRAWN: 'Withdrawn',
+  WAIVED: 'Waived',
+  ALLOCATED: 'Allocated',
 } as const;
 export type ClaimResponse = (typeof CLAIM_RESPONSE)[keyof typeof CLAIM_RESPONSE];
 
@@ -40,13 +48,18 @@ export const TX_STATUS = {
 } as const;
 export type TxStatus = (typeof TX_STATUS)[keyof typeof TX_STATUS];
 
-/** Case processing states */
+/**
+ * Case processing phases — mirrors DepositEscrow.CasePhase from B's contract.
+ *
+ * Source: contracts/src/DepositEscrow.sol enum CasePhase
+ */
 export const CASE_STATUS = {
-  PRIMARY: 'PRIMARY',
-  CHALLENGED: 'CHALLENGED',
-  FALLBACK: 'FALLBACK',
-  TIMEOUT: 'TIMEOUT',
-  RESOLVED: 'RESOLVED',
+  NONE: 'None',
+  PRIMARY: 'Primary',
+  PROPOSED: 'Proposed',
+  FALLBACK: 'Fallback',
+  EXIT_PENDING: 'ExitPending',
+  FINALIZED: 'Finalized',
 } as const;
 export type CaseStatus = (typeof CASE_STATUS)[keyof typeof CASE_STATUS];
 
@@ -59,13 +72,25 @@ export const ROLE = {
 } as const;
 export type Role = (typeof ROLE)[keyof typeof ROLE];
 
-/** Deposit allocation snapshot after claim window closes */
+/**
+ * Deposit allocation snapshot — mirrors DepositEscrow.Accounting from B's contract.
+ *
+ * Conservation invariant (all amounts in base units):
+ *   fundedAmount = unallocated + tenantCredit + landlordCredit
+ *                + tenantWithdrawn + landlordWithdrawn
+ *
+ * Use `verifyAllocationConservation()` from @rentbond/shared to check this.
+ *
+ * Source: contracts/src/DepositEscrow.sol struct Accounting
+ */
 export interface AllocationSnapshot {
   /** Chain ID for cross-network disambiguation */
   chainId: number;
   /** Contract address this snapshot refers to */
   contractAddress: Address;
-  unallocated: string; // base units string
+  /** Total deposited amount (set at fund time, never changes) */
+  fundedAmount: string;
+  unallocated: string;        // base units string
   tenantCredit: string;
   landlordCredit: string;
   tenantWithdrawn: string;

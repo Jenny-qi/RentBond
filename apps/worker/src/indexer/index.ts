@@ -16,28 +16,49 @@
 
 import type { Address, Hash } from '@rentbond/shared';
 
-/** On-chain events emitted by DepositEscrow */
+/**
+ * On-chain events emitted by DepositEscrow.
+ *
+ * Names match B's contract source exactly (PascalCase).
+ * Events not listed here (e.g. "negated checkout", "withdrawn claim",
+ * "challenged primary", "fallback timeout", "service auth") do not exist
+ * on-chain — they are handled via state reads or other event combinations.
+ *
+ * Source: contracts/src/DepositEscrow.sol (B's implementation)
+ */
 export const ESCROW_EVENTS = {
+  TERMS_ACCEPTED: 'TermsAccepted',
+  LEASE_CANCELLED: 'LeaseCancelled',
   FUNDED: 'Funded',
-  CHECKOUT_REQUESTED: 'CheckoutRequested',
-  CHECKOUT_NEGATED: 'CheckoutNegated',
-  CLAIMS_SUBMITTED: 'ClaimsSubmitted',
-  CLAIMS_WINDOW_CLOSED: 'ClaimsWindowClosed',
-  CLAIM_RESPONSE_UPDATED: 'ClaimResponseUpdated',
-  CLAIM_WITHDRAWN: 'ClaimWithdrawn',
-  PRIMARY_DECISION_PROPOSED: 'PrimaryDecisionProposed',
-  PRIMARY_DECISION_CHALLENGED: 'PrimaryDecisionChallenged',
-  FALLBACK_DECISION_PROPOSED: 'FallbackDecisionProposed',
-  FALLBACK_DECISION_PROPOSED_TIMEOUT: 'FallbackDecisionProposedTimeout',
-  ESCROW_EXPIRED: 'EscrowExpired',
+  CREDIT_ALLOCATED: 'CreditAllocated',
   WITHDRAWN: 'Withdrawn',
-  SERVICE_AUTHORIZATION: 'ServiceAuthorization',
+  CLAIMS_OPENED: 'ClaimsOpened',
+  CLAIMS_SUBMITTED: 'ClaimsSubmitted',
+  CLAIM_RESPONDED: 'ClaimResponded',
+  CLAIM_WAIVED: 'ClaimWaived',
+  CLAIMS_CLOSED: 'ClaimsClosed',
+  CASE_OPENED: 'CaseOpened',
+  DECISION_PROPOSED: 'DecisionProposed',
+  CASE_ESCALATED: 'CaseEscalated',
+  DECISION_FINALIZED: 'DecisionFinalized',
+  SERVICE_TIMED_OUT: 'ServiceTimedOut',
+  TIMEOUT_ALLOCATED: 'TimeoutAllocated',
+  ESCROW_EXPIRED: 'EscrowExpired',
+  SETTLEMENT_PROPOSED: 'SettlementProposed',
+  SETTLEMENT_CONFIRMED: 'SettlementConfirmed',
+  EVIDENCE_COMMITTED: 'EvidenceCommitted',
+  EVIDENCE_ACKNOWLEDGED: 'EvidenceAcknowledged',
+  CHECKOUT_REQUESTED: 'CheckoutRequested',
+  CHECKOUT_RESPONDED: 'CheckoutResponded',
+  CHECKOUT_CASE_OPENED: 'CheckoutCaseOpened',
+  CHECKOUT_CASE_RESOLVED: 'CheckoutCaseResolved',
 } as const;
 export type EscrowEventName = (typeof ESCROW_EVENTS)[keyof typeof ESCROW_EVENTS];
 
 /** On-chain events emitted by LeaseFactory */
 export const FACTORY_EVENTS = {
   LEASE_CREATED: 'LeaseCreated',
+  NEW_LEASES_PAUSED: 'NewLeasesPaused',
 } as const;
 export type FactoryEventName = (typeof FACTORY_EVENTS)[keyof typeof FACTORY_EVENTS];
 

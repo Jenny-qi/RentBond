@@ -78,11 +78,18 @@ export function subtractAmounts(a: string, b: string): bigint {
 }
 
 /**
- * Verify that deposit = unallocated + tenantCredit + landlordCredit + tenantWithdrawn + landlordWithdrawn.
- * Used to check allocation conservation before and after each state transition.
+ * Verify the allocation conservation invariant:
+ *   fundedAmount = unallocated + tenantCredit + landlordCredit
+ *                + tenantWithdrawn + landlordWithdrawn
+ *
+ * Mirrors DepositEscrow.Accounting invariant from B's contract.
+ * Used to check conservation before and after each state transition.
+ *
+ * @param fundedAmount — total deposited amount (immutable once funded)
+ * @param snapshot — current allocation state
  */
 export function verifyAllocationConservation(
-  deposit: string,
+  fundedAmount: string,
   snapshot: {
     unallocated: string;
     tenantCredit: string;
@@ -91,16 +98,16 @@ export function verifyAllocationConservation(
     landlordWithdrawn: string;
   }
 ): void {
-  const d = parseAmount(deposit);
+  const total = parseAmount(fundedAmount);
   const sum =
     parseAmount(snapshot.unallocated) +
     parseAmount(snapshot.tenantCredit) +
     parseAmount(snapshot.landlordCredit) +
     parseAmount(snapshot.tenantWithdrawn) +
     parseAmount(snapshot.landlordWithdrawn);
-  if (d !== sum) {
+  if (total !== sum) {
     throw new Error(
-      `Allocation conservation violated: deposit=${deposit} sum=${sum}`
+      `Allocation conservation violated: fundedAmount=${fundedAmount} sum=${sum}`
     );
   }
 }

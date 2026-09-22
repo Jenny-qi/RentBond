@@ -30,3 +30,6 @@ backups/
 Thumbs.db
 .idea/
 .vscode/
+
+# Worker export-job source is NOT build output — track it
+!apps/worker/src/exports/
