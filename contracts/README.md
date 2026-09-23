@@ -32,8 +32,8 @@ npx --yes @foundry-rs/forge@1.7.1 test -vv
 npx --yes @foundry-rs/forge@1.7.1 build --sizes --skip test --skip script
 ```
 
-本地最后一次结果为 32/32 测试通过。测试涵盖 700/100/200、CHECKOUT 主备流程、证据版本、服务撤销、挑战、超时、旧和解失效、固定收款人及 hardEnd；这不是测试网验收或安全审计。
+本地最后一次结果为 40/40 测试通过。除 700/100/200、CHECKOUT 主备流程、证据版本、服务撤销、挑战、超时、旧和解失效、固定收款人及 hardEnd 外，现有独立测试也覆盖 MockUSD 铸币/授权语义与 T/L/R/F/无关地址的关键越权路径；这不是测试网验收或安全审计。
 
 生产合约的本地优化后 runtime 均低于 24,576-byte EIP-170 限制，其中最接近上限的是 `DepositEscrowDeployer`。配置固定 Solidity 0.8.24、optimizer runs 1、via-IR 和 OpenZeppelin ReentrancyGuard 5.0.2。
 
-部署流程见 [script/README.md](script/README.md)。真实部署前还必须完成 Monad chainId/RPC 核验、外部复核、部署记录、从固定构建导出 ABI，以及剩余边界/fuzz/invariant 测试。
+部署流程见 [script/README.md](script/README.md)。固定构建 ABI 可用 `npm run contracts:export:abi` 重新生成并以 `deployments/abi/manifest.json` 校验。真实部署前仍必须完成外部复核、账户与测试 MON 准备、链上部署记录，以及剩余边界/fuzz/invariant 测试。
