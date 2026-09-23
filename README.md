@@ -6,7 +6,7 @@
 >
 > RentBond helps cross-border renters and small landlords settle rental deposits remotely. Once the claim window closes, undisputed funds become claimable while disputed deductions follow the agreed resolution process.
 
-**当前状态：合约模块已有本地实现和 32 个通过的 Foundry 测试；网页、后端、Worker、账户体验和 Monad 测试网部署仍未完成。** 文档和骨架检查不能替代独立审查、跨层验收或真实链上证据。
+**当前状态：合约模块已有本地实现和 40 个通过的 Foundry 测试；固定构建 ABI 已导出，Monad 测试网仍未广播部署。** 网页、后端、账户体验及跨层验收仍未完成；文档和本地检查不能替代独立审查或真实链上证据。
 
 ## 产品面向谁
 
@@ -95,6 +95,7 @@ node scripts/ts04-clone-verify.mjs   # TS04：独立 clone 验证
 npm run build:contracts
 npm run test:contracts
 npm run check:contract-sizes
+npm run contracts:export:abi
 ```
 
 已有 pnpm 时可运行 `pnpm doctor` 与 `pnpm check`。`doctor` 只检查骨架运行环境；`check` 检查本地文档链接、JSON、需求覆盖及目录；`ts04` 目前仍是骨架级 clone 检查。合约测试已经实现；网页 lint、类型检查和跨层业务测试尚未实现。
@@ -132,7 +133,7 @@ pnpm test:e2e
 pnpm build
 ```
 
-从 `.env.example` 配置服务环境，实际加载路径由 RB-02 固定。密钥、私有文件和真实合同不进入 Git。测试网部署命令 `pnpm contracts:deploy:testnet` 同样待实现，不能缺配置时回退主网。
+从 `.env.example` 配置服务环境，实际加载路径由 RB-02 固定。密钥、私有文件和真实合同不进入 Git。`npm run contracts:preflight:testnet` 只读核对网络；`npm run contracts:deploy:testnet` 仅允许显式选择 Monad Testnet、RPC 返回 chainId 10143、使用本地 Forge keystore 且二次确认后广播，不会缺配置时回退其他网络。
 
 ## GitHub 协作
 
