@@ -1,0 +1,25 @@
+{
+  "recordStatus": "user-reported; independent chain verification pending",
+  "chainId": 10143,
+  "contracts": {
+    "MockUSD": "0x36f5486ADcFC3Cd1076F2aFaFC720E24EdFf23B1",
+    "ResolverRegistry": "0x61f13f0c0DAaC2802EeD3Cd4DD9FD67c93d0ce30",
+    "DepositEscrowDeployer": "0x7E717703E2bf6cF0b7562DA8cdEb718e65A4f13f",
+    "LeaseFactory": "0x6ed49Bf8EE5E9ba2cbE2977fe100342Fe2999a7E",
+    "DepositEscrow": "0x80753a6Dd914177fE8AD8cE28B325Fe1B677C479"
+  },
+  "transactions": [
+    {
+      "label": "createLease (reported)",
+      "hash": "0x70f948a33e3af390cf53458b192ab6276ae5cac4a60414121bee8c40fcb8cafe",
+      "expectedFrom": "0x0582932f95ea2c070ffd87E612e585D083831a7A",
+      "expectedTo": "0x6ed49Bf8EE5E9ba2cbE2977fe100342Fe2999a7E"
+    },
+    {
+      "label": "fund (reported)",
+      "hash": "0xf7e1cfef92efa9ba94fcffc94a7d66e5dde6c53ba19eedadce2ff1e1590286fa",
+      "expectedFrom": "0x430ba461Df226e0eb57e7C5783affecB1Bf0b177",
+      "expectedTo": "0x80753a6Dd914177fE8AD8cE28B325Fe1B677C479"
+    }
+  ]
+}
