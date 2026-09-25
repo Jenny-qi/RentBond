@@ -6,7 +6,7 @@
 >
 > RentBond helps cross-border renters and small landlords settle rental deposits remotely. Once the claim window closes, undisputed funds become claimable while disputed deductions follow the agreed resolution process.
 
-**当前状态：合约模块已有本地实现和 32 个通过的 Foundry 测试；网页、后端、Worker、账户体验和 Monad 测试网部署仍未完成。** 文档和骨架检查不能替代独立审查、跨层验收或真实链上证据。
+**当前状态：合约模块已有本地实现和 32 个通过的 Foundry 测试；网页已有 P01–P12 页面、部分模拟交互和独立 Mera 账户试验，后端、Worker、真实账户/资金联调和 Monad 测试网部署仍未完成。** 文档和骨架检查不能替代独立审查、跨层验收或真实链上证据。成员 C 的完成范围与缺口见 [交接记录](docs/member-c-handoff.md)。
 
 ## 产品面向谁
 
@@ -86,7 +86,7 @@ RentBond/
 
 ## 当前能运行的检查
 
-骨架检查依赖 Node.js **24.14.0**。合约命令通过 npx 使用固定的 `@foundry-rs/forge@1.7.1`；网页依赖和锁文件仍待 RB-02 固定。
+骨架检查依赖 Node.js **24.14.0**。合约命令通过 npx 使用固定的 `@foundry-rs/forge@1.7.1`；网页包已有精确依赖和 npm 锁文件，仓库级 pnpm workspace 仍待 RB-02 统一。
 
 ```sh
 node scripts/doctor.mjs
@@ -97,7 +97,7 @@ npm run test:contracts
 npm run check:contract-sizes
 ```
 
-已有 pnpm 时可运行 `pnpm doctor` 与 `pnpm check`。`doctor` 只检查骨架运行环境；`check` 检查本地文档链接、JSON、需求覆盖及目录；`ts04` 目前仍是骨架级 clone 检查。合约测试已经实现；网页 lint、类型检查和跨层业务测试尚未实现。
+已有 pnpm 时可运行 `pnpm doctor` 与 `pnpm check`。`doctor` 只检查骨架运行环境；`check` 检查本地文档链接、JSON、需求覆盖及目录；`ts04` 目前仍是骨架级 clone 检查。合约测试已经实现；网页可单独运行 `npm run test --prefix apps/web`、`npm run typecheck --prefix apps/web`、`npm run build --prefix apps/web`。这些不是跨层验收；独立 lint 和跨层业务测试仍未实现。
 
 **跨层测试命令（RB-12/RB-13 后可运行）：**
 
