@@ -1,0 +1,804 @@
+[
+  {
+    "type": "function",
+    "name": "acceptProfile",
+    "inputs": [
+      {
+        "name": "profileId",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "computeProfileId",
+    "inputs": [
+      {
+        "name": "profile",
+        "type": "tuple",
+        "internalType": "struct IResolverRegistry.ServiceProfile",
+        "components": [
+          {
+            "name": "profileId",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "serviceTermsHash",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "ruleVersion",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "primaryResolver",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "fallbackResolver",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "token",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "maxDeposit",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "maxLeaseEnd",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "acceptUntil",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "timingProfileId",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "timeoutPolicy",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "timing",
+            "type": "tuple",
+            "internalType": "struct IResolverRegistry.TimingConfig",
+            "components": [
+              {
+                "name": "checkoutResponse",
+                "type": "uint64",
+                "internalType": "uint64"
+              },
+              {
+                "name": "claim",
+                "type": "uint64",
+                "internalType": "uint64"
+              },
+              {
+                "name": "response",
+                "type": "uint64",
+                "internalType": "uint64"
+              },
+              {
+                "name": "evidence",
+                "type": "uint64",
+                "internalType": "uint64"
+              },
+              {
+                "name": "primary",
+                "type": "uint64",
+                "internalType": "uint64"
+              },
+              {
+                "name": "challenge",
+                "type": "uint64",
+                "internalType": "uint64"
+              },
+              {
+                "name": "fallbackEvidence",
+                "type": "uint64",
+                "internalType": "uint64"
+              },
+              {
+                "name": "fallbackResolver",
+                "type": "uint64",
+                "internalType": "uint64"
+              },
+              {
+                "name": "exitNotice",
+                "type": "uint64",
+                "internalType": "uint64"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "stateMutability": "pure"
+  },
+  {
+    "type": "function",
+    "name": "computeTimingProfileId",
+    "inputs": [
+      {
+        "name": "timing",
+        "type": "tuple",
+        "internalType": "struct IResolverRegistry.TimingConfig",
+        "components": [
+          {
+            "name": "checkoutResponse",
+            "type": "uint64",
+            "internalType": "uint64"
+          },
+          {
+            "name": "claim",
+            "type": "uint64",
+            "internalType": "uint64"
+          },
+          {
+            "name": "response",
+            "type": "uint64",
+            "internalType": "uint64"
+          },
+          {
+            "name": "evidence",
+            "type": "uint64",
+            "internalType": "uint64"
+          },
+          {
+            "name": "primary",
+            "type": "uint64",
+            "internalType": "uint64"
+          },
+          {
+            "name": "challenge",
+            "type": "uint64",
+            "internalType": "uint64"
+          },
+          {
+            "name": "fallbackEvidence",
+            "type": "uint64",
+            "internalType": "uint64"
+          },
+          {
+            "name": "fallbackResolver",
+            "type": "uint64",
+            "internalType": "uint64"
+          },
+          {
+            "name": "exitNotice",
+            "type": "uint64",
+            "internalType": "uint64"
+          }
+        ]
+      },
+      {
+        "name": "timeoutPolicy",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "stateMutability": "pure"
+  },
+  {
+    "type": "function",
+    "name": "createProfile",
+    "inputs": [
+      {
+        "name": "profile",
+        "type": "tuple",
+        "internalType": "struct IResolverRegistry.ServiceProfile",
+        "components": [
+          {
+            "name": "profileId",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "serviceTermsHash",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "ruleVersion",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "primaryResolver",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "fallbackResolver",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "token",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "maxDeposit",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "maxLeaseEnd",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "acceptUntil",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "timingProfileId",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "timeoutPolicy",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "timing",
+            "type": "tuple",
+            "internalType": "struct IResolverRegistry.TimingConfig",
+            "components": [
+              {
+                "name": "checkoutResponse",
+                "type": "uint64",
+                "internalType": "uint64"
+              },
+              {
+                "name": "claim",
+                "type": "uint64",
+                "internalType": "uint64"
+              },
+              {
+                "name": "response",
+                "type": "uint64",
+                "internalType": "uint64"
+              },
+              {
+                "name": "evidence",
+                "type": "uint64",
+                "internalType": "uint64"
+              },
+              {
+                "name": "primary",
+                "type": "uint64",
+                "internalType": "uint64"
+              },
+              {
+                "name": "challenge",
+                "type": "uint64",
+                "internalType": "uint64"
+              },
+              {
+                "name": "fallbackEvidence",
+                "type": "uint64",
+                "internalType": "uint64"
+              },
+              {
+                "name": "fallbackResolver",
+                "type": "uint64",
+                "internalType": "uint64"
+              },
+              {
+                "name": "exitNotice",
+                "type": "uint64",
+                "internalType": "uint64"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "getProfile",
+    "inputs": [
+      {
+        "name": "profileId",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "profile",
+        "type": "tuple",
+        "internalType": "struct IResolverRegistry.ServiceProfile",
+        "components": [
+          {
+            "name": "profileId",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "serviceTermsHash",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "ruleVersion",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "primaryResolver",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "fallbackResolver",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "token",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "maxDeposit",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "maxLeaseEnd",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "acceptUntil",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "timingProfileId",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "timeoutPolicy",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "timing",
+            "type": "tuple",
+            "internalType": "struct IResolverRegistry.TimingConfig",
+            "components": [
+              {
+                "name": "checkoutResponse",
+                "type": "uint64",
+                "internalType": "uint64"
+              },
+              {
+                "name": "claim",
+                "type": "uint64",
+                "internalType": "uint64"
+              },
+              {
+                "name": "response",
+                "type": "uint64",
+                "internalType": "uint64"
+              },
+              {
+                "name": "evidence",
+                "type": "uint64",
+                "internalType": "uint64"
+              },
+              {
+                "name": "primary",
+                "type": "uint64",
+                "internalType": "uint64"
+              },
+              {
+                "name": "challenge",
+                "type": "uint64",
+                "internalType": "uint64"
+              },
+              {
+                "name": "fallbackEvidence",
+                "type": "uint64",
+                "internalType": "uint64"
+              },
+              {
+                "name": "fallbackResolver",
+                "type": "uint64",
+                "internalType": "uint64"
+              },
+              {
+                "name": "exitNotice",
+                "type": "uint64",
+                "internalType": "uint64"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "status",
+        "type": "tuple",
+        "internalType": "struct IResolverRegistry.ProfileStatus",
+        "components": [
+          {
+            "name": "exists",
+            "type": "bool",
+            "internalType": "bool"
+          },
+          {
+            "name": "primaryAccepted",
+            "type": "bool",
+            "internalType": "bool"
+          },
+          {
+            "name": "fallbackAccepted",
+            "type": "bool",
+            "internalType": "bool"
+          },
+          {
+            "name": "closedForNewFunding",
+            "type": "bool",
+            "internalType": "bool"
+          }
+        ]
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "isEligible",
+    "inputs": [
+      {
+        "name": "profileId",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      },
+      {
+        "name": "terms",
+        "type": "tuple",
+        "internalType": "struct IResolverRegistry.EligibilityTerms",
+        "components": [
+          {
+            "name": "token",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "depositAmount",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "leaseEndAt",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "ruleVersion",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "timingProfileId",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "serviceTermsHash",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          }
+        ]
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "isProfileAccepted",
+    "inputs": [
+      {
+        "name": "profileId",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "revokeForNewFunding",
+    "inputs": [
+      {
+        "name": "profileId",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "event",
+    "name": "ProfileAccepted",
+    "inputs": [
+      {
+        "name": "profileId",
+        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "resolver",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "ProfileClosedToNewFunding",
+    "inputs": [
+      {
+        "name": "profileId",
+        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "resolver",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "ProfileCreated",
+    "inputs": [
+      {
+        "name": "profileId",
+        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "primaryResolver",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "fallbackResolver",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "token",
+        "type": "address",
+        "indexed": false,
+        "internalType": "address"
+      },
+      {
+        "name": "serviceTermsHash",
+        "type": "bytes32",
+        "indexed": false,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "ruleVersion",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      },
+      {
+        "name": "maxDeposit",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      },
+      {
+        "name": "maxLeaseEnd",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      },
+      {
+        "name": "acceptUntil",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      },
+      {
+        "name": "timingProfileId",
+        "type": "bytes32",
+        "indexed": false,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "timeoutPolicy",
+        "type": "bytes32",
+        "indexed": false,
+        "internalType": "bytes32"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "error",
+    "name": "AlreadyAccepted",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidAcceptanceDeadline",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidDepositLimit",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidLeaseEnd",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidProfileId",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidResolver",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidRuleVersion",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidServiceTermsHash",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidTimeoutPolicy",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidTimingConfig",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidTimingProfile",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidToken",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NotResolver",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "ProfileAlreadyExists",
+    "inputs": [
+      {
+        "name": "profileId",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "ProfileClosed",
+    "inputs": [
+      {
+        "name": "profileId",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "ProfileNotFound",
+    "inputs": [
+      {
+        "name": "profileId",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ]
+  },
+  {
+    "type": "error",
+    "name": "ResolversMustDiffer",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "ServiceExpired",
+    "inputs": [
+      {
+        "name": "profileId",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ]
+  }
+]

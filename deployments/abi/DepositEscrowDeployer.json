@@ -1,0 +1,185 @@
+[
+  {
+    "type": "function",
+    "name": "deploy",
+    "inputs": [
+      {
+        "name": "terms",
+        "type": "tuple",
+        "internalType": "struct DepositEscrow.Terms",
+        "components": [
+          {
+            "name": "leaseId",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "tenant",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "landlord",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "primaryResolver",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "fallbackResolver",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "token",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "depositAmount",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "leaseEndAt",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "hardEndAt",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "timeoutPolicy",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "termsHash",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "ruleVersion",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "timingProfileId",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "serviceProfileId",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "serviceTermsHash",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "registryAddress",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "acceptDeadline",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "timing",
+            "type": "tuple",
+            "internalType": "struct IResolverRegistry.TimingConfig",
+            "components": [
+              {
+                "name": "checkoutResponse",
+                "type": "uint64",
+                "internalType": "uint64"
+              },
+              {
+                "name": "claim",
+                "type": "uint64",
+                "internalType": "uint64"
+              },
+              {
+                "name": "response",
+                "type": "uint64",
+                "internalType": "uint64"
+              },
+              {
+                "name": "evidence",
+                "type": "uint64",
+                "internalType": "uint64"
+              },
+              {
+                "name": "primary",
+                "type": "uint64",
+                "internalType": "uint64"
+              },
+              {
+                "name": "challenge",
+                "type": "uint64",
+                "internalType": "uint64"
+              },
+              {
+                "name": "fallbackEvidence",
+                "type": "uint64",
+                "internalType": "uint64"
+              },
+              {
+                "name": "fallbackResolver",
+                "type": "uint64",
+                "internalType": "uint64"
+              },
+              {
+                "name": "exitNotice",
+                "type": "uint64",
+                "internalType": "uint64"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "outputs": [
+      {
+        "name": "escrowAddress",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "event",
+    "name": "EscrowDeployed",
+    "inputs": [
+      {
+        "name": "leaseId",
+        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "factory",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "escrow",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      }
+    ],
+    "anonymous": false
+  }
+]

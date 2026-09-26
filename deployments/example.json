@@ -1,7 +1,8 @@
 {
   "templateOnly": true,
-  "environment": "testnet",
-  "chainId": null,
+  "readyForFrontend": false,
+  "environment": "monad-testnet",
+  "chainId": 10143,
   "sourceCommit": null,
   "deployedAt": null,
   "timingProfile": {
@@ -10,7 +11,7 @@
     "serviceProfileId": null,
     "durationsSeconds": null
   },
-  "schemaVersion": null,
+  "schemaVersion": 1,
   "contracts": {
     "MockUSD": null,
     "ResolverRegistry": null,
@@ -20,5 +21,6 @@
   "leases": [],
   "deploymentTransactions": [],
   "deploymentBlocks": [],
-  "abiDigest": null
+  "abiManifest": "abi/manifest.json",
+  "abiDigest": "fd14c75103ccba1074df13fc4995c38ef3ebf7d00d2efb06cb926307f29629e1"
 }
