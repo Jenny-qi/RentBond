@@ -62,3 +62,7 @@ export interface Job {
   error?: string;
   createdAt: number;
 }
+
+// Re-export scheduler utilities
+export * from './scheduler.js';
+
