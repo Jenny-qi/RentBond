@@ -6,12 +6,18 @@
 
 ```
 apps/worker/src/
-├── main.ts        # 进程入口，配置加载和主循环
-├── index.ts       # 模块导出
-├── indexer/       # 链上事件读取与幂等回放
-├── jobs/          # 截止/到期任务（CLOSE_CLAIMS、FINALIZE_PRIMARY 等）
-├── notifications/  # 邮件/SMS 提醒占位（P1）
-└── exports/       # 异步导出任务消费
+├── main.ts          # 进程入口，配置加载和主循环
+├── index.ts         # 模块导出
+├── indexer/
+│   ├── index.ts     # 事件常量、EventKey、幂等键、IndexerConfig
+│   ├── events.ts    # 类型化事件参数接口（从 ABI 生成）
+│   ├── allocation.ts # 事件→AllocationState 投影（资金守恒）
+│   ├── projection.ts# 事件→LeaseStatus 投影（Phase 映射）
+│   ├── contracts.ts # Escrow/Factory 函数调用桩
+│   └── providers.ts # viem RPC 客户端配置
+├── jobs/            # 截止/到期任务（CLOSE_CLAIMS、FINALIZE_PRIMARY 等）
+├── notifications/    # 邮件/SMS 提醒占位（P1）
+└── exports/         # 异步导出任务消费
 ```
 
 ## 入口
@@ -57,8 +63,16 @@ node apps/worker/src/main.ts   # RB-12 后可用（Node 24 原生支持 TS）
 
 ## 实现状态
 
-- **RB-12**：事件回放、重组回滚、同链备用 RPC、去重
-- **P1**：邮件通知
+| 模块 | 状态 | 说明 |
+|------|------|------|
+| `indexer/events.ts` | ✅ 类型完整 | 25 个 Escrow 事件 + 2 个 Factory 事件的类型化参数接口 |
+| `indexer/allocation.ts` | ✅ 投影逻辑 | 资金守恒投影：Funded→ClaimsClosed→Settlement/Timeout |
+| `indexer/projection.ts` | ✅ Phase 映射 | 合约 Phase→LeaseStatus，含 phaseToStatus 辅助 |
+| `indexer/contracts.ts` | ⚠️ 调用桩 | 7 个 Worker 操作（closeClaims 等），RB-12 替换为 viem |
+| `indexer/providers.ts` | ⚠️ 客户端桩 | viem public/wallet client，RB-12 实现 |
+| `jobs/` | ⚠️ 类型定义 | Job/JobType/JobStatus 已定义，执行逻辑 RB-12 |
+| `notifications/` | ⚠️ 占位 | P1 |
+| `exports/` | ⚠️ 占位 | RB-12 |
 
 ## 启动流程
 
