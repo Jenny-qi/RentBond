@@ -9,19 +9,40 @@
     "build": "next build",
     "start": "next start --port 3000",
     "typecheck": "tsc --noEmit",
-    "test": "node --test src/features/leases/*.test.mjs src/features/account/*.test.mjs"
+    "test": "node --test src/features/leases/*.test.mjs src/features/account/*.test.mjs src/server/tests/*.test.mjs",
+    "test:backend": "node --test src/server/tests/*.test.mjs",
+    "backend:init": "node src/server/cli.mjs init",
+    "backend:seed": "node src/server/cli.mjs seed",
+    "pretest:backend": "node src/server/generate-abi.mjs --solc",
+    "pretest": "node src/server/generate-abi.mjs --solc",
+    "db:migrate": "node src/server/cli.mjs migrate",
+    "backend:worker": "node src/server/cli.mjs worker",
+    "backend:cleanup": "node src/server/cli.mjs cleanup",
+    "backend:abi": "node src/server/generate-abi.mjs --solc"
   },
   "dependencies": {
     "@category-labs/mera": "0.2.0",
-    "next": "15.5.9",
+    "@electric-sql/pglite": "0.5.8",
+    "fflate": "0.8.3",
+    "next": "15.5.26",
+    "pg": "8.23.0",
     "react": "19.1.4",
     "react-dom": "19.1.4",
-    "viem": "2.56.9"
+    "viem": "2.56.9",
+    "zod": "4.6.5"
+  },
+  "overrides": {
+    "tmp": "0.2.7",
+    "postcss": "8.5.28",
+    "sharp": "0.35.4"
   },
   "devDependencies": {
     "@types/node": "24.5.2",
+    "@types/pg": "8.15.6",
     "@types/react": "19.1.13",
     "@types/react-dom": "19.1.9",
+    "hardhat": "3.18.0",
+    "solc": "0.8.24",
     "typescript": "5.9.2"
   }
 }

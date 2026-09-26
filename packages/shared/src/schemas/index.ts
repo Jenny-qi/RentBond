@@ -7,12 +7,13 @@
 
 export const SCHEMA_VERSION = '1.0.0';
 
-/** RFC 7807 error shape used across all API routes */
+/** RentBond's JSON error envelope (not RFC 7807 Problem Details). */
 export interface ApiError {
   error: {
     code: string;
     message: string;
-    requestId?: string;
+    requestId: string;
+    retryable: boolean;
   };
 }
 
@@ -88,6 +89,6 @@ export type HttpStatusCode = typeof HTTP_STATUS[keyof typeof HTTP_STATUS];
 /**
  * Build a structured API error.
  */
-export function apiError(code: ErrorCode, message: string, requestId?: string): ApiError {
-  return { error: { code, message, requestId } };
+export function apiError(code: ErrorCode, message: string, requestId = crypto.randomUUID(), retryable = false): ApiError {
+  return { error: { code, message, requestId, retryable } };
 }

@@ -11,5 +11,8 @@
   },
   "scripts": {
     "typecheck": "node scripts/not-implemented.mjs typecheck RB-02"
+  },
+  "dependencies": {
+    "viem": "2.56.9"
   }
 }

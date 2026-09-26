@@ -25,6 +25,8 @@ private/
 uploads/
 exports/
 backups/
+.rentbond/
+*.tsbuildinfo
 .supabase/
 .DS_Store
 Thumbs.db

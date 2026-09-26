@@ -66,6 +66,8 @@ export {
   TERMS_HASH_ALGO,
   SALT_LENGTH,
   ALICE_FIXTURE_COMMITMENT,
+  canonicalJson,
+  COMMITMENT_DOMAIN,
 } from './commitments/index.js';
 
 // Network
