@@ -6,7 +6,7 @@
 >
 > RentBond helps cross-border renters and small landlords settle rental deposits remotely. Once the claim window closes, undisputed funds become claimable while disputed deductions follow the agreed resolution process.
 
-**当前状态：合约模块已有本地实现和 40 个通过的 Foundry 测试；固定构建 ABI 已导出，Monad 测试网仍未广播部署。** 网页、后端、账户体验及跨层验收仍未完成；文档和本地检查不能替代独立审查或真实链上证据。
+**当前状态：合约模块已有本地实现和 40 个通过的 Foundry 测试，固定构建 ABI 已导出；网页已有 P01–P12 页面、部分模拟交互和独立 Mera 账户试验。** 用户报告了 Monad 测试网手工部署及入金，地址和交易记录仍待独立链上核验，不能作为正式部署清单。后端、Worker、真实账户/资金联调和跨层验收仍未完成；文档和本地检查不能替代独立审查或真实链上证据。成员 C 的完成范围与缺口见 [交接记录](docs/member-c-handoff.md)。
 
 ## 产品面向谁
 
@@ -29,7 +29,7 @@ Alice 是跨境租客，退租后已离开当地。她与房东在入住前确�
 | 已认可扣款 → 房东 | 100 MockUSD | 可领取 |
 | 争议部分 | 200 MockUSD | 待处理，尚未分配 |
 
-若有效处理结果支持其中 50 给房东，最终租客 850、房东 150；若主备处理均超时，按事先接受的退出政策最终租客 900、房东 100。领取交易确认后才显示“已领取”。上述仍是**虚构案例，不是真实用户数据**；对应本地合约流程测试已通过，但尚无 Monad 测试网交易。
+若有效处理结果支持其中 50 给房东，最终租客 850、房东 150；若主备处理均超时，按事先接受的退出政策最终租客 900、房东 100。领取交易确认后才显示“已领取”。上述仍是**虚构案例，不是真实用户数据**；对应本地合约流程测试已通过，尚无这套 700/100/200 结算流程的 Monad 测试网验收证据。
 
 主 Demo 展示 Tenant / Landlord / Resolver 三种角色。备用处理、服务预授权、超时退出、Worker 和故障恢复保留在完整实现及技术附录中。详见 [MVP 规格](docs/MVP-SPEC.md) 与 [Demo 脚本](docs/contest/demo.md)。
 
@@ -86,7 +86,7 @@ RentBond/
 
 ## 当前能运行的检查
 
-骨架检查依赖 Node.js **24.14.0**。合约命令通过 npx 使用固定的 `@foundry-rs/forge@1.7.1`；网页依赖和锁文件仍待 RB-02 固定。
+骨架检查依赖 Node.js **24.14.0**。合约命令通过 npx 使用固定的 `@foundry-rs/forge@1.7.1`；网页包已有精确依赖和 npm 锁文件，仓库级 pnpm workspace 仍待 RB-02 统一。
 
 ```sh
 node scripts/doctor.mjs
@@ -98,7 +98,7 @@ npm run check:contract-sizes
 npm run contracts:export:abi
 ```
 
-已有 pnpm 时可运行 `pnpm doctor` 与 `pnpm check`。`doctor` 只检查骨架运行环境；`check` 检查本地文档链接、JSON、需求覆盖及目录；`ts04` 目前仍是骨架级 clone 检查。合约测试已经实现；网页 lint、类型检查和跨层业务测试尚未实现。
+已有 pnpm 时可运行 `pnpm doctor` 与 `pnpm check`。`doctor` 只检查骨架运行环境；`check` 检查本地文档链接、JSON、需求覆盖及目录；`ts04` 目前仍是骨架级 clone 检查。合约测试已经实现；网页可单独运行 `npm run test --prefix apps/web`、`npm run typecheck --prefix apps/web`、`npm run build --prefix apps/web`。这些不是跨层验收；独立 lint 和跨层业务测试仍未实现。
 
 **跨层测试命令（RB-12/RB-13 后可运行）：**
 

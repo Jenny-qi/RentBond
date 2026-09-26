@@ -1,0 +1,27 @@
+{
+  "name": "@rentbond/web",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "RentBond pages and account UX (member C). Mock-labeled until ABI/API land.",
+  "scripts": {
+    "dev": "next dev --port 3000",
+    "build": "next build",
+    "start": "next start --port 3000",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test src/features/leases/*.test.mjs src/features/account/*.test.mjs"
+  },
+  "dependencies": {
+    "@category-labs/mera": "0.2.0",
+    "next": "15.5.9",
+    "react": "19.1.4",
+    "react-dom": "19.1.4",
+    "viem": "2.56.9"
+  },
+  "devDependencies": {
+    "@types/node": "24.5.2",
+    "@types/react": "19.1.13",
+    "@types/react-dom": "19.1.9",
+    "typescript": "5.9.2"
+  }
+}
