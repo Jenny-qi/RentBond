@@ -31,6 +31,8 @@ E 主责。所有脚本按职责分组；新增脚本须在本文件登记。
 | --- | --- | --- |
 | `verify-monad-evidence.mjs` | 核对用户记录的 Monad Testnet 链 ID、当前字节码存在、交易收据/发送方/接收方 | 全部字段匹配才退出 0；错误链、空字节码、缺失或失败收据、地址不符退出 1；不证明源码身份或业务阶段 |
 | `verify-monad-evidence.test.mjs` | 用本地模拟 RPC 检查上述失败关闭路径 | 5 项本地测试全部通过；不会访问外部 RPC |
+| `attest-monad-deployment.mjs` | 核对五份部署回执/首次代码块、三种固定编译配置的可执行代码、ABI 摘要、创建/入金事件、条款/Registry/会计/余额，输出只读 JSON 快照 | 任意链、源码/代码、事件、指针或资金不符即退出 1；不会签名或广播；不替代独立审查或完整验收 |
+| `attest-monad-deployment.test.mjs` | 检查字节码可执行部分比较对 metadata、immutable 与篡改 opcode 的处理 | 3 项本地测试通过；不会访问外部 RPC |
 
 ## 注意事项
 

@@ -1,0 +1,11 @@
+{
+  "recordStatus": "RPC-discovered deployment transactions; checked by read-only attestation",
+  "chainId": 10143,
+  "contracts": {
+    "MockUSD": { "blockNumber": 65022047, "transactionHash": "0x9a8912fdb9a47258b438b6cca6fb0da32eee9a661dd351d02d050017cac1ae42" },
+    "ResolverRegistry": { "blockNumber": 65043332, "transactionHash": "0x56a7ccf2b92664c48da672b2fa1da23e33bfe9cf856feca221552746167dfdf9" },
+    "DepositEscrowDeployer": { "blockNumber": 65048476, "transactionHash": "0x625a10d214122da307b1b6ac555ad52b3bc7f4e78184a7586616093eac95ebd0" },
+    "LeaseFactory": { "blockNumber": 65052009, "transactionHash": "0x3a0172aa48a28aac40f92cc6935d7b28243cad63a6fa5cbda40cad87f140feff" },
+    "DepositEscrow": { "blockNumber": 65285181, "transactionHash": "0x70f948a33e3af390cf53458b192ab6276ae5cac4a60414121bee8c40fcb8cafe", "createdInternallyBy": "LeaseFactory" }
+  }
+}

@@ -6,12 +6,12 @@
 
 ## 前置技术试验
 
-2026-09-24：人工操作记录见 `deployments/monad-testnet-2026-09-24.observed.json`，只读核验脚本的 5 个模拟 RPC 测试通过；当前环境实际 RPC 连接超时。TS01/02 仍为 Not started，人工截图和模拟测试不代替四账户拒签、越权及真实资金闭环的独立证据。
+2026-09-26：官方 RPC 已返回 [五份部署回执及只读状态快照](../deployments/monad-testnet-2026-09-26.chain-evidence.json)，并与一笔创建、一笔入金的事件及余额交叉核对。TS01/02 有部分链上证据，但四账户拒签/越权和 700/100/200 结算及领取尚未运行；不得标为 Passed 或 Verified。
 
 | ID | 试验 | 负责人 | 状态 | 证据 |
 | --- | --- | --- | --- | --- |
-| TS01 | 网络、四账户、错误链和拒签 | B/E | Not started | — |
-| TS02 | 最小真实资金闭环与权限 | B/E | Not started | — |
+| TS01 | 网络、四账户、错误链和拒签 | B/E | In progress | [只读链 ID、四角色条款](../deployments/monad-testnet-2026-09-26.chain-evidence.json)；钱包拒签/错误链/越权 Not run |
+| TS02 | 最小真实资金闭环与权限 | B/E | In progress | [创建与入金、余额快照](../deployments/monad-testnet-2026-09-26.chain-evidence.json)；结算/领取及独立复核 Not run |
 | TS03 | SIWE 与私有文件越权拒绝 | D/C | Not started | — |
 | TS04 | 独立成员从新 clone 完整运行 | E | Not started | — |
 | TS05 | passkey 同地址恢复、费用、取消不执行 | C/D | In progress | [C local slice](../tests/reports/2026-09-25-member-c.md) (SDK unit only; real device Not run) |
