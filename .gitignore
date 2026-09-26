@@ -6,6 +6,10 @@ coverage/
 .turbo/
 contracts/out/
 contracts/cache/
+contracts/out-noir/
+contracts/cache-noir/
+contracts/out-noir200/
+contracts/cache-noir200/
 contracts/broadcast/
 playwright-report/
 test-results/
