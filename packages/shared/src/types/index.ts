@@ -96,7 +96,7 @@ export interface AllocationSnapshot {
   tenantWithdrawn: string;
   landlordWithdrawn: string;
   /** Chain block when this snapshot was computed */
-  lastSyncedBlock: number;
+  lastSyncedBlock: bigint;
   /** Whether this snapshot is confirmed on-chain */
   confirmed: boolean;
   /** schemaVersion for cache invalidation */
