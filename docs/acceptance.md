@@ -6,6 +6,8 @@
 
 ## 前置技术试验
 
+2026-09-24：人工操作记录见 `deployments/monad-testnet-2026-09-24.observed.json`，只读核验脚本的 5 个模拟 RPC 测试通过；当前环境实际 RPC 连接超时。TS01/02 仍为 Not started，人工截图和模拟测试不代替四账户拒签、越权及真实资金闭环的独立证据。
+
 | ID | 试验 | 负责人 | 状态 | 证据 |
 | --- | --- | --- | --- | --- |
 | TS01 | 网络、四账户、错误链和拒签 | B/E | Not started | — |
@@ -21,7 +23,7 @@
 | AT01 | R/F 服务方案未授权、已撤销或不覆盖本租约时，T 尝试 fund。 | 拒绝，余额和状态不变。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md) |
 | AT02 | T/L 已接受且服务有效，T 精确存入 D；再次存入。 | 第一次成功；第二次拒绝，不多收押金。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md) |
 | AT03 | approve 成功但 fund 未签或失败。 | 显示未存入；可重试／撤销授权。 | C/D/E | In progress | Not run | [C local slice](../tests/reports/2026-09-25-member-c.md) |
-| AT04 | 无关地址尝试 submitClaims、proposeDecision、withdraw。 | 全部被合约拒绝。 | B/E | Not started | Not run | — |
+| AT04 | 无关地址尝试 submitClaims、proposeDecision、withdraw。 | 全部被合约拒绝。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-23-member-b-contracts-local.md) |
 | AT05 | 租约自然到期但未交接。 | 没有自动全额退款。 | B/E | Not started | Not run | — |
 | AT06 | 双方确认交接。 | 从确认时刻启动固定申索窗口。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md) |
 | AT07 | 提前交接请求无人回应。 | 可开 CHECKOUT，不立即退钱；到 leaseEndAt 可走预定申索，不被请求阻塞。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md) |

@@ -29,13 +29,13 @@ packages/shared/src/
 
 ## 状态枚举
 
-**LeaseStatus**：`DRAFT` → `INVITED` → `ACTIVE` → `CLAIMS_OPEN` → `DISPUTE` / `ALLOCATED` → `CLOSED`
+**LeaseStatus**（对应 DepositEscrow.Phase）：`AWAITING_ACCEPTANCE` → `AWAITING_FUNDING` → `ACTIVE` → `CHECKOUT_REQUESTED` / `CHECKOUT_CASE` → `CLAIMS_OPEN` → `CLAIMS_REVIEW` → `CLAIM_CASE` → `EXIT_PENDING` → `CANCELLED` / `ALLOCATED` → `CLOSED`
 
-**ClaimResponse**（Tenant 对每项申索的回复）：`Pending` | `Accepted` | `Disputed` | `Withdrawn`
+**ClaimResponse**（Tenant 对每项申索的回复，对应 DepositEscrow.ClaimStatus）：`Pending` | `Accepted` | `Disputed` | `Waived` | `Allocated`
 
 **TxStatus**（区分签署/提交/确认中/确认成功/失败/取消）：`AWAITING_SIGNATURE` → `SUBMITTED` → `CONFIRMING` → `CONFIRMED` ↘ `FAILED` | `CANCELLED`
 
-**CaseStatus**：`PRIMARY` → `CHALLENGED` → `FALLBACK` → `TIMEOUT` → `RESOLVED`
+**CaseStatus**（对应 DepositEscrow.CasePhase）：`None` | `Primary` | `Proposed` | `Fallback` | `ExitPending` | `Finalized`
 
 ## 类型约束
 
@@ -73,12 +73,13 @@ formatAmount(1000000000n); // '1000'
 const snapshot: AllocationSnapshot = {
   chainId: 10143,
   contractAddress: normalizeAddress('0xABC...'),
-  unallocated: '200000000',
-  tenantCredit: '700000000',
-  landlordCredit: '100000000',
+  fundedAmount: '1000000000', // set at fund time, immutable
+  unallocated: '200000000',   // Alice's disputed 200
+  tenantCredit: '700000000', // Alice's unchallenged 700
+  landlordCredit: '100000000', // landlord's accepted 100
   tenantWithdrawn: '0',
   landlordWithdrawn: '0',
-  lastSyncedBlock: 12345678,
+  lastSyncedBlock: 12345678n,
   confirmed: false,
   schemaVersion: '1.0.0',
 };

@@ -153,3 +153,10 @@ export function parseEventKey(key: string): EventKey {
 export function isFactoryEvent(name: ContractEventName): name is FactoryEventName {
   return name === FACTORY_EVENTS.LEASE_CREATED;
 }
+
+// Re-export typed sub-modules for consumers
+export * from './events.js';
+export * from './allocation.js';
+export * from './projection.js';
+export * from './contracts.js';
+export * from './providers.js';

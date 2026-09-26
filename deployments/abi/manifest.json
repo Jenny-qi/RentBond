@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "ca4b36cf6ac85cd0f91e32f8ca107109dc8a54ac",
+  "compiler": "solc 0.8.24",
+  "forgePackage": "@foundry-rs/forge@1.7.1",
+  "bundleSha256": "fd14c75103ccba1074df13fc4995c38ef3ebf7d00d2efb06cb926307f29629e1",
+  "contracts": [
+    {
+      "contract": "MockUSD",
+      "file": "MockUSD.json",
+      "artifact": "contracts/out/MockUSD.sol/MockUSD.json",
+      "sha256": "eaffa5c777f27da0d8b6febf44fe0378db7bc40928967675a74a27ccb6d65284"
+    },
+    {
+      "contract": "ResolverRegistry",
+      "file": "ResolverRegistry.json",
+      "artifact": "contracts/out/ResolverRegistry.sol/ResolverRegistry.json",
+      "sha256": "12fe0d39c84ad5dfc9a20c0e4799c74d98f1a568990124bc4261394afc838d75"
+    },
+    {
+      "contract": "DepositEscrowDeployer",
+      "file": "DepositEscrowDeployer.json",
+      "artifact": "contracts/out/DepositEscrowDeployer.sol/DepositEscrowDeployer.json",
+      "sha256": "5b54cbffccdf4d8c8bbdf2b181c6aeb7bf9573ae41c743b650481f63ade50d23"
+    },
+    {
+      "contract": "LeaseFactory",
+      "file": "LeaseFactory.json",
+      "artifact": "contracts/out/LeaseFactory.sol/LeaseFactory.json",
+      "sha256": "c30ed5ea1e2eeac70be30434312aab1bc1380b6e9720bcd43d39da1c34ef9f68"
+    },
+    {
+      "contract": "DepositEscrow",
+      "file": "DepositEscrow.json",
+      "artifact": "contracts/out/DepositEscrow.sol/DepositEscrow.json",
+      "sha256": "7166d4cb462b50279f0d506b04582e02a7eef48b258fe892051a10c548be3419"
+    }
+  ]
+}

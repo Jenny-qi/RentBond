@@ -1,5 +1,7 @@
 # 需求追踪表
 
+2026-09-24 补充只读 Monad Testnet 证据检查脚本及用户观察记录（`scripts/verify-monad-evidence.mjs`、`deployments/monad-testnet-2026-09-24.observed.json`）。该工具仅验证链 ID、字节码存在和交易收据基本字段；当前环境 RPC 连接超时，尚不能作为 FR-03、SC-09 或 AT02 的链上通过证据，状态不变。
+
 FR/SC 来自 v1.2。合约切片已填写实现文件和本地测试证据；跨层部分继续保留 In progress/Not started。Verified 仍需要固定 commit、独立复核、适用环境与完整验收，不能把本地单元测试当成发布完成。
 
 | requirementId | 原文位置与摘要 | owner | plannedLocation | implementationFiles | testIds | status | commit | evidenceLink |

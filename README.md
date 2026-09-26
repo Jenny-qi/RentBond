@@ -6,7 +6,7 @@
 >
 > RentBond helps cross-border renters and small landlords settle rental deposits remotely. Once the claim window closes, undisputed funds become claimable while disputed deductions follow the agreed resolution process.
 
-**当前状态：合约模块已有本地实现和 32 个通过的 Foundry 测试；网页已有 P01–P12 页面、部分模拟交互和独立 Mera 账户试验；成员 D 的后端、私有存储、数据库、导出与 Gas 补给已实现并通过本地 API/合约联调。完整 Worker、真实设备账户/页面联调和 Monad 测试网部署仍未完成。** 文档和骨架检查不能替代独立审查、跨层验收或真实测试网证据。成员 C 的范围见 [C 交接](docs/member-c-handoff.md)，后端启动与接口见 [D 交接](docs/member-d-handoff.md)。
+**当前状态：合约模块已有本地实现和 40 个通过的 Foundry 测试，固定构建 ABI 已导出；网页已有 P01–P12 页面、部分模拟交互和独立 Mera 账户试验；D 的后端、私有存储、数据库、导出与 Gas 补给已有本地 API/合约联调证据。** 主分支已记录用户报告的 Monad 测试网手工部署及入金，独立核验材料见相应部署交接及待审 PR。完整 Worker、真实设备恢复和页面资金联调尚未验收。文档和本地检查不能替代独立审查或真实链上证据。范围与缺口见 [C 交接](docs/member-c-handoff.md) 和 [D 交接](docs/member-d-handoff.md)。
 
 ## 产品面向谁
 
@@ -29,7 +29,7 @@ Alice 是跨境租客，退租后已离开当地。她与房东在入住前确�
 | 已认可扣款 → 房东 | 100 MockUSD | 可领取 |
 | 争议部分 | 200 MockUSD | 待处理，尚未分配 |
 
-若有效处理结果支持其中 50 给房东，最终租客 850、房东 150；若主备处理均超时，按事先接受的退出政策最终租客 900、房东 100。领取交易确认后才显示“已领取”。上述仍是**虚构案例，不是真实用户数据**；对应本地合约流程测试已通过，但尚无 Monad 测试网交易。
+若有效处理结果支持其中 50 给房东，最终租客 850、房东 150；若主备处理均超时，按事先接受的退出政策最终租客 900、房东 100。领取交易确认后才显示“已领取”。上述仍是**虚构案例，不是真实用户数据**；对应本地合约流程测试已通过，尚无这套 700/100/200 结算流程的 Monad 测试网验收证据。
 
 主 Demo 展示 Tenant / Landlord / Resolver 三种角色。备用处理、服务预授权、超时退出、Worker 和故障恢复保留在完整实现及技术附录中。详见 [MVP 规格](docs/MVP-SPEC.md) 与 [Demo 脚本](docs/contest/demo.md)。
 
@@ -95,6 +95,7 @@ node scripts/ts04-clone-verify.mjs   # TS04：独立 clone 验证
 npm run build:contracts
 npm run test:contracts
 npm run check:contract-sizes
+npm run contracts:export:abi
 ```
 
 已有 pnpm 时可运行 `pnpm doctor` 与 `pnpm check`。`doctor` 只检查骨架运行环境；`check` 检查本地文档链接、JSON、需求覆盖及目录；`ts04` 目前仍是骨架级 clone 检查。合约测试已经实现；网页可单独运行 `npm run test --prefix apps/web`、`npm run typecheck --prefix apps/web`、`npm run build --prefix apps/web`。这些不是跨层验收；独立 lint 和跨层业务测试仍未实现。
@@ -132,7 +133,7 @@ pnpm test:e2e
 pnpm build
 ```
 
-从 `.env.example` 配置服务环境，实际加载路径由 RB-02 固定。密钥、私有文件和真实合同不进入 Git。测试网部署命令 `pnpm contracts:deploy:testnet` 同样待实现，不能缺配置时回退主网。
+从 `.env.example` 配置服务环境，实际加载路径由 RB-02 固定。密钥、私有文件和真实合同不进入 Git。`npm run contracts:preflight:testnet` 只读核对网络；`npm run contracts:deploy:testnet` 仅允许显式选择 Monad Testnet、RPC 返回 chainId 10143、使用本地 Forge keystore 且二次确认后广播，不会缺配置时回退其他网络。
 
 ## GitHub 协作
 

@@ -1,6 +1,6 @@
 # 合约接口与状态规则（B → C/D/E）
 
-更新时间：2026-09-21。当前源码与测试已实现，ABI 仍须在合并 commit 固定后从构建产物导出；尚无 Monad 测试网地址。
+更新时间：2026-09-23。当前源码与 40 项本地测试已实现；五份 ABI 已从固定构建产物导出，整包 SHA-256 为 `fd14c75103ccba1074df13fc4995c38ef3ebf7d00d2efb06cb926307f29629e1`。尚无 Monad 测试网地址或交易。
 
 ## 不可绕过的业务规则
 
@@ -126,6 +126,7 @@ D/E 以 `chainId + txHash + logIndex` 幂等消费并保存 blockHash；页面�
 npm run build:contracts
 npm run test:contracts
 npm run check:contract-sizes
+npm run contracts:export:abi
 ```
 
-当前本地结果为 32/32 通过，生产合约尺寸均低于 EIP-170；尚未绑定合并 commit、独立复核或测试网部署。ABI 交付时必须附源码 commit、solc/Forge 版本、chainId、部署地址/区块/交易、时间方案和 ABI digest。任何字段、权限、金额或期限变化都要同步 C/D/E，不能只改前端类型。
+当前本地结果为 40/40 通过，生产合约尺寸均低于 EIP-170。ABI 清单位于 `deployments/abi/manifest.json`，但地址仍为空；尚未完成独立复核或测试网部署。正式交付时必须同时附源码 commit、solc/Forge 版本、chainId、部署地址/区块/交易、时间方案和相同 ABI digest。任何字段、权限、金额或期限变化都要同步 C/D/E，不能只改前端类型。

@@ -4,54 +4,33 @@
  * Independent long-running Node.js process. Cannot rely on web request lifecycle.
  *
  * Usage:
- *   node apps/worker/src/main.js
+ *   node apps/worker/src/main.ts
  *
  * Environment (from .env):
  *   RPC_URL, RPC_FALLBACK_URL, CHAIN_ID,
  *   FACTORY_ADDRESS, RESOLVER_REGISTRY_ADDRESS,
- *   DATABASE_URL, PERSISTENCE_PATH,
- *   WORKER_BATCH_SIZE, WORKER_POLL_INTERVAL_MS
+ *   DEPLOYMENT_BLOCK, PERSISTENCE_PATH,
+ *   WORKER_BATCH_SIZE, WORKER_POLL_INTERVAL_MS, WORKER_GAS_ACCOUNT
  *
  * E owns; B/D collaborate on event schema and projection mapping.
  */
 
-interface WorkerConfig {
-  rpcUrl: string;
-  rpcFallbackUrl?: string;
-  chainId: number;
-  factoryAddress: string;
-  resolverRegistryAddress: string;
-  persistencePath: string;
-  /** How many blocks to fetch per polling batch */
-  batchSize: number;
-  /** Polling interval in ms */
-  pollIntervalMs: number;
-}
-
-function loadConfig(): WorkerConfig {
-  const missing = (k: string) => {
-    if (!process.env[k]) throw new Error(`Missing required env: ${k}`);
-    return process.env[k]!;
-  };
-
-  return {
-    rpcUrl: missing('RPC_URL'),
-    rpcFallbackUrl: process.env.RPC_FALLBACK_URL,
-    chainId: Number(missing('CHAIN_ID')),
-    factoryAddress: missing('FACTORY_ADDRESS'),
-    resolverRegistryAddress: missing('RESOLVER_REGISTRY_ADDRESS'),
-    persistencePath: missing('PERSISTENCE_PATH'),
-    batchSize: Number(process.env.WORKER_BATCH_SIZE ?? '100'),
-    pollIntervalMs: Number(process.env.WORKER_POLL_INTERVAL_MS ?? '5000'),
-  };
-}
+import { loadWorkerConfig } from './config.js';
 
 async function main() {
-  const config = loadConfig();
+  // Validate all env vars before doing anything else
+  const config = loadWorkerConfig();
 
   console.log('[worker] Starting RentBond Worker');
-  console.log(`[worker] chain=${config.chainId} factory=${config.factoryAddress}`);
+  console.log(`[worker] chain=${config.chainId}`);
+  console.log(`[worker] factory=${config.factoryAddress}`);
+  console.log(`[worker] registry=${config.resolverRegistryAddress}`);
+  console.log(`[worker] deploymentBlock=${config.deploymentBlock}`);
+  console.log(`[worker] batchSize=${config.batchSize} pollInterval=${config.pollIntervalMs}ms`);
   console.log(`[worker] persistence=${config.persistencePath}`);
+  if (config.workerGasAccount) {
+    console.log(`[worker] workerGasAccount=${config.workerGasAccount}`);
+  }
 
   // TODO RB-12: initialize RPC provider, load ABI, start indexer loop
   // TODO RB-12: connect to persistence (DB or file-based queue)

@@ -32,6 +32,7 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
       - run: node scripts/check-scaffold.mjs
+      - run: node --test scripts/verify-monad-evidence.test.mjs
 
   typecheck:
     name: Type check

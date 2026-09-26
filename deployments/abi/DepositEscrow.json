@@ -1,0 +1,2334 @@
+[
+  {
+    "type": "constructor",
+    "inputs": [
+      {
+        "name": "terms_",
+        "type": "tuple",
+        "internalType": "struct DepositEscrow.Terms",
+        "components": [
+          {
+            "name": "leaseId",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "tenant",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "landlord",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "primaryResolver",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "fallbackResolver",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "token",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "depositAmount",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "leaseEndAt",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "hardEndAt",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "timeoutPolicy",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "termsHash",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "ruleVersion",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "timingProfileId",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "serviceProfileId",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "serviceTermsHash",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "registryAddress",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "acceptDeadline",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "timing",
+            "type": "tuple",
+            "internalType": "struct IResolverRegistry.TimingConfig",
+            "components": [
+              {
+                "name": "checkoutResponse",
+                "type": "uint64",
+                "internalType": "uint64"
+              },
+              {
+                "name": "claim",
+                "type": "uint64",
+                "internalType": "uint64"
+              },
+              {
+                "name": "response",
+                "type": "uint64",
+                "internalType": "uint64"
+              },
+              {
+                "name": "evidence",
+                "type": "uint64",
+                "internalType": "uint64"
+              },
+              {
+                "name": "primary",
+                "type": "uint64",
+                "internalType": "uint64"
+              },
+              {
+                "name": "challenge",
+                "type": "uint64",
+                "internalType": "uint64"
+              },
+              {
+                "name": "fallbackEvidence",
+                "type": "uint64",
+                "internalType": "uint64"
+              },
+              {
+                "name": "fallbackResolver",
+                "type": "uint64",
+                "internalType": "uint64"
+              },
+              {
+                "name": "exitNotice",
+                "type": "uint64",
+                "internalType": "uint64"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "factory_",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "acceptTerms",
+    "inputs": [
+      {
+        "name": "termsHash",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "acknowledgeEvidence",
+    "inputs": [
+      {
+        "name": "submitter",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "version",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "bundleId",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      },
+      {
+        "name": "commitment",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      },
+      {
+        "name": "agree",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "cancelUnfunded",
+    "inputs": [],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "challenge",
+    "inputs": [
+      {
+        "name": "caseId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "commitment",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "claimsClosed",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "claimsSubmitted",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "closeClaims",
+    "inputs": [],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "confirmSettlement",
+    "inputs": [
+      {
+        "name": "proposalId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "escalateTimeout",
+    "inputs": [
+      {
+        "name": "caseId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "expireEscrow",
+    "inputs": [],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "expireUnfunded",
+    "inputs": [],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "factory",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "finalizePrimary",
+    "inputs": [
+      {
+        "name": "caseId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "finalizeTimeout",
+    "inputs": [
+      {
+        "name": "caseId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "fund",
+    "inputs": [
+      {
+        "name": "amount",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "getAccounting",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "tuple",
+        "internalType": "struct DepositEscrow.Accounting",
+        "components": [
+          {
+            "name": "fundedAmount",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "unallocated",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "tenantCredit",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "landlordCredit",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "tenantWithdrawn",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "landlordWithdrawn",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "revision",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getActiveCase",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "tuple",
+        "internalType": "struct DepositEscrow.ActiveCase",
+        "components": [
+          {
+            "name": "caseId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "caseType",
+            "type": "uint8",
+            "internalType": "enum DepositEscrow.CaseType"
+          },
+          {
+            "name": "openedAt",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "disputedAmount",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "evidenceDeadline",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "primaryDeadline",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "challengeDeadline",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "fallbackStartAt",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "fallbackDeadline",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "timeoutAt",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "proposalAt",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "proposalHash",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "challengeCommitment",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "decisionHash",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "phase",
+            "type": "uint8",
+            "internalType": "enum DepositEscrow.CasePhase"
+          },
+          {
+            "name": "exists",
+            "type": "bool",
+            "internalType": "bool"
+          },
+          {
+            "name": "checkoutApproved",
+            "type": "bool",
+            "internalType": "bool"
+          }
+        ]
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getCheckout",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "tuple",
+        "internalType": "struct DepositEscrow.CheckoutRequest",
+        "components": [
+          {
+            "name": "requester",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "evidenceHash",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "requestedAt",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "responseDeadline",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "exists",
+            "type": "bool",
+            "internalType": "bool"
+          },
+          {
+            "name": "responded",
+            "type": "bool",
+            "internalType": "bool"
+          },
+          {
+            "name": "agreed",
+            "type": "bool",
+            "internalType": "bool"
+          },
+          {
+            "name": "caseOpened",
+            "type": "bool",
+            "internalType": "bool"
+          },
+          {
+            "name": "resolved",
+            "type": "bool",
+            "internalType": "bool"
+          }
+        ]
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getClaim",
+    "inputs": [
+      {
+        "name": "claimId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "tuple",
+        "internalType": "struct DepositEscrow.Claim",
+        "components": [
+          {
+            "name": "id",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "amount",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "commitment",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "responseCommitment",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "status",
+            "type": "uint8",
+            "internalType": "enum DepositEscrow.ClaimStatus"
+          },
+          {
+            "name": "landlordAllocated",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "tenantAllocated",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getClaimCount",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getDecision",
+    "inputs": [
+      {
+        "name": "index",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "tuple",
+        "internalType": "struct DepositEscrow.DecisionInput",
+        "components": [
+          {
+            "name": "claimId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "landlordAmount",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getDecisionCount",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getEvidence",
+    "inputs": [
+      {
+        "name": "submitter",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "bundleId",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      },
+      {
+        "name": "version",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "tuple",
+        "internalType": "struct DepositEscrow.EvidenceRecord",
+        "components": [
+          {
+            "name": "submitter",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "version",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "bundleId",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "commitment",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "exists",
+            "type": "bool",
+            "internalType": "bool"
+          },
+          {
+            "name": "acknowledged",
+            "type": "bool",
+            "internalType": "bool"
+          },
+          {
+            "name": "agreed",
+            "type": "bool",
+            "internalType": "bool"
+          }
+        ]
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getLatestEvidenceVersion",
+    "inputs": [
+      {
+        "name": "submitter",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "bundleId",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getLeasePhase",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint8",
+        "internalType": "enum DepositEscrow.Phase"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getSettlementProposal",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "tuple",
+        "internalType": "struct DepositEscrow.SettlementProposal",
+        "components": [
+          {
+            "name": "proposalId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "proposer",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "tenantShare",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "landlordShare",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "snapshotRevision",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "validUntil",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "detailsHash",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          }
+        ]
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getSettlementSchedule",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "tuple",
+        "internalType": "struct DepositEscrow.SettlementSchedule",
+        "components": [
+          {
+            "name": "startedAt",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "claimDeadline",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "responseDeadline",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "evidenceDeadline",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "primaryDeadline",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "started",
+            "type": "bool",
+            "internalType": "bool"
+          }
+        ]
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getTerms",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "tuple",
+        "internalType": "struct DepositEscrow.Terms",
+        "components": [
+          {
+            "name": "leaseId",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "tenant",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "landlord",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "primaryResolver",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "fallbackResolver",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "token",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "depositAmount",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "leaseEndAt",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "hardEndAt",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "timeoutPolicy",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "termsHash",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "ruleVersion",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "timingProfileId",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "serviceProfileId",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "serviceTermsHash",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          },
+          {
+            "name": "registryAddress",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "acceptDeadline",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "timing",
+            "type": "tuple",
+            "internalType": "struct IResolverRegistry.TimingConfig",
+            "components": [
+              {
+                "name": "checkoutResponse",
+                "type": "uint64",
+                "internalType": "uint64"
+              },
+              {
+                "name": "claim",
+                "type": "uint64",
+                "internalType": "uint64"
+              },
+              {
+                "name": "response",
+                "type": "uint64",
+                "internalType": "uint64"
+              },
+              {
+                "name": "evidence",
+                "type": "uint64",
+                "internalType": "uint64"
+              },
+              {
+                "name": "primary",
+                "type": "uint64",
+                "internalType": "uint64"
+              },
+              {
+                "name": "challenge",
+                "type": "uint64",
+                "internalType": "uint64"
+              },
+              {
+                "name": "fallbackEvidence",
+                "type": "uint64",
+                "internalType": "uint64"
+              },
+              {
+                "name": "fallbackResolver",
+                "type": "uint64",
+                "internalType": "uint64"
+              },
+              {
+                "name": "exitNotice",
+                "type": "uint64",
+                "internalType": "uint64"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "landlord",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "markServiceTimeout",
+    "inputs": [
+      {
+        "name": "caseId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "openCheckoutCase",
+    "inputs": [],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "openClaimCase",
+    "inputs": [],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "phase",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint8",
+        "internalType": "enum DepositEscrow.Phase"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "proposeCheckoutDecision",
+    "inputs": [
+      {
+        "name": "caseId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "approved",
+        "type": "bool",
+        "internalType": "bool"
+      },
+      {
+        "name": "reasonsCommitment",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "proposeDecision",
+    "inputs": [
+      {
+        "name": "caseId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "result",
+        "type": "tuple[]",
+        "internalType": "struct DepositEscrow.DecisionInput[]",
+        "components": [
+          {
+            "name": "claimId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "landlordAmount",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
+      },
+      {
+        "name": "reasonsCommitment",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "proposeSettlement",
+    "inputs": [
+      {
+        "name": "tenantShare",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "landlordShare",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "snapshotRevision",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "validUntil",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "detailsHash",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "proposalId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "recordEvidence",
+    "inputs": [
+      {
+        "name": "bundleId",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      },
+      {
+        "name": "version",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "commitment",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "requestCheckout",
+    "inputs": [
+      {
+        "name": "evidenceHash",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "resolveFallback",
+    "inputs": [
+      {
+        "name": "caseId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "result",
+        "type": "tuple[]",
+        "internalType": "struct DepositEscrow.DecisionInput[]",
+        "components": [
+          {
+            "name": "claimId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "landlordAmount",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
+      },
+      {
+        "name": "reasonsCommitment",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "resolveFallbackCheckout",
+    "inputs": [
+      {
+        "name": "caseId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "approved",
+        "type": "bool",
+        "internalType": "bool"
+      },
+      {
+        "name": "reasonsCommitment",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "respondCheckout",
+    "inputs": [
+      {
+        "name": "agree",
+        "type": "bool",
+        "internalType": "bool"
+      },
+      {
+        "name": "evidenceHash",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "respondClaim",
+    "inputs": [
+      {
+        "name": "claimId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "accept",
+        "type": "bool",
+        "internalType": "bool"
+      },
+      {
+        "name": "responseCommitment",
+        "type": "bytes32",
+        "internalType": "bytes32"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "startScheduledSettlement",
+    "inputs": [],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "submitClaims",
+    "inputs": [
+      {
+        "name": "inputs",
+        "type": "tuple[]",
+        "internalType": "struct DepositEscrow.ClaimInput[]",
+        "components": [
+          {
+            "name": "amount",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "commitment",
+            "type": "bytes32",
+            "internalType": "bytes32"
+          }
+        ]
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "tenant",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "tenantAccepted",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool",
+        "internalType": "bool"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "totalClaimAmount",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "waiveClaim",
+    "inputs": [
+      {
+        "name": "claimId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "withdraw",
+    "inputs": [],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "withdrawFor",
+    "inputs": [
+      {
+        "name": "beneficiary",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "event",
+    "name": "CaseEscalated",
+    "inputs": [
+      {
+        "name": "leaseId",
+        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "caseId",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "challenger",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "challengeCommitment",
+        "type": "bytes32",
+        "indexed": false,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "fallbackDeadline",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "CaseOpened",
+    "inputs": [
+      {
+        "name": "leaseId",
+        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "caseId",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "caseType",
+        "type": "uint8",
+        "indexed": true,
+        "internalType": "enum DepositEscrow.CaseType"
+      },
+      {
+        "name": "disputedAmount",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "CheckoutCaseOpened",
+    "inputs": [
+      {
+        "name": "leaseId",
+        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "requester",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "CheckoutCaseResolved",
+    "inputs": [
+      {
+        "name": "leaseId",
+        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "caseId",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "approved",
+        "type": "bool",
+        "indexed": false,
+        "internalType": "bool"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "CheckoutRequested",
+    "inputs": [
+      {
+        "name": "leaseId",
+        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "requester",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "evidenceHash",
+        "type": "bytes32",
+        "indexed": false,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "responseDeadline",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "CheckoutResponded",
+    "inputs": [
+      {
+        "name": "leaseId",
+        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "responder",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "agree",
+        "type": "bool",
+        "indexed": false,
+        "internalType": "bool"
+      },
+      {
+        "name": "evidenceHash",
+        "type": "bytes32",
+        "indexed": false,
+        "internalType": "bytes32"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "ClaimResponded",
+    "inputs": [
+      {
+        "name": "leaseId",
+        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "claimId",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "accepted",
+        "type": "bool",
+        "indexed": false,
+        "internalType": "bool"
+      },
+      {
+        "name": "responseCommitment",
+        "type": "bytes32",
+        "indexed": false,
+        "internalType": "bytes32"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "ClaimWaived",
+    "inputs": [
+      {
+        "name": "leaseId",
+        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "claimId",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "ClaimsClosed",
+    "inputs": [
+      {
+        "name": "leaseId",
+        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "unclaimedAmount",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      },
+      {
+        "name": "acceptedAmount",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      },
+      {
+        "name": "disputedAmount",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "ClaimsOpened",
+    "inputs": [
+      {
+        "name": "leaseId",
+        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "claimDeadline",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "ClaimsSubmitted",
+    "inputs": [
+      {
+        "name": "leaseId",
+        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "landlord",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "claimCount",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      },
+      {
+        "name": "totalAmount",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "CreditAllocated",
+    "inputs": [
+      {
+        "name": "leaseId",
+        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "beneficiary",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "amount",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      },
+      {
+        "name": "source",
+        "type": "bytes32",
+        "indexed": false,
+        "internalType": "bytes32"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "DecisionFinalized",
+    "inputs": [
+      {
+        "name": "leaseId",
+        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "caseId",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "decisionHash",
+        "type": "bytes32",
+        "indexed": false,
+        "internalType": "bytes32"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "DecisionProposed",
+    "inputs": [
+      {
+        "name": "leaseId",
+        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "caseId",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "resolver",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "decisionHash",
+        "type": "bytes32",
+        "indexed": false,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "challengeDeadline",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "EscrowExpired",
+    "inputs": [
+      {
+        "name": "leaseId",
+        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "amount",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "EvidenceAcknowledged",
+    "inputs": [
+      {
+        "name": "leaseId",
+        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "submitter",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "version",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "acknowledger",
+        "type": "address",
+        "indexed": false,
+        "internalType": "address"
+      },
+      {
+        "name": "agree",
+        "type": "bool",
+        "indexed": false,
+        "internalType": "bool"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "EvidenceCommitted",
+    "inputs": [
+      {
+        "name": "leaseId",
+        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "submitter",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "version",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "bundleId",
+        "type": "bytes32",
+        "indexed": false,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "commitment",
+        "type": "bytes32",
+        "indexed": false,
+        "internalType": "bytes32"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "Funded",
+    "inputs": [
+      {
+        "name": "leaseId",
+        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "tenant",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "amount",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      },
+      {
+        "name": "serviceProfileId",
+        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "LeaseCancelled",
+    "inputs": [
+      {
+        "name": "leaseId",
+        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "caller",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "reason",
+        "type": "bytes32",
+        "indexed": false,
+        "internalType": "bytes32"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "ServiceTimedOut",
+    "inputs": [
+      {
+        "name": "leaseId",
+        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "caseId",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "timeoutAt",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "SettlementConfirmed",
+    "inputs": [
+      {
+        "name": "leaseId",
+        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "proposalId",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "tenantShare",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      },
+      {
+        "name": "landlordShare",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "SettlementProposed",
+    "inputs": [
+      {
+        "name": "leaseId",
+        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "proposalId",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "proposer",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "tenantShare",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      },
+      {
+        "name": "landlordShare",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      },
+      {
+        "name": "snapshotRevision",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      },
+      {
+        "name": "validUntil",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      },
+      {
+        "name": "detailsHash",
+        "type": "bytes32",
+        "indexed": false,
+        "internalType": "bytes32"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "TermsAccepted",
+    "inputs": [
+      {
+        "name": "leaseId",
+        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "tenant",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "termsHash",
+        "type": "bytes32",
+        "indexed": false,
+        "internalType": "bytes32"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "TimeoutAllocated",
+    "inputs": [
+      {
+        "name": "leaseId",
+        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "caseId",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "amount",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "Withdrawn",
+    "inputs": [
+      {
+        "name": "leaseId",
+        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "beneficiary",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "caller",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "amount",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "error",
+    "name": "AlreadyFunded",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "AmountMismatch",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "BalanceDeltaMismatch",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "CaseAlreadyOpened",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "CaseNotFound",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "ClaimAlreadyFinalized",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "ClaimNotFound",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "ClaimResponseClosed",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "ClaimsAlreadySubmitted",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "ClaimsExceedDeposit",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "ClaimsNotClosed",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "DeadlineNotReached",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "DeadlinePassed",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "HashMismatch",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidAddress",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidCommitment",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidDecisionVector",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidSettlement",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidState",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidTerms",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NoDisputedBalance",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NothingToWithdraw",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "OutsideServiceScope",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "ProposalAlreadyExists",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "ProposalExpired",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "ProposalNotFound",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "ReentrancyGuardReentrantCall",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "ServiceNotAccepted",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "ServiceNotEligible",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "ServiceRevoked",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "StaleProposal",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "TooManyClaims",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "TransferFailed",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "Unauthorized",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "WrongCasePhase",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "WrongCaseType",
+    "inputs": []
+  }
+]
