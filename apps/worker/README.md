@@ -17,7 +17,7 @@ apps/worker/src/
 ## 入口
 
 ```sh
-node apps/worker/src/main.js   # RB-12 后可用
+node apps/worker/src/main.ts   # RB-12 后可用（Node 24 原生支持 TS）
 ```
 
 环境变量：`RPC_URL`、`RPC_FALLBACK_URL`、`CHAIN_ID`、`FACTORY_ADDRESS`、
@@ -29,17 +29,20 @@ node apps/worker/src/main.js   # RB-12 后可用
 | 规则 | 说明 |
 |------|------|
 | 停止 Worker ≠ 冻结合约退出 | 合约是无需许可的，任何人都可推进 |
-| 重启不能重复分配 | 幂等键：chainId + txHash + logIndex |
+| 重启不能重复分配 | 幂等键：chainId + contractAddress + txHash + logIndex |
 | 任务期限来自链上 | 不因重试延长；延迟推进不重置起算点 |
 | 补给账户分离 | Worker 账户无租约角色私钥 |
 
 ## 事件类型（indexer）
 
-`Funded` | `CheckoutRequested` | `CheckoutNegated` | `ClaimsSubmitted` |
-`ClaimsWindowClosed` | `ClaimResponseUpdated` | `ClaimWithdrawn` |
-`PrimaryDecisionProposed` | `PrimaryDecisionChallenged` |
-`FallbackDecisionProposed` | `FallbackDecisionProposedTimeout` |
-`EscrowExpired` | `Withdrawn` | `ServiceAuthorization`
+`TermsAccepted` | `LeaseCancelled` | `Funded` | `CreditAllocated` | `Withdrawn` |
+`ClaimsOpened` | `ClaimsSubmitted` | `ClaimResponded` | `ClaimWaived` | `ClaimsClosed` |
+`CaseOpened` | `DecisionProposed` | `CaseEscalated` | `DecisionFinalized` |
+`ServiceTimedOut` | `TimeoutAllocated` | `EscrowExpired` |
+`SettlementProposed` | `SettlementConfirmed` | `EvidenceCommitted` | `EvidenceAcknowledged` |
+`CheckoutRequested` | `CheckoutResponded` | `CheckoutCaseOpened` | `CheckoutCaseResolved`
+
+工厂事件：`LeaseCreated` | `NewLeasesPaused`
 
 ## 任务类型（jobs）
 

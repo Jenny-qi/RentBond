@@ -7,11 +7,11 @@
 ```
 tests/
 ├── README.md              # 本文件
-├── runner.ts             # 测试运行器（integration / e2e / all）
+├── runner.mjs             # 测试运行器（integration / e2e / all）
 ├── integration/
-│   └── suite.ts          # IT-01 — IT-08（RB-12 后可运行）
+│   └── suite.mjs          # IT-01 — IT-08（RB-12 后可运行）
 └── e2e/
-    └── suite.ts          # E2E-01 — E2E-08（RB-12/RB-13 后可运行）
+    └── suite.mjs          # E2E-01 — E2E-08（RB-12/RB-13 后可运行）
 ```
 
 ## 当前状态
@@ -47,9 +47,9 @@ tests/
 ## 运行
 
 ```sh
-node tests/runner.ts integration  # RB-12 后
-node tests/runner.ts e2e         # RB-12/RB-13 后
-node tests/runner.ts all         # 全部
+node tests/runner.mjs integration  # RB-12 后
+node tests/runner.mjs e2e         # RB-12/RB-13 后
+node tests/runner.mjs all         # 全部
 ```
 
 ## 报告
@@ -57,8 +57,7 @@ node tests/runner.ts all         # 全部
 运行结果输出到 `tests/reports/`（不含敏感材料），格式：
 
 ```
-PASS IT-01: SIWE nonce replay is rejected
-  → evidence: tests/reports/it-01-2026-09-20.log
+tests/reports/{suite}-{date}.json
 ```
 
 ## 验收
