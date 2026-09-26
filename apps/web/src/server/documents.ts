@@ -20,6 +20,7 @@ import { newCommitment, randomToken, sha256 } from "./crypto.ts";
 import { requireThat } from "./errors.ts";
 import { boundedBody, detectMime } from "./storage.ts";
 import { audit } from "./auth.ts";
+import { caseMaterialRefs } from "./presentation.ts";
 import type { z } from "zod";
 
 async function writeAccess(
@@ -283,18 +284,10 @@ export async function documentAccess(
     );
   if (!["T", "L"].includes(lease.role) && !row.case_id) {
     requireThat(caseId, 403, "FORBIDDEN", "A case scope is required.");
-    const bundles = await ctx.sql.query(
-      "SELECT * FROM evidence_bundles WHERE case_id=$1",
-      [caseId],
+    const refs = await caseMaterialRefs(ctx, row.lease_id, caseId);
+    const referenced = refs.some(
+      (ref) => ref.documentId === id && ref.version === version,
     );
-    const referenced = bundles.some((bundle) => {
-      verifyManifest(bundle);
-      return bundle.manifest.items.some((item: Row) =>
-        item.documents.some(
-          (ref: Row) => ref.documentId === id && ref.version === version,
-        ),
-      );
-    });
     requireThat(
       referenced,
       403,

@@ -8,7 +8,7 @@ import { exportSchema, gasSchema } from "./schemas.ts";
 import { sha256, canonicalJson } from "./crypto.ts";
 import { audit } from "./auth.ts";
 import { ApiFailure, requireThat } from "./errors.ts";
-import { privateHistory } from "./presentation.ts";
+import { privateHistory, caseMaterialRefs } from "./presentation.ts";
 
 export async function createExport(ctx: Context, body: unknown) {
   const input = exportSchema.parse(body);
@@ -105,10 +105,18 @@ async function gasEligibility(ctx: Context, lease: Row) {
     return;
   }
   const live = await liveLease(ctx, lease);
+  const outstanding =
+    BigInt(live.accounting.unallocated) +
+    BigInt(live.accounting.tenantCredit) +
+    BigInt(live.accounting.landlordCredit);
+  const fundedExit =
+    ["T", "L"].includes(lease.role) &&
+    BigInt(live.accounting.fundedAmount) > 0n &&
+    outstanding > 0n;
   requireThat(
     live.phase !== 9 &&
       live.phase !== 11 &&
-      live.chainTime < Number(live.terms.hardEndAt),
+      (live.chainTime < Number(live.terms.hardEndAt) || fundedExit),
     409,
     "LEASE_NOT_ACTIVE",
     "This lease is not eligible for test gas.",
@@ -144,6 +152,9 @@ async function exportArchive(ctx: Context, job: Row) {
     [lease.id, job.case_id],
   );
   const history = await privateHistory(ctx, lease.id, job.case_id ?? undefined);
+  const scopedRefs = job.case_id
+    ? await caseMaterialRefs(ctx, lease.id, job.case_id)
+    : [];
   const visibleClaims = history.claims;
   const cases = await ctx.sql.query(
     "SELECT id,chain_case_id,snapshot,synced_at FROM cases WHERE lease_id=$1 AND ($2::uuid IS NULL OR id=$2)",
@@ -166,14 +177,9 @@ async function exportArchive(ctx: Context, job: Row) {
     if (
       job.case_id &&
       version.case_id !== job.case_id &&
-      !bundles.some((b) =>
-        b.manifest.items.some((i: Row) =>
-          i.documents.some(
-            (d: Row) =>
-              d.documentId === version.document_id &&
-              d.version === version.version,
-          ),
-        ),
+      !scopedRefs.some(
+        (d: Row) =>
+          d.documentId === version.document_id && d.version === version.version,
       )
     )
       continue;
@@ -235,11 +241,7 @@ async function exportArchive(ctx: Context, job: Row) {
       salt,
       commitment,
     })),
-    claims: visibleClaims.map(({ manifest, salt, commitment }) => ({
-      manifest,
-      salt,
-      commitment,
-    })),
+    claims: visibleClaims,
     originals,
     verification: {
       fileHash: "SHA-256",
@@ -260,7 +262,7 @@ async function exportArchive(ctx: Context, job: Row) {
   );
   files["manifest.json"] = strToU8(encoded);
   files["VERIFY.txt"] = strToU8(
-    "RentBond test materials. MockUSD has no cash value.\nVerify original SHA-256 hashes and salted commitments with the shared implementation.\nWallet confirmations, evidence responses and fund movements are in canonical chain events; local saved versions are not on-chain submissions.\nUse the original account and contract for recovery; this archive holds no private keys.\n",
+    "RentBond test materials. MockUSD has no cash value.\nVerify original SHA-256 hashes and salted commitments with the shared implementation.\nWallet confirmations, evidence responses and fund movements are in canonical chain events; local saved versions are not on-chain submissions.\nStatements and capture times are party assertions, not verified facts or legal certification. Withdrawal notes preserve the original and do not revoke chain records.\nUse the original account and contract for recovery; this archive holds no private keys.\n",
   );
   return zipSync(files, { level: 0 });
 }

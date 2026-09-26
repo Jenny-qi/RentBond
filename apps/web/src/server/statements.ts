@@ -2,8 +2,8 @@ import { randomUUID } from "node:crypto";
 import { z } from "zod";
 import type { Context } from "./context.ts";
 import type { Row } from "./db.ts";
-import { caseAccess, leaseAccess, liveLease } from "./acl.ts";
-import { documentRef, timestamp, amount } from "./schemas.ts";
+import { caseAccess, leaseAccess, liveLease, verifyManifest } from "./acl.ts";
+import { documentRef, timestamp, hash } from "./schemas.ts";
 import { newCommitment } from "./crypto.ts";
 import { materialRefs } from "./documents.ts";
 import { requireThat } from "./errors.ts";
@@ -17,10 +17,19 @@ const reason = z.string().min(20).max(2000);
 const statementSchema = z.discriminatedUnion("kind", [
   z
     .object({
+      kind: z.literal("evidence-withdrawal"),
+      bundleId: hash,
+      version: z.number().int().positive(),
+      reason,
+    })
+    .strict(),
+  z
+    .object({
       kind: z.literal("claim-response"),
       claimId: integerId,
       accept: z.boolean(),
       reason,
+      documents: z.array(documentRef).max(20).default([]),
     })
     .strict(),
   z
@@ -103,6 +112,24 @@ export async function createStatement(
 ) {
   const input = statementSchema.parse(body),
     lease = await leaseAccess(ctx, leaseId);
+  if (input.kind === "evidence-withdrawal") {
+    const [bundle] = await ctx.sql.query(
+      "SELECT * FROM evidence_bundles WHERE lease_id=$1 AND author=$2 AND bundle_id=$3 AND version=$4",
+      [leaseId, ctx.session.wallet, input.bundleId, input.version],
+    );
+    requireThat(
+      bundle,
+      403,
+      "FORBIDDEN",
+      "Only the original author may append a withdrawal note.",
+    );
+    verifyManifest(bundle);
+    const saved = await store(ctx, leaseId, bundle.case_id, input.kind, {
+      ...input,
+      targetCommitment: bundle.commitment,
+    });
+    return { ...saved, transaction: null };
+  }
   const live = await liveLease(ctx, lease);
   requireThat(
     live.chainTime < Number(live.terms.hardEndAt),
@@ -133,6 +160,10 @@ export async function createStatement(
     );
     name = "respondClaim";
     args = [input.claimId, input.accept];
+    content = {
+      ...input,
+      documents: await materialRefs(ctx, leaseId, input.documents),
+    };
   } else if (input.kind === "checkout") {
     requireThat(
       live.phase === 2 &&

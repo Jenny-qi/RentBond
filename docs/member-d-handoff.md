@@ -96,3 +96,7 @@ For the PostgreSQL two-connection test, set RENTBOND_TEST_DATABASE_URL to a disp
 With the local Next server running, set RENTBOND_TEST_BASE_URL=http://localhost:3000 and run node src/server/tests/http.integration.mjs from apps/web. This explicit smoke command creates fictional lease/file records and exercises real HTTP, session cookies and the automatic local export queue.
 
 See [evidence](../tests/reports/2026-09-26-member-d.md) for the executed results and limits.
+
+The [2026-09-27 review](../tests/reports/2026-09-27-member-d-review.md) supersedes the initial completeness assessment. It records fixes for case response/original visibility, RPC failover, final-deadline sponsor access and missing material metadata/withdrawal notes, plus integration with main at d26ddab.
+
+Public-upload release is still gated by PRD 9.4's malware scanning/quarantine requirement. The current backend enforces type/size/hash checks, private storage and attachment download isolation; these are not malware scanning. Hosted Storage verification is optional for local development, but any chosen public deployment must validate its storage policy, upload-scanning process, RPC finality and device recovery before release.

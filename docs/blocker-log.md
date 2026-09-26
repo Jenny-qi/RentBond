@@ -27,7 +27,11 @@ SDK 首次安装发生 ECONNRESET，重试后成功；该下载故障已解决�
 
 ## 2026-09-26 成员 D 检查
 
-- 已生成与现有源码一致的 ABI，并通过真实本地 EVM 联调。BL07 的公网部署/确认策略仍待 B/E，不能以本地 chainId=10143 的测试替代 Monad。
+- 已生成与现有源码一致的 ABI，并通过真实本地 EVM 联调。BL11 的公网部署/确认策略仍待 B/E，不能以本地 chainId=10143 的测试替代 Monad。
 - BL09 真机 PRF 与跨设备恢复仍待 C/本人设备；D 已验证 Mera 签名适配与 SIWE 同址权限恢复。
 - Supabase REST 适配和默认拒绝策略已交付，本次没有开通托管项目。开发使用本地私有存储或自托管服务即可。
 - 现有 EvidenceAcknowledged 事件缺少 bundleId/commitment；D 已用精确 getEvidence 读取避免误归属，B/E 后续版本评审该事件完整性。
+
+## 2026-09-27 D 复核
+
+D 分支已合入 main d26ddab 的 B/E 变更，修复与补充内容见 [复核报告](../tests/reports/2026-09-27-member-d-review.md)。D 分支推送不等于合并 main。PR #6 提供的公开测试网核验证据仍按其 PR 范围审查，不能推导出 Web/API/Worker 已完成公网联调。正式开放公众上传前，PRD 9.4 要求的文件扫描与隔离仍是发布阻断项；当前类型/大小/摘要及下载安全头不能替代扫描。

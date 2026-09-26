@@ -62,10 +62,11 @@ POST /api/leases/:id/statements 保存不可覆盖的私有声明：
 
 | kind | 其他字段 | 钱包动作 |
 | --- | --- | --- |
-| claim-response | claimId、accept、reason | respondClaim |
+| claim-response | claimId、accept、reason、documents（可选反证） | respondClaim |
 | checkout | actualAt、reason、documents（至少一份） | requestCheckout |
 | challenge | reason、documents | challenge |
 | settlement | tenantShare、landlordShare、validUntil、reason | proposeSettlement，附当前 revision |
+| evidence-withdrawal | bundleId、version、reason；仅原作者 | 无链上动作；追加说明，保留原件与承诺 |
 
 GET /api/cases/:id 返回当前授权案件。POST /api/cases/:id/decisions 仅 R/F 在合法窗口调用：{reason,documents,reasons:[{claimId,landlordAmount,reason}],checkoutApproved?}。CHECKOUT 必须空金额向量与 boolean 结果；CLAIMS 向量必须完整按序覆盖未分配项目。返回对应 propose/resolve 钱包参数。尚未上链的声明仅作者可见；正式记录通过事件或链上申索承诺匹配后共享。
 
@@ -78,3 +79,5 @@ POST /api/test-gas/request 为 {leaseId}，返回 202 {id,state,amount,statusUrl
 POST /api/leases/:id/cleanup-request 为 {confirm:true}。返回 requested:true、deleted:false；双方都请求后由维护命令清原件，普通用户没有单方面删除对方材料的接口。
 
 更多运行参数、E 的同步与队列接口见 [D 交接](../member-d-handoff.md)。金额真相始终来自合约；C 仍负责每次签名的明确确认和真实页面接线。
+
+2026-09-27 复核补充：材料 items 可提供 capturedAt（epoch 毫秒），与服务器 submittedAt 分开保存；该时间是提交者声明。私有声明和申索响应含 author/savedAt/onChain，用于区分保存草稿与链上记录。案件页和案件导出包含该案已上链的租客回应及原申索／当前交接请求附件，无需重复上传；未上链草稿、其他案件和未升级 F 仍拒绝访问。到 hardEndAt 后，仍有已入金余额待退出或领取的 T/L 可在原配额内申请 Gas；此例外不扩大 R/F 权限。

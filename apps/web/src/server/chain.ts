@@ -2,6 +2,7 @@ import {
   createPublicClient,
   createWalletClient,
   defineChain,
+  fallback,
   http,
   keccak256,
   type Abi,
@@ -99,9 +100,18 @@ export function createChain(config: Config): Chain {
         true,
       );
     }
-    const i = results.findIndex((r) => r.status === "fulfilled");
-    if (i < 0) throw unavailable("RPC is unavailable.");
-    return { client: clients[i], url: endpoints[i] };
+    const available = endpoints.filter(
+      (_, i) => results[i].status === "fulfilled",
+    );
+    if (!available.length) throw unavailable("RPC is unavailable.");
+    const transport = fallback(
+      available.map((url) => http(url, { timeout: 8000, retryCount: 0 })),
+      { retryCount: 0 },
+    );
+    return {
+      client: createPublicClient({ chain, cacheTime: 0, transport }),
+      transport,
+    };
   };
   const finalizedReceipt = async (hash: string) => {
     const { client } = await connected();
@@ -267,7 +277,7 @@ export function createChain(config: Config): Chain {
         "GAS_DISABLED",
         "Test gas sponsor is unavailable.",
       );
-      const { client, url } = await connected();
+      const { client, transport } = await connected();
       const account = privateKeyToAccount(config.sponsorKey as Hex);
       requireThat(
         account.address.toLowerCase() !== wallet.toLowerCase(),
@@ -278,7 +288,7 @@ export function createChain(config: Config): Chain {
       const signer = createWalletClient({
         account,
         chain,
-        transport: http(url, { retryCount: 0, timeout: 8000 }),
+        transport,
       });
       const prepared = await signer.prepareTransactionRequest({
         to: wallet as Address,

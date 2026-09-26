@@ -4,6 +4,8 @@
 
 FR/SC 来自 v1.2。合约切片已填写实现文件和本地测试证据；跨层部分继续保留 In progress/Not started。Verified 仍需要固定 commit、独立复核、适用环境与完整验收，不能把本地单元测试当成发布完成。
 
+2026-09-27 D 后续复核涵盖 FR-10/11/12/17/18/21/24/28/33/34、SC-04 与 AT27/33/43/44；修复、回归命令、真实结果和未完成发布要求见 [D 逐项复核](../tests/reports/2026-09-27-member-d-review.md)。下表 D:96dcffc 为初始实现基线，不能忽略这份后续修复记录。
+
 | requirementId | 原文位置与摘要 | owner | plannedLocation | implementationFiles | testIds | status | commit | evidenceLink |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | FR-01 | PRD 6/7章：界面始终显示“Monad 测试网 · 测试资产，无现金价值” | C | apps/web/src/features/ | `apps/web/src/components/Shell.tsx` (frontend fixture only) | AT41 | In progress | pending | [C local slice](../tests/reports/2026-09-25-member-c.md) |

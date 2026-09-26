@@ -298,6 +298,27 @@ test(
     );
     let live = await app.chain.lease(escrow);
     assert.equal(live.claims[0].id, "1");
+    const response = await tenant.request(
+      "/api/leases/" + leaseId + "/statements",
+      {
+        method: "POST",
+        json: {
+          kind: "claim-response",
+          claimId: "1",
+          accept: false,
+          reason: "The tenant disputes the fictional cleaning claim.",
+          documents: [{ documentId: photo.documentId, version: 1 }],
+        },
+      },
+    );
+    assert.equal(response.status, 201, JSON.stringify(response.data));
+    await write(
+      tw,
+      escrow,
+      escrowAbi,
+      "respondClaim",
+      response.data.transaction.args,
+    );
     await publicClient.request({
       method: "evm_setNextBlockTimestamp",
       params: [Number(live.schedule.claimDeadline)],
@@ -313,6 +334,16 @@ test(
       "SELECT * FROM cases WHERE lease_id=$1",
       [leaseId],
     );
+    const casePage = await r.request("/api/cases/" + caseRow.id);
+    assert.equal(casePage.data.statements[0].id, response.data.id);
+    assert.equal(casePage.data.statements[0].onChain, true);
+    const originalLink = await r.request(
+      "/api/documents/" +
+        photo.documentId +
+        "/access?version=1&caseId=" +
+        caseRow.id,
+    );
+    assert.equal(originalLink.status, 200, JSON.stringify(originalLink.data));
     const evidence = await l.request("/api/cases/" + caseRow.id + "/evidence", {
       method: "POST",
       json: {
@@ -402,6 +433,11 @@ test(
       (await tenant.request("/api/exports/" + exp.data.id)).data.state,
       "ready",
     );
+    await publicClient.request({
+      method: "evm_setNextBlockTimestamp",
+      params: [Number(prepare.data.terms.hardEndAt)],
+    });
+    await publicClient.request({ method: "evm_mine", params: [] });
     const gas = await tenant.request("/api/test-gas/request", {
       method: "POST",
       json: { leaseId },

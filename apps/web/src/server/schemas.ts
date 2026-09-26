@@ -82,6 +82,7 @@ export const bundleSchema = z
           .object({
             roomKey: z.string().min(1).max(100),
             description: z.string().min(1).max(2000),
+            capturedAt: timestamp.optional(),
             documents: z.array(documentRef).max(20),
           })
           .strict(),
