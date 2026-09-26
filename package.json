@@ -19,6 +19,7 @@
     "fixtures:seed": "node scripts/not-implemented.mjs fixtures:seed RB-08",
     "dev": "node scripts/not-implemented.mjs dev RB-02",
     "worker:dev": "node scripts/not-implemented.mjs worker:dev RB-12",
+    "worker:health": "node scripts/worker-health.mjs",
     "test:contracts": "npx --yes @foundry-rs/forge@1.7.1 test --root contracts -vv",
     "build:contracts": "npx --yes @foundry-rs/forge@1.7.1 build --root contracts",
     "check:contract-sizes": "npx --yes @foundry-rs/forge@1.7.1 build --root contracts --sizes --skip test --skip script",
