@@ -64,10 +64,14 @@ test("PostgreSQL: fresh/repeated migration, two-connection nonce/idempotency rac
     1,
   );
   const [migration] = await app.db.query("SELECT * FROM schema_migrations");
-  await app.db.query("UPDATE schema_migrations SET checksum='tampered' WHERE name=$1",[migration.name]);
+  await app.db.query(
+    "UPDATE schema_migrations SET checksum='tampered' WHERE name=$1",
+    [migration.name],
+  );
   await assert.rejects(migrate(second), /modified/);
   await app.db.query("UPDATE schema_migrations SET checksum=$1 WHERE name=$2", [
-    migration.checksum,migration.name,
+    migration.checksum,
+    migration.name,
   ]);
   t.diagnostic((await root.query("SELECT version()")).rows[0].version);
 });

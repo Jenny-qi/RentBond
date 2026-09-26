@@ -127,7 +127,10 @@ export async function openDatabase(
   };
 }
 
-export async function migrate(db: Database, through?: string): Promise<string[]> {
+export async function migrate(
+  db: Database,
+  through?: string,
+): Promise<string[]> {
   const dir = resolve(
     dirname(fileURLToPath(import.meta.url)),
     "../../../../infra/migrations",
@@ -140,8 +143,11 @@ export async function migrate(db: Database, through?: string): Promise<string[]>
     for (const name of (await readdir(dir))
       .filter((n) => /^\d+.*\.sql$/.test(n))
       .sort()) {
-      if(through && name>through)continue;
-      const text = (await readFile(join(dir, name), "utf8")).replaceAll("\r\n","\n");
+      if (through && name > through) continue;
+      const text = (await readFile(join(dir, name), "utf8")).replaceAll(
+        "\r\n",
+        "\n",
+      );
       const checksum = createHash("sha256").update(text).digest("hex");
       const [existing] = await sql.query(
         "SELECT checksum FROM schema_migrations WHERE name=$1",

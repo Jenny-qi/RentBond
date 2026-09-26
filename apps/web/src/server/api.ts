@@ -151,18 +151,16 @@ async function dispatch(
     );
     return {
       data: {
-        items: rows
-          .slice(0, limit)
-          .map((r) => ({
-            id: r.id,
-            title: r.terms.title,
-            role: r.role,
-            version: r.version,
-            contractAddress: r.contract_address,
-            commitment: r.commitment,
-            projection: r.projection,
-            lastSyncedAt: r.synced_at,
-          })),
+        items: rows.slice(0, limit).map((r) => ({
+          id: r.id,
+          title: r.terms.title,
+          role: r.role,
+          version: r.version,
+          contractAddress: r.contract_address,
+          commitment: r.commitment,
+          projection: r.projection,
+          lastSyncedAt: r.synced_at,
+        })),
         nextCursor: rows.length > limit ? rows[limit - 1].id : null,
       },
     };
