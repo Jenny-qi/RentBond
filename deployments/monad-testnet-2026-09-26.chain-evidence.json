@@ -1,0 +1,158 @@
+{
+  "schemaVersion": 1,
+  "status": "read-only-on-chain-evidence; independent review and full TS01/TS02 pending",
+  "readyForFrontend": false,
+  "chainId": 10143,
+  "observedAtBlock": "0x3ec4fce",
+  "observedAtBlockHash": "0xa96930c7b585ca53f9f09899b730fca7dbf03d984734f0735752ae31bcda851f",
+  "observedAtUnix": "1790415486",
+  "sourceCommit": "ca4b36cf6ac85cd0f91e32f8ca107109dc8a54ac",
+  "abiBundleSha256": "fd14c75103ccba1074df13fc4995c38ef3ebf7d00d2efb06cb926307f29629e1",
+  "comparison": "executable runtime matches pinned local compiler profiles after masking constructor immutables and Solidity CBOR/IPFS digests; metadata hashes are not asserted identical",
+  "contracts": {
+    "ResolverRegistry": {
+      "address": "0x61f13f0c0DAaC2802EeD3Cd4DD9FD67c93d0ce30",
+      "runtimeSha256": "7fa8a2ecd85488d0a10be429b625b74aec09ec5d1dc2c6cfc934bb92c6285320",
+      "runtimeBytes": 6146,
+      "compilerProfile": "optimizer runs 200, viaIR false",
+      "executableBytes": 6093,
+      "maskedEmbeddedIpfsDigests": 0,
+      "deployment": {
+        "blockNumber": "0x3e07b84",
+        "transactionHash": "0x56a7ccf2b92664c48da672b2fa1da23e33bfe9cf856feca221552746167dfdf9",
+        "blockHash": "0x6960d61fcc100460eb546d488eb9afa6f9c1e9f67cd0ec31bef9908d2adb032a",
+        "status": "0x1",
+        "createdInternally": false
+      }
+    },
+    "MockUSD": {
+      "address": "0x36f5486ADcFC3Cd1076F2aFaFC720E24EdFf23B1",
+      "runtimeSha256": "8e5084e262e5564818474e9072c4d51fb42f7f33871f9df23a5232fa2bfcf22b",
+      "runtimeBytes": 1775,
+      "compilerProfile": "optimizer runs 1, viaIR false",
+      "executableBytes": 1722,
+      "maskedEmbeddedIpfsDigests": 0,
+      "deployment": {
+        "blockNumber": "0x3e0285f",
+        "transactionHash": "0x9a8912fdb9a47258b438b6cca6fb0da32eee9a661dd351d02d050017cac1ae42",
+        "blockHash": "0x8f1af270a8835dd189bbd00c308737ed1f4f92787383ac4026cbef701bec8730",
+        "status": "0x1",
+        "createdInternally": false
+      }
+    },
+    "LeaseFactory": {
+      "address": "0x6ed49Bf8EE5E9ba2cbE2977fe100342Fe2999a7E",
+      "runtimeSha256": "2a11aa4604c28469bf507db0d157473529a4526b80de3dad5ef4a21a0391cc1e",
+      "runtimeBytes": 3653,
+      "compilerProfile": "optimizer runs 1, viaIR true",
+      "executableBytes": 3600,
+      "maskedEmbeddedIpfsDigests": 0,
+      "deployment": {
+        "blockNumber": "0x3e09d69",
+        "transactionHash": "0x3a0172aa48a28aac40f92cc6935d7b28243cad63a6fa5cbda40cad87f140feff",
+        "blockHash": "0x3a8529012cf473aadb4193372be598dd10e9fb23a9c1d91db3af5bc1da6aac35",
+        "status": "0x1",
+        "createdInternally": false
+      }
+    },
+    "DepositEscrow": {
+      "address": "0x80753a6Dd914177fE8AD8cE28B325Fe1B677C479",
+      "runtimeSha256": "d9d95e34a403236ecfb6064cc8d5cc903401fbda18a1192ea2fb2adb03738071",
+      "runtimeBytes": 20651,
+      "compilerProfile": "optimizer runs 1, viaIR true",
+      "executableBytes": 20598,
+      "maskedEmbeddedIpfsDigests": 0,
+      "deployment": {
+        "blockNumber": "0x3e42c3d",
+        "transactionHash": "0x70f948a33e3af390cf53458b192ab6276ae5cac4a60414121bee8c40fcb8cafe",
+        "blockHash": "0x471325fb7ebaf5d11b14a161e9631d668c3d22530d844733e28f8644842f7d80",
+        "status": "0x1",
+        "createdInternally": true
+      }
+    },
+    "DepositEscrowDeployer": {
+      "address": "0x7E717703E2bf6cF0b7562DA8cdEb718e65A4f13f",
+      "runtimeSha256": "ccd96fccb3ae8bc1249d31add9ec4215f26955f510f29c434f26fdabbaac72b5",
+      "runtimeBytes": 23768,
+      "compilerProfile": "optimizer runs 1, viaIR true",
+      "executableBytes": 23715,
+      "maskedEmbeddedIpfsDigests": 1,
+      "deployment": {
+        "blockNumber": "0x3e08f9c",
+        "transactionHash": "0x625a10d214122da307b1b6ac555ad52b3bc7f4e78184a7586616093eac95ebd0",
+        "blockHash": "0x8ef52bbf9977da8bfac7356a35dc58bd0bb74585a9bd939eb3abb9094a4fe56b",
+        "status": "0x1",
+        "createdInternally": false
+      }
+    }
+  },
+  "transactions": {
+    "createLease (reported)": {
+      "hash": "0x70f948a33e3af390cf53458b192ab6276ae5cac4a60414121bee8c40fcb8cafe",
+      "from": "0x0582932f95ea2c070ffd87e612e585d083831a7a",
+      "to": "0x6ed49bf8ee5e9ba2cbe2977fe100342fe2999a7e",
+      "blockNumber": "0x3e42c3d",
+      "blockHash": "0x471325fb7ebaf5d11b14a161e9631d668c3d22530d844733e28f8644842f7d80",
+      "status": "0x1"
+    },
+    "fund (reported)": {
+      "hash": "0xf7e1cfef92efa9ba94fcffc94a7d66e5dde6c53ba19eedadce2ff1e1590286fa",
+      "from": "0x430ba461df226e0eb57e7c5783affecb1bf0b177",
+      "to": "0x80753a6dd914177fe8ad8ce28b325fe1b677c479",
+      "blockNumber": "0x3e4476f",
+      "blockHash": "0xc3ffcbe91b2942c910af1dd66408c820e0446fa68465781644ccb81e1842ae56",
+      "status": "0x1"
+    }
+  },
+  "lease": {
+    "leaseId": "0x1c8007824fec6be4b1d0ed65b9fe17cc9c3fdd2271a85972487f767de4cef3b6",
+    "tenant": "0x430ba461df226e0eb57e7c5783affecb1bf0b177",
+    "landlord": "0x0582932f95ea2c070ffd87e612e585d083831a7a",
+    "primaryResolver": "0x82a713979a3b7c06b472a2433fea734ab81d473c",
+    "fallbackResolver": "0x6df00b2201099e71e329b05eabdd6655d49ca87a",
+    "token": "0x36f5486adcfc3cd1076f2afafc720e24edff23b1",
+    "depositAmount": "1000000000",
+    "leaseEndAt": "1798675200",
+    "hardEndAt": "1801872000",
+    "timeoutPolicy": "0x5b5609df6ca8596e5bb132411f2507761242bcacb6fac4968a6841c4f9a0a365",
+    "termsHash": "0x0006587a2c9ea840274a851bebc012b87b015e664d5b12e5374e50c48a59c101",
+    "ruleVersion": "1",
+    "timingProfileId": "0x890a50b0a63c59b8a5d3bd712728250507cac49d7b380a98f8033077fc4b676f",
+    "serviceProfileId": "0x9d11cc21a087da5a3c031200ccd38abd11bc032de76f6b7eb472ea95df6a5467",
+    "serviceTermsHash": "0x12f2ea7fbf6f538d9dffa5bbca7cc7426360de59f594c9eac873a2c5a707279d",
+    "registryAddress": "0x61f13f0c0daac2802eed3cd4dd9fd67c93d0ce30",
+    "acceptDeadline": "1792108740",
+    "timingSeconds": [
+      "604800",
+      "604800",
+      "604800",
+      "259200",
+      "604800",
+      "259200",
+      "172800",
+      "604800",
+      "259200"
+    ],
+    "phase": 2,
+    "tenantAccepted": true,
+    "claimCount": "0",
+    "profileStatus": {
+      "exists": true,
+      "primaryAccepted": true,
+      "fallbackAccepted": true,
+      "closedForNewFunding": false
+    },
+    "accounting": {
+      "funded": "1000000000",
+      "unallocated": "1000000000",
+      "tenantCredit": "0",
+      "landlordCredit": "0",
+      "tenantWithdrawn": "0",
+      "landlordWithdrawn": "0",
+      "revision": "0"
+    },
+    "tokenBalanceBaseUnits": "1000000000",
+    "tokenDecimals": 6,
+    "mintOperator": "0x0582932f95ea2c070ffd87e612e585d083831a7a"
+  }
+}
