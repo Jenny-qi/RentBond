@@ -2,6 +2,8 @@
 
 2026-09-24 补充只读 Monad Testnet 证据检查脚本及用户观察记录（`scripts/verify-monad-evidence.mjs`、`deployments/monad-testnet-2026-09-24.observed.json`）。该工具仅验证链 ID、字节码存在和交易收据基本字段；当前环境 RPC 连接超时，尚不能作为 FR-03、SC-09 或 AT02 的链上通过证据，状态不变。
 
+2026-09-26 后续独立只读 RPC 已核对部署区块/回执、可执行字节码、ABI 摘要、事件、条款和入金余额，见 [证据报告](../tests/reports/2026-09-26-monad-chain-evidence.md)。这支持 FR-03、FR-07、SC-09、AT02 的**一次入金实例**，仍缺第二次入金拒绝、四账户/异常路径及完整结算，需求状态保持 In progress。
+
 FR/SC 来自 v1.2。合约切片已填写实现文件和本地测试证据；跨层部分继续保留 In progress/Not started。Verified 仍需要固定 commit、独立复核、适用环境与完整验收，不能把本地单元测试当成发布完成。
 
 2026-09-27 D 后续复核涵盖 FR-10/11/12/17/18/21/24/28/33/34、SC-04 与 AT27/33/43/44；修复、回归命令、真实结果和未完成发布要求见 [D 逐项复核](../tests/reports/2026-09-27-member-d-review.md)。下表 D:96dcffc 为初始实现基线，不能忽略这份后续修复记录。
