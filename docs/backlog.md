@@ -27,6 +27,8 @@
 
 **RB-08a 账户**：C 实测 Mera 创建、恢复原地址、取消签署；D 提供 nonce/会话与受限 Gas。两者分别交付后共同跑 TS05，不能以外部钱包工程入口代替 P0。
 
+2026-09-26 D 已交付 RB-08 后端及 RB-09/10/11/12 的 D 接口：SIWE、草稿/邀请、不可覆盖材料、案件 ACL、私有声明、ZIP 导出、测试补给与事件/任务数据层。参见 [D 交接](member-d-handoff.md) 和 [执行证据](../tests/reports/2026-09-26-member-d.md)。C 的真机恢复/页面接线与 E 的完整 Worker/独立复核仍是各自待办，不把本地后端切片写成整个 RB-08 完成。
+
 **RB-06a 超时路径**：B 覆盖 primaryDeadline/fallbackDeadline/timeoutAt/hardEndAt 边界；E 停 Worker 再公开推进，验证不会因为迟调用延长期限。
 
 业务非目标：本启动阶段不增加 Sponsor 功能、不接真实资产、不实现 P1 邮件。P1 排在完整 P0 后。

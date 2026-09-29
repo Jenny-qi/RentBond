@@ -3,19 +3,20 @@
  * event idempotency/rollback, RPC fault, Worker stop/start.
  *
  * E owns; D provides permission test cases.
- * These are NOT runnable yet — run after RB-08 / RB-12 complete.
+ * D's IT-01/02/07/08 are runnable; E's IT-03/04/05/06 await RB-12.
  *
  * @typedef {{ id: string, description: string, requires: string[], run: () => Promise<{passed: boolean, output: string}> }} IntegrationTest
  */
 
 /** @type {IntegrationTest[]} */
+import { memberDTest } from './member-d.mjs';
 export const integrationTests = [
   {
     id: 'IT-01',
     description: 'SIWE nonce replay is rejected',
     requires: ['RB-08'],
     async run() {
-      return { passed: false, output: 'Not implemented — RB-08 required' };
+      return memberDTest('auth.test.mjs', 'SIWE: real EOA');
     },
   },
   {
@@ -23,7 +24,7 @@ export const integrationTests = [
     description: "Cross-lease ACL: tenant cannot access another lease's documents",
     requires: ['RB-08'],
     async run() {
-      return { passed: false, output: 'Not implemented — RB-08 required' };
+      return memberDTest('materials.test.mjs', 'cross-lease documents');
     },
   },
   {
@@ -63,7 +64,7 @@ export const integrationTests = [
     description: 'Test gas refills respect quota and do not exceed limits',
     requires: ['RB-08'],
     async run() {
-      return { passed: false, output: 'Not implemented — RB-08 required' };
+      return memberDTest('cases-gas.test.mjs', 'AT43:');
     },
   },
   {
@@ -71,7 +72,7 @@ export const integrationTests = [
     description: 'SIWE session expires and forces re-auth after 24h',
     requires: ['RB-08'],
     async run() {
-      return { passed: false, output: 'Not implemented — RB-08 required' };
+      return memberDTest('auth.test.mjs', 'idle and absolute');
     },
   },
 ];

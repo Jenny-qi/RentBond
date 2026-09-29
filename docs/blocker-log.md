@@ -18,9 +18,20 @@
 
 | ID | 状态 | 复现与影响 | 负责人 / 下一步 / 关闭证据 |
 | --- | --- | --- | --- |
-| BL11 | In progress | 已有绑定源码、ABI、部署地址/区块、回执及入金状态的只读证据；仍缺确认策略、独立复核、结算/领取和完整跨层验收，未发布 `readyForFrontend` manifest | B/E → C；完成 TS01/02、第二人复核及跨层验收后再冻结正式 manifest，前端不能声称领取完成 |
-| BL08 | Open | D 的 API/server 仅 README，无可用 SIWE、草稿、邀请、私有材料、导出和 Gas 路由；真实 P04/P08/资料/导出尚无法联调 | D → C；冻结 schema/示例/错误/权限，C 接入并与 E 跑 AT |
+| BL11 | Open | 固定构建 ABI 已导出，但正式网络部署 manifest（源码、地址、区块、确认策略）仍未核验；前端不能声称真实入金或领取 | B/E → C；核验并交付部署 manifest 后接真实读写，附跨层及链上证据 |
+| BL08 | Closed (D local implementation) | D 已提供 SIWE、草稿、邀请、私有材料、导出、Gas、schema 与权限测试；C 仍需把页面接入真实接口 | D → C/E；[接口](interfaces/api.md)、[交接](member-d-handoff.md)、[本地证据](../tests/reports/2026-09-26-member-d.md) |
 | BL09 | In progress | Mera 0.2.0 已接地址试验并通过替身单测；无真实手机/桌面 PRF、同址恢复和签名设备证据 | C/D/E；本人在目标设备/HTTPS RP 域名完成 TS05，不能以模拟通过关闭 |
 | BL10 | Not started | C 自身剩余：P08 完整 CHECKOUT、上传版本交互、真实交易恢复/替换/流水与导出接线；不是所有缺项都属于外部阻塞 | C；按 [逐项交接](member-c-handoff.md) 在相应接口准备后完成并验证 |
 
 SDK 首次安装发生 ECONNRESET，重试后成功；该下载故障已解决。未联系外部成员，未上传或部署。
+
+## 2026-09-26 成员 D 检查
+
+- 已生成与现有源码一致的 ABI，并通过真实本地 EVM 联调。BL11 的公网部署/确认策略仍待 B/E，不能以本地 chainId=10143 的测试替代 Monad。
+- BL09 真机 PRF 与跨设备恢复仍待 C/本人设备；D 已验证 Mera 签名适配与 SIWE 同址权限恢复。
+- Supabase REST 适配和默认拒绝策略已交付，本次没有开通托管项目。开发使用本地私有存储或自托管服务即可。
+- 现有 EvidenceAcknowledged 事件缺少 bundleId/commitment；D 已用精确 getEvidence 读取避免误归属，B/E 后续版本评审该事件完整性。
+
+## 2026-09-27 D 复核
+
+D 分支已合入 main d26ddab 的 B/E 变更，修复与补充内容见 [复核报告](../tests/reports/2026-09-27-member-d-review.md)。D 分支推送不等于合并 main。PR #6 提供的公开测试网核验证据仍按其 PR 范围审查，不能推导出 Web/API/Worker 已完成公网联调。正式开放公众上传前，PRD 9.4 要求的文件扫描与隔离仍是发布阻断项；当前类型/大小/摘要及下载安全头不能替代扫描。

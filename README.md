@@ -6,7 +6,7 @@
 >
 > RentBond helps cross-border renters and small landlords settle rental deposits remotely. Once the claim window closes, undisputed funds become claimable while disputed deductions follow the agreed resolution process.
 
-**当前状态：合约模块已有本地实现和 40 个通过的 Foundry 测试，固定构建 ABI 已导出；网页已有 P01–P12 页面、部分模拟交互和独立 Mera 账户试验。** Monad 测试网手工部署、一次创建与一次入金已获得[只读链上证据](tests/reports/2026-09-26-monad-chain-evidence.md)，但尚未经过第二人复核，不能作为正式发布清单或完整资金闭环。后端、Worker、真实账户/资金联调和跨层验收仍未完成。成员 C 的完成范围与缺口见 [交接记录](docs/member-c-handoff.md)。
+**当前状态：合约模块已有本地实现和 40 个通过的 Foundry 测试，固定构建 ABI 已导出；网页已有 P01–P12 页面、部分模拟交互和独立 Mera 账户试验；D 的后端、私有存储、数据库、导出与 Gas 补给已有本地 API/合约联调证据。** 主分支已记录用户报告的 Monad 测试网手工部署及入金，独立核验材料见相应部署交接及待审 PR。完整 Worker、真实设备恢复和页面资金联调尚未验收。文档和本地检查不能替代独立审查或真实链上证据。范围与缺口见 [C 交接](docs/member-c-handoff.md) 和 [D 交接](docs/member-d-handoff.md)。
 
 ## 产品面向谁
 

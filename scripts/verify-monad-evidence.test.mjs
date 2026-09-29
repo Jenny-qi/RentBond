@@ -3,6 +3,7 @@ import { spawn } from "node:child_process";
 import { createServer } from "node:http";
 import { readFile } from "node:fs/promises";
 import { test } from "node:test";
+import { fileURLToPath } from "node:url";
 
 const recordPath = new URL("../deployments/monad-testnet-2026-09-24.observed.json", import.meta.url);
 const scriptPath = new URL("./verify-monad-evidence.mjs", import.meta.url);
@@ -32,7 +33,8 @@ async function check(overrides = {}) {
   });
   await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
   try {
-    const child = spawn(process.execPath, [scriptPath.pathname, recordPath.pathname], {
+    const child = spawn(process.execPath, [fileURLToPath(scriptPath), fileURLToPath(recordPath)], {
+      windowsHide: true,
       env: { ...process.env, RENTBOND_READONLY_RPC_URL: `http://127.0.0.1:${server.address().port}` },
     });
     let output = "";

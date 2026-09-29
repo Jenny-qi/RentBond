@@ -9,3 +9,4 @@
 *.sh text eol=lf
 *.png binary
 *.docx binary
+infra/migrations/*.sql text eol=lf
