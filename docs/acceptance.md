@@ -1,5 +1,7 @@
 # 验收清单
 
+2026-09-30 增量：新增 DEMO_SHORT **模板与脚本**、1 项资金分配/领取 fuzz（256 组输入）和 Worker 事件区块/UTC 截止区分；四项 D 权限集成用例及一项调度回归已接入运行器。完整 E2E 未实现时现明确退出非零。模板没有链上地址或交易，新增本地测试不代替 TS01/02、AT12/16/23/26 的测试网操作及独立评审。
+
 2026-09-29 C 实施：P01–P12 切换真实 SIWE/API/ABI，当前可见界面统一为英文；金额、期限和权限规则不变。代码及本地验证汇总在 [Web README](../apps/web/README.md)，不再另建交接/群汇报。新增前端适配器测试与真实本地 EVM 读取验证；AT03/05—26/33/35/41—44/46 的页面接线已有，TS05 真机、完整浏览器角色流程和 Monad 测试网证据仍待完成，本次不标记 Verified。
 
 2026-09-29 阶段复查：当前 HEAD 为 `0dcc55f`；阶段复查 记录跨层运行实际为 0 通过、16 跳过且返回成功，以及本机依赖缺失导致的 Web 检查失败。历史模块通过不等于当前跨层通过；AT12/23/26、AT29—31/47/51、TS04/05 等仍待完整证据，本次不提升验收状态。
@@ -14,8 +16,8 @@
 
 | ID | 试验 | 负责人 | 状态 | 证据 |
 | --- | --- | --- | --- | --- |
-| TS01 | 网络、四账户、错误链和拒签 | B/E | Not started | — |
-| TS02 | 最小真实资金闭环与权限 | B/E | Not started | — |
+| TS01 | 网络、四账户、错误链和拒签 | B/E | In progress | [链 ID 与角色只读快照](../deployments/monad-testnet-2026-09-26.chain-evidence.json)；拒签/错误链/越权 Not run |
+| TS02 | 最小真实资金闭环与权限 | B/E | In progress | [创建与入金快照](../deployments/monad-testnet-2026-09-26.chain-evidence.json)；分配/领取 Not run |
 | TS03 | SIWE 与私有文件越权拒绝 | D/C | In progress | [D local slice](../tests/reports/2026-09-26-member-d.md) |
 | TS04 | 独立成员从新 clone 完整运行 | E | Not started | — |
 | TS05 | passkey 同地址恢复、费用、取消不执行 | C/D | In progress | [C local slice](../tests/reports/2026-09-25-member-c.md) (SDK unit only; real device Not run); [D local slice](../tests/reports/2026-09-26-member-d.md) |

@@ -37,18 +37,17 @@ jobs:
 
   typecheck:
     name: Type check
-    if: ${{ false }} # Enable with RB-02 when app dependencies and lockfile exist.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-      - run: pnpm install --frozen-lockfile
+      - run: npm ci --prefix apps/web --no-audit --no-fund
         env:
           NPM_CONFIG_AUDIT: false
-      - run: pnpm typecheck
-        # Implemented by RB-02; until then prints a clear not-implemented error
+      - run: npm ci --prefix packages/shared --no-audit --no-fund
+      - run: npm run typecheck --prefix apps/web
 
   test-contracts:
     name: Contract tests
@@ -64,19 +63,19 @@ jobs:
 
   test-integration:
     name: Integration tests
-    if: ${{ false }} # Enable with RB-12.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-      - run: node tests/runner.mjs integration
-        # Runs after RB-12
+      - run: npm ci --prefix apps/web --no-audit --no-fund
+      - run: npm ci --prefix packages/shared --no-audit --no-fund
+      - run: npm run backend:abi --prefix apps/web
+      - run: node tests/runner.mjs integration --only=IT-01,IT-02,IT-07,IT-08,IT-09
 
   test-e2e:
     name: E2E tests
-    if: ${{ false }} # Enable with RB-12/RB-13.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -84,4 +83,4 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
       - run: node tests/runner.mjs e2e
-        # Runs after RB-12/RB-13
+        # Red until E2E-01–08 are implemented; skipped is never a pass.

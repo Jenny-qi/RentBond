@@ -1,0 +1,85 @@
+{
+  "suite": "e2e",
+  "generatedAt": "2026-09-30T10:52:08.946Z",
+  "total": 8,
+  "passed": 0,
+  "failed": 0,
+  "skipped": 8,
+  "complete": false,
+  "results": [
+    {
+      "id": "E2E-01",
+      "description": "Full flow: invite → fund → checkout → claims → 700/100/200 split → withdraw",
+      "status": "skipped",
+      "requires": [
+        "RB-12"
+      ],
+      "completedAt": "2026-09-30T10:52:08.946Z"
+    },
+    {
+      "id": "E2E-02",
+      "description": "Partial dispute resolved: 200 → 50/150 final allocation",
+      "status": "skipped",
+      "requires": [
+        "RB-12",
+        "RB-07"
+      ],
+      "completedAt": "2026-09-30T10:52:08.946Z"
+    },
+    {
+      "id": "E2E-03",
+      "description": "Service timeout: 900/100 exit policy",
+      "status": "skipped",
+      "requires": [
+        "RB-12",
+        "RB-06"
+      ],
+      "completedAt": "2026-09-30T10:52:08.946Z"
+    },
+    {
+      "id": "E2E-04",
+      "description": "Cancel before fund: no state change, no transactions",
+      "status": "skipped",
+      "requires": [
+        "RB-09"
+      ],
+      "completedAt": "2026-09-30T10:52:08.946Z"
+    },
+    {
+      "id": "E2E-05",
+      "description": "Refuse to sign fund: transaction not submitted",
+      "status": "skipped",
+      "requires": [
+        "RB-09"
+      ],
+      "completedAt": "2026-09-30T10:52:08.946Z"
+    },
+    {
+      "id": "E2E-06",
+      "description": "Recover account with same address after session loss",
+      "status": "skipped",
+      "requires": [
+        "RB-08"
+      ],
+      "completedAt": "2026-09-30T10:52:08.946Z"
+    },
+    {
+      "id": "E2E-07",
+      "description": "Duplicate withdraw call: second call fails silently (no double payment)",
+      "status": "skipped",
+      "requires": [
+        "RB-12"
+      ],
+      "completedAt": "2026-09-30T10:52:08.946Z"
+    },
+    {
+      "id": "E2E-08",
+      "description": "AT51: Full stop of all services, recover from chain state with third-party gas",
+      "status": "skipped",
+      "requires": [
+        "RB-13"
+      ],
+      "completedAt": "2026-09-30T10:52:08.946Z"
+    }
+  ]
+}

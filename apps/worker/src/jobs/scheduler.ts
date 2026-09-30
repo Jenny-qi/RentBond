@@ -13,13 +13,15 @@ import { JOB_TYPE, type Job, type JobType } from './index.js';
 
 /**
  * Job trigger — derived from a specific on-chain event.
- * The block number of that event is the authoritative trigger.
+ * The confirmed event block proves provenance; deadlines are UTC seconds.
  */
 export interface JobTrigger {
   type: JobType;
   leaseAddress: Address;
   triggerBlock: bigint;
-  triggerTimestamp: number; // wall-clock for logging only
+  triggerTimestamp: number;
+  dueAt: bigint;
+  caseId?: bigint;
 }
 
 /**
@@ -30,74 +32,53 @@ export interface JobTrigger {
  */
 export function decideJobTrigger(
   event: EscrowEventArgs,
+  leaseAddress: Address,
   triggerBlock: bigint,
   triggerTimestamp: number
 ): JobTrigger | null {
+  if (!/^0x[0-9a-fA-F]{40}$/.test(leaseAddress)) throw new Error('A confirmed escrow address is required');
+  if (triggerBlock < 0n || !Number.isSafeInteger(triggerTimestamp) || triggerTimestamp <= 0) {
+    throw new Error('A confirmed event block and UTC timestamp are required');
+  }
   switch (event.name) {
     case 'ClaimsOpened': {
       // Claims window just opened — schedule CLOSE_CLAIMS for when it expires
       const claimDeadline = event.args.claimDeadline;
-      // The Worker polls and calls closeClaims() when block >= claimDeadline.
-      // We create the job now so it can be picked up at the right time.
+      if (claimDeadline <= 0n) throw new Error('Invalid claim deadline');
       return {
         type: JOB_TYPE.CLOSE_CLAIMS,
-        leaseAddress: '0x' as Address, // resolved from leaseId → escrow mapping
-        triggerBlock: claimDeadline,
+        leaseAddress,
+        triggerBlock,
         triggerTimestamp,
-      };
-    }
-
-    case 'CaseOpened': {
-      // A case was opened — schedule FINALIZE_PRIMARY for primary deadline
-      // (primaryDeadline is in the case, not the event — fetched from contract)
-      return {
-        type: JOB_TYPE.FINALIZE_PRIMARY,
-        leaseAddress: '0x' as Address,
-        triggerBlock: 0n, // resolved from on-chain case data
-        triggerTimestamp,
+        dueAt: claimDeadline,
       };
     }
 
     case 'CaseEscalated': {
-      // Primary decision was challenged → schedule FINALIZE_FALLBACK
+      // No finalizeFallback ABI. F may resolve; after the deadline anyone
+      // can markServiceTimeout(caseId), after re-reading on-chain case state.
       const fallbackDeadline = event.args.fallbackDeadline;
+      if (fallbackDeadline <= 0n) throw new Error('Invalid fallback deadline');
       return {
-        type: JOB_TYPE.FINALIZE_FALLBACK,
-        leaseAddress: '0x' as Address,
-        triggerBlock: fallbackDeadline,
+        type: JOB_TYPE.MARK_SERVICE_TIMEOUT,
+        leaseAddress,
+        caseId: event.args.caseId,
+        triggerBlock,
         triggerTimestamp,
-      };
-    }
-
-    case 'DecisionFinalized': {
-      // A decision was finalized → schedule WITHDRAW_UNALLOCATED
-      // (only meaningful if there's still unallocated after settlement)
-      return {
-        type: JOB_TYPE.WITHDRAW_UNALLOCATED,
-        leaseAddress: '0x' as Address,
-        triggerBlock: triggerBlock + 1n,
-        triggerTimestamp,
+        dueAt: fallbackDeadline,
       };
     }
 
     case 'ServiceTimedOut': {
-      // Service timeout triggered → schedule FINALIZE_TIMEOUT
       const timeoutAt = event.args.timeoutAt;
+      if (timeoutAt <= 0n) throw new Error('Invalid timeout deadline');
       return {
         type: JOB_TYPE.FINALIZE_TIMEOUT,
-        leaseAddress: '0x' as Address,
-        triggerBlock: timeoutAt,
+        leaseAddress,
+        caseId: event.args.caseId,
+        triggerBlock,
         triggerTimestamp,
-      };
-    }
-
-    case 'EscrowExpired': {
-      // Hard end reached → schedule EXPIRE_ESCROW
-      return {
-        type: JOB_TYPE.EXPIRE_ESCROW,
-        leaseAddress: '0x' as Address,
-        triggerBlock: triggerBlock + 1n,
-        triggerTimestamp,
+        dueAt: timeoutAt,
       };
     }
 
@@ -111,8 +92,8 @@ export function decideJobTrigger(
  * Generate a deterministic job ID from lease and type.
  * Format: "{leaseAddress}/{jobType}"
  */
-export function jobId(leaseAddress: Address, type: JobType): string {
-  return `${leaseAddress}/${type}`;
+export function jobId(leaseAddress: Address, type: JobType, caseId?: bigint): string {
+  return `${leaseAddress.toLowerCase()}/${type}/${caseId === undefined ? 'lease' : caseId.toString()}`;
 }
 
 /**
@@ -121,11 +102,13 @@ export function jobId(leaseAddress: Address, type: JobType): string {
  */
 export function createJob(trigger: JobTrigger): Job {
   return {
-    id: jobId(trigger.leaseAddress, trigger.type),
+    id: jobId(trigger.leaseAddress, trigger.type, trigger.caseId),
     type: trigger.type,
     leaseAddress: trigger.leaseAddress,
     triggerBlock: trigger.triggerBlock,
     triggerTimestamp: trigger.triggerTimestamp,
+    dueAt: trigger.dueAt,
+    caseId: trigger.caseId,
     status: 'PENDING',
     attempts: 0,
     maxAttempts: 3,

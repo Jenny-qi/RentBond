@@ -9,12 +9,12 @@
  */
 
 /** @type {IntegrationTest[]} */
-import { memberDTest } from './member-d.mjs';
+import { memberDTest, workerSchedulerTest } from './member-d.mjs';
 export const integrationTests = [
   {
     id: 'IT-01',
     description: 'SIWE nonce replay is rejected',
-    requires: ['RB-08'],
+    requires: [],
     async run() {
       return memberDTest('auth.test.mjs', 'SIWE: real EOA');
     },
@@ -22,7 +22,7 @@ export const integrationTests = [
   {
     id: 'IT-02',
     description: "Cross-lease ACL: tenant cannot access another lease's documents",
-    requires: ['RB-08'],
+    requires: [],
     async run() {
       return memberDTest('materials.test.mjs', 'cross-lease documents');
     },
@@ -62,7 +62,7 @@ export const integrationTests = [
   {
     id: 'IT-07',
     description: 'Test gas refills respect quota and do not exceed limits',
-    requires: ['RB-08'],
+    requires: [],
     async run() {
       return memberDTest('cases-gas.test.mjs', 'AT43:');
     },
@@ -70,9 +70,17 @@ export const integrationTests = [
   {
     id: 'IT-08',
     description: 'SIWE session expires and forces re-auth after 24h',
-    requires: ['RB-08'],
+    requires: [],
     async run() {
       return memberDTest('auth.test.mjs', 'idle and absolute');
+    },
+  },
+  {
+    id: 'IT-09',
+    description: 'Worker uses confirmed event block and UTC deadline separately',
+    requires: [],
+    async run() {
+      return workerSchedulerTest();
     },
   },
 ];

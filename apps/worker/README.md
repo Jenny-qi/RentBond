@@ -15,7 +15,7 @@ apps/worker/src/
 │   ├── projection.ts# 事件→LeaseStatus 投影（Phase 映射）
 │   ├── contracts.ts # Escrow/Factory 函数调用桩
 │   └── providers.ts # viem RPC 客户端配置
-├── jobs/            # 截止/到期任务（CLOSE_CLAIMS、FINALIZE_PRIMARY 等）
+├── jobs/            # 截止/到期任务（CLOSE_CLAIMS、MARK_SERVICE_TIMEOUT 等）
 │   └── scheduler.ts  # 事件→JobTrigger 决策，decideJobTrigger/createJob
 ├── notifications/    # 邮件/SMS 提醒占位（P1）
 └── exports/         # 异步导出任务消费
@@ -66,25 +66,21 @@ node apps/worker/src/main.ts   # RB-12 后可用（Node 24 原生支持 TS）
 
 ## 事件→JobTrigger
 
-| 触发事件 | 创建的 Job | triggerBlock 来源 |
+| 触发事件 | 创建的 Job | 到期 UTC 秒数 |
 |---------|-----------|-----------------|
 | `ClaimsOpened` | `CLOSE_CLAIMS` | `claimDeadline` |
-| `CaseOpened` | `FINALIZE_PRIMARY` | 从链上案件数据读取 |
-| `CaseEscalated` | `FINALIZE_FALLBACK` | `fallbackDeadline` |
-| `DecisionFinalized` | `WITHDRAW_UNALLOCATED` | `triggerBlock + 1` |
+| `CaseEscalated` | `MARK_SERVICE_TIMEOUT` | `fallbackDeadline` |
 | `ServiceTimedOut` | `FINALIZE_TIMEOUT` | `timeoutAt` |
-| `EscrowExpired` | `EXPIRE_ESCROW` | `triggerBlock + 1` |
+
+`triggerBlock` 只保存该事件的已确认区块号，不能与 `dueAt` 比较。Worker 执行前还须以已确认区块时间和合约阶段重新检查资格。`CaseOpened` 不含 primaryDeadline；没有读出案件状态前不得猜测。`DecisionFinalized` 和 `EscrowExpired` 已是完成事件，不会触发不存在的 `withdrawUnallocated` 或重复到期交易。到期主结果及 hardEndAt 仍需单独读取合约排程实现。
 
 ## 任务类型（jobs）
 
 | 类型 | 触发条件 | 说明 |
 |------|----------|------|
 | `CLOSE_CLAIMS` | claimDeadline 到期 | 一次性关闭窗口，分配已认可/未申索 |
-| `FINALIZE_PRIMARY` | primaryDeadline 到期 | 无挑战则生效；被挑战则失效 |
-| `FINALIZE_FALLBACK` | fallbackDeadline 到期 | 备用处理人结果生效 |
+| `MARK_SERVICE_TIMEOUT` | fallbackDeadline 到期 | 未有备用结果时调用 `markServiceTimeout(caseId)` |
 | `FINALIZE_TIMEOUT` | timeoutAt 到期 | 超时退出，争议款归租客 |
-| `EXPIRE_ESCROW` | hardEndAt 到期 | 最终退出，落实已成立金额权利 |
-| `WITHDRAW_UNALLOCATED` | 全部结算后 | 将剩余 U 退还租客 |
 
 ## 实现状态
 
@@ -95,7 +91,7 @@ node apps/worker/src/main.ts   # RB-12 后可用（Node 24 原生支持 TS）
 | `indexer/projection.ts` | ✅ Phase 映射 | 合约 Phase→LeaseStatus，含 phaseToStatus 辅助 |
 | `indexer/contracts.ts` | ⚠️ 调用桩 | 7 个 Worker 操作（closeClaims 等），RB-12 替换为 viem |
 | `indexer/providers.ts` | ⚠️ 客户端桩 | viem public/wallet client，RB-12 实现 |
-| `jobs/scheduler.ts` | ✅ 调度逻辑 | decideJobTrigger/createJob，6 种事件触发器 |
+| `jobs/scheduler.ts` | ⚠️ 候选调度 | 3 种有明确事件时间的候选任务；尚未接真实 RPC/持久化与执行 |
 | `jobs/` | ⚠️ 执行逻辑 | Job/JobType/JobStatus 已定义，executeJob RB-12 |
 | `notifications/` | ⚠️ 占位 | P1 |
 | `exports/` | ⚠️ 占位 | RB-12 |

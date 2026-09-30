@@ -1,13 +1,13 @@
 import { spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
-export function memberDTest(file, pattern) {
+function runNodeTest(file, pattern, cwd) {
   return new Promise((resolve) => {
     const child = spawn(
       process.execPath,
-      ["--test", "--test-name-pattern=" + pattern, "src/server/tests/" + file],
+      ["--test", ...(pattern ? ["--test-name-pattern=" + pattern] : []), file],
       {
-        cwd: fileURLToPath(new URL("../../apps/web/", import.meta.url)),
+        cwd,
         windowsHide: true,
         stdio: ["ignore", "pipe", "pipe"],
       },
@@ -22,6 +22,17 @@ export function memberDTest(file, pattern) {
     child.on("error", (error) =>
       resolve({ passed: false, output: error.message }),
     );
-    child.on("close", (code) => resolve({ passed: code === 0, output }));
+    child.on("close", (code) => {
+      const match = output.match(/^(?:#|ℹ)\s*pass\s+(\d+)\s*$/m);
+      resolve({ passed: code === 0 && match !== null && Number(match[1]) > 0, output });
+    });
   });
+}
+
+export function memberDTest(file, pattern) {
+  return runNodeTest("src/server/tests/" + file, pattern, fileURLToPath(new URL("../../apps/web/", import.meta.url)));
+}
+
+export function workerSchedulerTest() {
+  return runNodeTest("tests/integration/scheduler.test.mjs", null, fileURLToPath(new URL("../../", import.meta.url)));
 }

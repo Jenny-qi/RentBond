@@ -28,7 +28,15 @@ const suites = {
   all: [...integrationTests, ...e2eTests],
 };
 
-const tests = suites[suiteName] ?? suites.all;
+if (!(suiteName in suites)) {
+  throw new Error(`Unknown suite: ${suiteName}`);
+}
+const only = process.argv.find((arg) => arg.startsWith('--only='));
+const selectedIds = only ? new Set(only.slice('--only='.length).split(',')) : null;
+const tests = selectedIds ? suites[suiteName].filter((test) => selectedIds.has(test.id)) : suites[suiteName];
+if (tests.length === 0 || (selectedIds && tests.length !== selectedIds.size)) {
+  throw new Error(`No matching tests for ${suiteName}: ${only ?? '(empty suite)'}`);
+}
 const date = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
 const reportPath = join('tests', 'reports', `${suiteName}-${date}.json`);
 
@@ -49,7 +57,7 @@ for (const test of tests) {
 
   if (requires.length > 0) {
     console.log(`SKIP ${id} — requires: ${requires.join(', ')}`);
-    results.push({ id, description, status: 'skipped', completedAt: new Date().toISOString() });
+    results.push({ id, description, status: 'skipped', requires, completedAt: new Date().toISOString() });
     skipped++;
     continue;
   }
@@ -89,6 +97,7 @@ const report = {
   passed,
   failed,
   skipped,
+  complete: failed === 0 && skipped === 0,
   results,
 };
 
@@ -100,4 +109,5 @@ console.log(`Failed : ${failed}`);
 console.log(`Skipped: ${skipped}`);
 console.log(`Report : ${reportPath}`);
 
-process.exitCode = failed > 0 ? 1 : 0;
+if (skipped > 0) console.error(`INCOMPLETE: ${skipped} unimplemented test(s) were skipped.`);
+process.exitCode = failed > 0 || skipped > 0 ? 1 : 0;
