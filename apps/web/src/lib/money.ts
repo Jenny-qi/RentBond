@@ -8,7 +8,7 @@ export const STEP = 10_000n;
 export const MIN_DEPOSIT = 1;
 export const MAX_DEPOSIT = 10_000;
 export const ASSET_SYMBOL = 'MockUSD';
-export const TESTNET_BANNER = 'Monad 测试网 · 测试资产，无现金价值';
+export const TESTNET_BANNER = 'Monad testnet · Test assets have no cash value';
 
 export function parseBaseUnits(units: string): bigint {
   if (!/^\d+$/.test(units)) throw new Error(`Invalid base units: ${units}`);
@@ -39,17 +39,17 @@ export function formatMockUsdPlain(units: string | bigint): string {
 export function parseUserAmount(input: string): { ok: true; baseUnits: string } | { ok: false; error: string } {
   const trimmed = input.trim();
   if (!/^\d+(\.\d{1,2})?$/.test(trimmed)) {
-    return { ok: false, error: '金额最多 2 位小数，且须为数字。' };
+    return { ok: false, error: 'Enter a number with at most 2 decimal places.' };
   }
   const [whole, fraction = ''] = trimmed.split('.');
   const padded = (fraction + '0'.repeat(DECIMALS)).slice(0, DECIMALS);
   const units = BigInt(whole) * 10n ** BigInt(DECIMALS) + BigInt(padded);
   const minUnits = 10n ** BigInt(DECIMALS); // 1.00 MockUSD for deposits
   if (units < minUnits || units > 10_000n * 10n ** BigInt(DECIMALS)) {
-    return { ok: false, error: `押金须在 ${MIN_DEPOSIT}–${MAX_DEPOSIT} ${ASSET_SYMBOL}。` };
+    return { ok: false, error: `Deposit must be between ${MIN_DEPOSIT}–${MAX_DEPOSIT} ${ASSET_SYMBOL}.` };
   }
   if (units % STEP !== 0n) {
-    return { ok: false, error: '最小业务单位为 0.01 MockUSD。' };
+    return { ok: false, error: 'Amounts must use increments of 0.01 MockUSD.' };
   }
   return { ok: true, baseUnits: units.toString() };
 }
@@ -58,16 +58,16 @@ export function parseUserAmount(input: string): { ok: true; baseUnits: string } 
 export function parseShareAmount(input: string, maxBaseUnits: string): { ok: true; baseUnits: string } | { ok: false; error: string } {
   const trimmed = input.trim();
   if (!/^\d+(\.\d{1,2})?$/.test(trimmed)) {
-    return { ok: false, error: '金额最多 2 位小数，且须为数字。' };
+    return { ok: false, error: 'Enter a number with at most 2 decimal places.' };
   }
   const [whole, fraction = ''] = trimmed.split('.');
   const padded = (fraction + '0'.repeat(DECIMALS)).slice(0, DECIMALS);
   const units = BigInt(whole) * 10n ** BigInt(DECIMALS) + BigInt(padded);
   if (units < 0n || units > parseBaseUnits(maxBaseUnits)) {
-    return { ok: false, error: `金额须在 0 与上限 ${formatMockUsd(maxBaseUnits)} 之间。` };
+    return { ok: false, error: `Amount must be between 0 and ${formatMockUsd(maxBaseUnits)}.` };
   }
   if (units % STEP !== 0n) {
-    return { ok: false, error: '最小业务单位为 0.01 MockUSD。' };
+    return { ok: false, error: 'Amounts must use increments of 0.01 MockUSD.' };
   }
   return { ok: true, baseUnits: units.toString() };
 }

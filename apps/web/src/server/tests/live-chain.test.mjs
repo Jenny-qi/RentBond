@@ -19,6 +19,7 @@ import {
 import { TIMEOUT_POLICY, checkedProfile } from "../leases.ts";
 import { syncLease } from "../projections.ts";
 import { runGasJob, runExportJob } from "../jobs.ts";
+import { readLease as readFrontendLease } from "../../features/live/client.ts";
 
 test(
   "real local EVM: service, lease, funding, exact evidence acknowledgement, claims, fallback ACL, export and sponsor transfer",
@@ -209,6 +210,10 @@ test(
     });
     assert.equal(attached.status, 200, JSON.stringify(attached.data));
     const escrow = attached.data.contractAddress;
+    const frontendConfig = { mode: 'local', chainId: 10143, rpcUrl: rpc, factory, confirmations: 1 };
+    const frontendBefore = await readFrontendLease(frontendConfig, escrow, prepare.data.commitment);
+    assert.equal(frontendBefore.accounting.fundedAmount, '0');
+    await assert.rejects(readFrontendLease(frontendConfig, escrow, hash(999)), /terms commitment mismatch/);
     const tokenAbi = compiled["src/MockUSD.sol"].MockUSD.abi;
     await write(tw, escrow, escrowAbi, "acceptTerms", [
       prepare.data.commitment,
@@ -220,6 +225,9 @@ test(
     await write(tw, token, tokenAbi, "approve", [escrow, 1000000000n]);
     const before = await app.chain.lease(escrow);
     assert.equal(before.accounting.fundedAmount, "0", "approve is not funding");
+    const frontendApproved = await readFrontendLease(frontendConfig, escrow, prepare.data.commitment);
+    assert.equal(frontendApproved.allowance, '1000000000');
+    assert.equal(frontendApproved.accounting.fundedAmount, '0');
     const fundingTx = await write(tw, escrow, escrowAbi, "fund", [1000000000n]);
     await syncLease(app, leaseId);
     const funded = await tenant.request("/api/transactions/" + fundingTx);
@@ -376,6 +384,9 @@ test(
       (await fallback.request("/api/cases/" + caseRow.id)).status,
       200,
     );
+    const frontendCase = (await fallback.request('/api/cases/' + caseRow.id)).data;
+    assert.equal(frontendCase.contractAddress.toLowerCase(), escrow.toLowerCase());
+    assert.equal(frontendCase.role, 'F');
     const access = await fallback.request(
       "/api/documents/" +
         photo.documentId +
@@ -487,6 +498,10 @@ test(
     );
     await syncLease(app, leaseId);
     const finished = await tenant.request("/api/leases/" + leaseId);
+    const frontendFinished = await readFrontendLease(frontendConfig, escrow, prepare.data.commitment);
+    assert.equal(frontendFinished.accounting.tenantWithdrawn, '950000000');
+    assert.equal(frontendFinished.accounting.landlordWithdrawn, '50000000');
+    assert.equal(frontendFinished.accounting.unallocated, '0');
     assert.equal(
       finished.data.projection.accounting.tenantWithdrawn,
       "950000000",

@@ -80,4 +80,6 @@ POST /api/leases/:id/cleanup-request 为 {confirm:true}。返回 requested:true�
 
 更多运行参数、E 的同步与队列接口见 [D 交接](../member-d-handoff.md)。金额真相始终来自合约；C 仍负责每次签名的明确确认和真实页面接线。
 
+2026-09-29 C 消费接口：`GET /api/cases/:id` 在既有案件授权检查后增加 `contractAddress`、`role`，供当前 R/F 页面核对链上合约和身份；未新增写权限或扩大材料范围。C 的真实页面与英文确认流程已接入，验证边界见 [Web README](../../apps/web/README.md)。
+
 2026-09-27 复核补充：材料 items 可提供 capturedAt（epoch 毫秒），与服务器 submittedAt 分开保存；该时间是提交者声明。私有声明和申索响应含 author/savedAt/onChain，用于区分保存草稿与链上记录。案件页和案件导出包含该案已上链的租客回应及原申索／当前交接请求附件，无需重复上传；未上链草稿、其他案件和未升级 F 仍拒绝访问。到 hardEndAt 后，仍有已入金余额待退出或领取的 T/L 可在原配额内申请 Gas；此例外不扩大 R/F 权限。

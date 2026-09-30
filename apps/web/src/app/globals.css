@@ -143,3 +143,25 @@ fieldset { min-width: 0; border: 1px solid var(--stroke); border-radius: 12px; }
  .topbar .btn { padding: 8px 12px; min-height: 40px; } .identity .kicker { display: none; } .identity b { font-size: 15px; } .btn { min-height: 44px; }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; scroll-behavior: auto !important; } }
+.live-stage { display: block; max-width: 1180px; margin: 0 auto; }
+.live-main { padding: 24px; display: grid; gap: 20px; padding-bottom: 190px; overflow-wrap: anywhere; }
+.live-main h1 { font-size: clamp(26px,4vw,44px); line-height: 1.25; }
+.live-form fieldset { border: 0; padding: 0; display: grid; gap: 16px; min-width: 0; }
+.live-main input, .live-main select, .live-main textarea { width: 100%; min-width: 0; }
+.live-main .btn { margin: 6px 8px 6px 0; white-space: normal; }
+.live-details { margin: 12px 0; }
+.live-details pre, .live-dialog pre { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 350px; overflow: auto; }
+.live-balances { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 16px; }
+.live-balances strong { font-size: 22px; }
+.live-status { position: fixed; z-index: 40; bottom: 0; left: 0; right: 0; background: #171c28; color: #fff; padding: 14px 24px; max-height: 160px; overflow: auto; overflow-wrap: anywhere; }
+.live-status:empty { display: none; }
+.live-dialog { width: min(620px,94vw); max-height: 85vh; overflow: auto; background: #18222e; color: #fff; border: 1px solid #81939d; border-radius: 18px; padding: 24px; }
+.live-dialog::backdrop { background: #000a; }
+.live-main article { border-top: 1px solid #ffffff26; padding: 16px 0; }
+.live-tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+.live-tabs a { padding: 10px 16px; border: 1px solid #ffffff35; border-radius: 24px; }
+.live-tabs a[aria-current="page"] { background: #efe2b7; color: #18222e; }
+.live-controls { border: 0; padding: 0; margin: 0; min-width: 0; display: grid; gap: 20px; }
+.live-controls:disabled { opacity: .65; }
+.live-estimate { padding: 16px; border: 1px dashed #ffffff60; margin: 20px 0; border-radius: 12px; }
+@media(max-width:600px) { .live-main { padding: 16px 12px 190px; } .live-balances { grid-template-columns: repeat(2,minmax(0,1fr)); } .live-stage .topbar { flex-wrap: wrap; gap: 16px; } .live-balances strong { font-size: 17px; } }

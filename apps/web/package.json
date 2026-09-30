@@ -9,7 +9,7 @@
     "build": "next build",
     "start": "next start --port 3000",
     "typecheck": "tsc --noEmit",
-    "test": "node --test src/features/leases/*.test.mjs src/features/account/*.test.mjs src/server/tests/*.test.mjs",
+    "test": "node --test src/features/leases/*.test.mjs src/features/account/*.test.mjs src/features/live/*.test.mjs src/server/tests/*.test.mjs",
     "test:backend": "node --test src/server/tests/*.test.mjs",
     "backend:init": "node src/server/cli.mjs init",
     "backend:seed": "node src/server/cli.mjs seed",

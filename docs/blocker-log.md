@@ -1,5 +1,16 @@
 # 阻塞与待核事项
 
+## 2026-09-29 阶段复查补充
+
+依据本地已合并 HEAD `0dcc55f`，PR #6/#7 已在本地历史合并。以下为当前开发/验证缺项；未另存群汇报，证据边界保留在本表。
+
+| ID | 状态 | 复现与影响 | 负责人 / 下一步 / 关闭证据 |
+| --- | --- | --- | --- |
+| BL12 | Open | `node tests/runner.mjs all` 全部 16 项 skipped，仍退出 0；不能据此发布 | E；明确未验收退出策略，接入已有 D 用例并完成真实 E2E，启用 CI，保存实际执行证据 |
+| BL13 | Open | Worker scheduler 将 deadline 秒数作为 triggerBlock，地址/调用尚是桩且接口与 ABI 不一致 | E/B/D；按确认区块时间和实际合约状态调度，完成持久化执行及边界/停启测试，关联 SC-12、AT29—31/47/51 |
+| BL14 | Closed (current machine only) | 最初缺 solc 等依赖；npm 缓存权限失败后经允许按锁文件安装成功，Web 58项、类型检查和构建通过 | C；[Web README](../apps/web/README.md)。第二人新 clone 的 TS04 仍未完成 |
+| BL15 | Open | 当前测试网租约为正常长周期，主 Demo 缺可短时复现的真实结算；公众上传扫描仍未实现 | B/C/E 交付明确 DEMO_SHORT 流程与交易证据；D 在公众上传前补扫描/隔离；A 追踪提交规则与证据 |
+
 更新时间 2026-09-26。这里区分资料缺失与尚未开发；未完成不自动叫外部阻塞。
 
 | ID | 状态 | 事项 | 负责人 | 关闭证据 |
@@ -21,7 +32,7 @@
 | BL11 | Open | 固定构建 ABI 已导出，但正式网络部署 manifest（源码、地址、区块、确认策略）仍未核验；前端不能声称真实入金或领取 | B/E → C；核验并交付部署 manifest 后接真实读写，附跨层及链上证据 |
 | BL08 | Closed (D local implementation) | D 已提供 SIWE、草稿、邀请、私有材料、导出、Gas、schema 与权限测试；C 仍需把页面接入真实接口 | D → C/E；[接口](interfaces/api.md)、[交接](member-d-handoff.md)、[本地证据](../tests/reports/2026-09-26-member-d.md) |
 | BL09 | In progress | Mera 0.2.0 已接地址试验并通过替身单测；无真实手机/桌面 PRF、同址恢复和签名设备证据 | C/D/E；本人在目标设备/HTTPS RP 域名完成 TS05，不能以模拟通过关闭 |
-| BL10 | Not started | C 自身剩余：P08 完整 CHECKOUT、上传版本交互、真实交易恢复/替换/流水与导出接线；不是所有缺项都属于外部阻塞 | C；按 [逐项交接](member-c-handoff.md) 在相应接口准备后完成并验证 |
+| BL10 | In progress | CHECKOUT/材料版本/交易回执、替换核对与恢复/历史/导出已接线，页面为英文；尚无本人设备和完整浏览器测试网流程证据 | C/D/E；见 [Web 实现](../apps/web/README.md)，在已核验 DEMO_SHORT 环境由角色本人完成端到端验收 |
 
 SDK 首次安装发生 ECONNRESET，重试后成功；该下载故障已解决。未联系外部成员，未上传或部署。
 

@@ -17,7 +17,7 @@ test('SDK adapter derives same address from same PRF; only public metadata escap
   assert.equal(first.address, restored.address);
   assert.deepEqual(Object.keys(first).sort(), ['address', 'credentialId', 'derivation', 'rpId']);
   assert.throws(() => assertSameAddress('0x' + '0'.repeat(40), first.address));
-  await assert.rejects(inspectMeraAccount({ mode: 'restore', rpId: 'localhost', expectedAddress: '0x' + '0'.repeat(40), webAuthnClient: client }), /不同地址/);
+  await assert.rejects(inspectMeraAccount({ mode: 'restore', rpId: 'localhost', expectedAddress: '0x' + '0'.repeat(40), webAuthnClient: client }), /different address/);
 });
 test('cancelled late WebAuthn result is discarded and cannot become a session', async () => {
   const abort = new AbortController();
@@ -27,7 +27,7 @@ test('invalid restoration rejected before device prompt and PRF failure stays ex
   let calls = 0;
   await assert.rejects(inspectMeraAccount({ mode: 'restore', rpId: 'localhost', expectedAddress: 'bad', webAuthnClient: { ...client, getCredential: async () => { calls++; return client.getCredential(); } } }));
   assert.equal(calls, 0);
-  assert.match(meraErrorMessage(new MeraError('PRF_UNAVAILABLE', 'test')), /不支持 PRF/);
+  assert.match(meraErrorMessage(new MeraError('PRF_UNAVAILABLE', 'test')), /does not support PRF/);
 });
 test('Mera/viem fixture signature verifies and ended session cannot sign again', async () => {
   const key = output();

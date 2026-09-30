@@ -326,6 +326,8 @@ async function dispatch(
         data: {
           id,
           leaseId: lease.id,
+          contractAddress: lease.contract_address,
+          role: lease.role,
           terms: lease.terms,
           commitment: lease.commitment,
           salt: lease.salt,
