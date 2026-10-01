@@ -11,6 +11,11 @@
  *   node tests/runner.mjs e2e
  *   node tests/runner.mjs all
  *
+ * Exit codes:
+ *   0 = all tests passed
+ *   1 = one or more tests failed
+ *   2 = all tests skipped (RB-xx prerequisites not met — not a failure)
+ *
  * Output:
  *   - Console: human-readable progress
  *   - tests/reports/{suite}-{date}.json: machine-readable results
@@ -109,5 +114,6 @@ console.log(`Failed : ${failed}`);
 console.log(`Skipped: ${skipped}`);
 console.log(`Report : ${reportPath}`);
 
+// Exit codes: 0 = all passed, 1 = any failure, 2 = all skipped (RB-xx not met — not a CI failure)
+process.exitCode = failed > 0 ? 1 : skipped > 0 && passed === 0 ? 2 : 0;
 if (skipped > 0) console.error(`INCOMPLETE: ${skipped} unimplemented test(s) were skipped.`);
-process.exitCode = failed > 0 || skipped > 0 ? 1 : 0;
