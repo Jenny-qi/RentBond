@@ -160,15 +160,72 @@ export async function buildLeaseCsv(
 }
 
 /**
- * Build a PDF summary for a lease.
- * Requires adding a PDF library (pdfkit / jspdf / pdf-lib) to the workspace.
+ * Build a PDF lease accounting summary.
+ * Uses jspdf — no native dependencies, runs in any Node.js environment.
  */
 export async function buildLeasePdf(
-  _leaseAddress: string,
-  _escrowReadFn: (addr: string) => Promise<Record<string, unknown>>
+  leaseAddress: string,
+  escrowReadFn: (addr: string) => Promise<Record<string, unknown>>
 ): Promise<Buffer> {
-  throw new Error(
-    'PDF export requires adding a PDF library to the workspace. ' +
-    'Add pdfkit or jspdf to apps/worker/package.json, then implement this function.'
-  );
+  const { jsPDF } = await import('jspdf');
+  const acct = await escrowReadFn(leaseAddress) as {
+    fundedAmount?: bigint;
+    unallocated?: bigint;
+    tenantCredit?: bigint;
+    landlordCredit?: bigint;
+    tenantWithdrawn?: bigint;
+    landlordWithdrawn?: bigint;
+    phase?: number;
+    leaseId?: string;
+  };
+
+  const funded = BigInt(acct.fundedAmount ?? 0);
+  const unallocated = BigInt(acct.unallocated ?? 0);
+  const tenantCredit = BigInt(acct.tenantCredit ?? 0);
+  const landlordCredit = BigInt(acct.landlordCredit ?? 0);
+  const tenantWithdrawn = BigInt(acct.tenantWithdrawn ?? 0);
+  const landlordWithdrawn = BigInt(acct.landlordWithdrawn ?? 0);
+
+  const fmt = (n: bigint) => (Number(n) / 1_000_000).toFixed(2) + ' MON';
+  const total = unallocated + tenantCredit + landlordCredit + tenantWithdrawn + landlordWithdrawn;
+  const conserved = funded === total ? '✓' : '✗ VIOLATED';
+
+  const doc = new jsPDF();
+  const title = `RentBond Lease Accounting`;
+  doc.setFontSize(18);
+  doc.text(title, 14, 20);
+
+  doc.setFontSize(10);
+  doc.text(`Lease: ${leaseAddress}`, 14, 30);
+  doc.text(`Generated: ${new Date().toISOString()}`, 14, 36);
+  doc.text(`Phase: ${acct.phase ?? 'unknown'}`, 14, 42);
+
+  let y = 54;
+  doc.setFontSize(12);
+  doc.text('Accounting Summary', 14, y);
+  y += 8;
+
+  doc.setFontSize(10);
+  const rows: [string, string][] = [
+    ['Funded Amount', fmt(funded)],
+    ['Unallocated', fmt(unallocated)],
+    ['Tenant Credit', fmt(tenantCredit)],
+    ['Landlord Credit', fmt(landlordCredit)],
+    ['Tenant Withdrawn', fmt(tenantWithdrawn)],
+    ['Landlord Withdrawn', fmt(landlordWithdrawn)],
+    ['Total Distributed', fmt(total)],
+    ['Conservation Check', conserved],
+  ];
+
+  for (const [label, value] of rows) {
+    doc.text(label + ':', 14, y);
+    doc.text(value, 90, y);
+    y += 7;
+    if (y > 270) {
+      doc.addPage();
+      y = 20;
+    }
+  }
+
+  return Buffer.from(doc.output('arraybuffer'));
 }

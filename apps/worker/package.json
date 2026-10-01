@@ -11,11 +11,12 @@
   "scripts": {
     "dev": "node scripts/not-implemented.mjs worker:dev RB-12",
     "start": "node scripts/not-implemented.mjs worker:start RB-12",
-    "build": "node scripts/not-implemented.mjs worker:build RB-12",
+    "build": "node --check src/main.ts",
     "test": "node scripts/not-implemented.mjs test:worker RB-13"
   },
   "dependencies": {
-    "@rentbond/shared": "workspace:*"
+    "@rentbond/shared": "workspace:*",
+    "jspdf": "^4.2.1"
   },
   "devDependencies": {
     "@types/node": "22.10.0"
