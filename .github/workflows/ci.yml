@@ -86,9 +86,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-      - run: node tests/runner.mjs e2e
-        # Red until E2E-01–08 are implemented; skipped is never a pass.
       - run: |
           # Exit 2 = all skipped (RB-xx not met) — not a CI failure
-          node tests/runner.mjs e2e || code=$?
-          [ "${code:-0}" -eq 2 ] && exit 0 || exit ${code:-1}
+          node tests/runner.mjs e2e
+          code=$?
+          [ $code -eq 2 ] && exit 0 || exit $code
