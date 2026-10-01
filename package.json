@@ -4,6 +4,9 @@
   "private": true,
   "description": "RentBond programmable rental-deposit settlement workspace",
   "engines": { "node": "24.14.0" },
+  "pnpm": {
+    "onlyBuiltDependencies": ["esbuild"]
+  },
   "scripts": {
     "doctor": "node scripts/doctor.mjs",
     "check": "node scripts/check-scaffold.mjs",

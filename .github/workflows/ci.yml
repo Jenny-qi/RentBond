@@ -11,6 +11,7 @@ permissions:
 
 env:
   NODE_VERSION: '24.x'
+  PNPM_VERSION: '12.8.1'
 
 jobs:
   doctor:
@@ -18,9 +19,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
+      - run: pnpm install --allow-build=esbuild
       - run: node scripts/doctor.mjs
 
   check-scaffold:
@@ -28,9 +33,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
+      - run: pnpm install --allow-build=esbuild
       - run: node scripts/check-scaffold.mjs
       - run: node --test scripts/verify-monad-evidence.test.mjs
       - run: node --test scripts/attest-monad-deployment.test.mjs
@@ -40,38 +49,44 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-      - run: npm ci --prefix apps/web --no-audit --no-fund
-        env:
-          NPM_CONFIG_AUDIT: false
-      - run: npm ci --prefix packages/shared --no-audit --no-fund
-      - run: npm run typecheck --prefix apps/web
+      - run: pnpm install --allow-build=esbuild
+      - run: pnpm run typecheck --prefix apps/web
 
   test-contracts:
     name: Contract tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-      - run: npm run build:contracts
-      - run: npm run test:contracts
-      - run: npm run check:contract-sizes
+      - run: pnpm install --allow-build=esbuild
+      - run: pnpm run build:contracts
+      - run: pnpm run test:contracts
+      - run: pnpm run check:contract-sizes
 
   test-integration:
     name: Integration tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-      - run: npm ci --prefix apps/web --no-audit --no-fund
-      - run: npm ci --prefix packages/shared --no-audit --no-fund
-      - run: npm run backend:abi --prefix apps/web
+      - run: pnpm install --allow-build=esbuild
+      - run: pnpm run backend:abi --prefix apps/web
       - run: |
           set +e
           node tests/runner.mjs integration --only=IT-01,IT-02,IT-07,IT-08,IT-09
@@ -84,9 +99,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
+      - run: pnpm install --allow-build=esbuild
       - run: |
           set +e
           node tests/runner.mjs e2e
