@@ -56,7 +56,7 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
       - run: pnpm install --allow-build=esbuild
-      - run: pnpm run typecheck --prefix apps/web
+      - run: pnpm --filter @rentbond/web run typecheck
 
   test-contracts:
     name: Contract tests
@@ -86,7 +86,7 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
       - run: pnpm install --allow-build=esbuild
-      - run: pnpm run backend:abi --prefix apps/web
+      - run: pnpm --filter @rentbond/web run backend:abi
       - run: |
           set +e
           node tests/runner.mjs integration --only=IT-01,IT-02,IT-07,IT-08,IT-09
