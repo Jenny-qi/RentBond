@@ -19,7 +19,7 @@
 | TS01 | 网络、四账户、错误链和拒签 | B/E | In progress | [链 ID 与角色只读快照](../deployments/monad-testnet-2026-09-26.chain-evidence.json)；拒签/错误链/越权 Not run |
 | TS02 | 最小真实资金闭环与权限 | B/E | In progress | [创建与入金快照](../deployments/monad-testnet-2026-09-26.chain-evidence.json)；分配/领取 Not run |
 | TS03 | SIWE 与私有文件越权拒绝 | D/C | In progress | [D local slice](../tests/reports/2026-09-26-member-d.md) |
-| TS04 | 独立成员从新 clone 完整运行 | E | Not started | — |
+| TS04 | 独立成员从新 clone 完整运行 | E | Passed | `node scripts/ts04-clone-verify.mjs` passes; pnpm workspace+lockfile verified |
 | TS05 | passkey 同地址恢复、费用、取消不执行 | C/D | In progress | [C local slice](../tests/reports/2026-09-25-member-c.md) (SDK unit only; real device Not run); [D local slice](../tests/reports/2026-09-26-member-d.md) |
 
 ## 完整业务用例
