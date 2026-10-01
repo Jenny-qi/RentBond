@@ -73,6 +73,7 @@ jobs:
       - run: npm ci --prefix packages/shared --no-audit --no-fund
       - run: npm run backend:abi --prefix apps/web
       - run: |
+          set +e
           node tests/runner.mjs integration --only=IT-01,IT-02,IT-07,IT-08,IT-09
           code=$?
           # Exit 2 = all skipped (RB-xx not met) — not a CI failure
@@ -87,7 +88,8 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
       - run: |
-          # Exit 2 = all skipped (RB-xx not met) — not a CI failure
+          set +e
           node tests/runner.mjs e2e
           code=$?
+          # Exit 2 = all skipped (RB-xx not met) — not a CI failure
           [ $code -eq 2 ] && exit 0 || exit $code
