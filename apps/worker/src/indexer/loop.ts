@@ -691,7 +691,7 @@ export async function startIndexer(config: ValidatedWorkerConfig): Promise<void>
   // Main loop
   while (running) {
     try {
-      await runOneCycle(client, config, state, eventStore, projectionStore, factoryAbi, escrowAbi);
+      await runOneCycle(client, config, state, eventStore, projectionStore, factoryAbi, escrowAbi, `${config.persistencePath}/jobs.json`);
     } catch (err) {
       console.error('[INDEXER] Cycle error:', err);
       // Continue running — don't crash on transient errors
@@ -716,7 +716,8 @@ async function runOneCycle(
   eventStore: EventStore,
   projectionStore: ProjectionStore,
   factoryAbi: unknown[],
-  escrowAbi: unknown[]
+  escrowAbi: unknown[],
+  jobStorePath: string
 ): Promise<void> {
   const latestBlock = await getLatestBlock(client);
   const batchSize = BigInt(config.batchSize);
@@ -766,12 +767,12 @@ async function runOneCycle(
       if (!newPos) continue;
       // Restart from the block before the re-orged one
       const reorgFrom = newPos.lastBlock > 0n ? newPos.lastBlock : config.deploymentBlock;
-      await pollAndProcessEscrow(client, config, state, eventStore, projectionStore, escrow, reorgFrom, latestBlock, escrowAbi);
+      await pollAndProcessEscrow(client, config, state, eventStore, projectionStore, escrow, reorgFrom, latestBlock, escrowAbi, jobStorePath);
       anyProgress = true;
       continue;
     }
 
-    const progress = await pollAndProcessEscrow(client, config, state, eventStore, projectionStore, escrow, fromBlock, toBlock, escrowAbi);
+    const progress = await pollAndProcessEscrow(client, config, state, eventStore, projectionStore, escrow, fromBlock, toBlock, escrowAbi, jobStorePath);
     if (progress) anyProgress = true;
   }
 
@@ -793,7 +794,8 @@ async function pollAndProcessEscrow(
   escrow: Address,
   fromBlock: bigint,
   toBlock: bigint,
-  escrowAbi: unknown[]
+  escrowAbi: unknown[],
+  jobStorePath: string
 ): Promise<boolean> {
   if (fromBlock > toBlock) return false;
 
@@ -828,7 +830,8 @@ async function pollAndProcessEscrow(
       state,
       eventStore,
       projectionStore,
-      stored
+      stored,
+      jobStorePath
     );
 
     if (raw.blockNumber > newLastBlock) {
@@ -854,7 +857,8 @@ async function projectEvent(
   state: IndexerState,
   eventStore: EventStore,
   projectionStore: ProjectionStore,
-  stored: StoredEvent
+  stored: StoredEvent,
+  jobStorePath: string
 ): Promise<void> {
   const escrow = stored.contractAddress;
 
@@ -912,9 +916,7 @@ async function projectEvent(
     );
     if (trigger) {
       console.log(`[INDEXER] Job trigger: type=${trigger.type} lease=${escrow} dueAt=${trigger.dueAt}`);
-      // The job queue is managed by the scheduler — we just emit the trigger.
-      // Jobs are created and persisted by the scheduler.
-      emitJobTrigger(trigger);
+      await emitJobTrigger(trigger, jobStorePath);
     }
   } catch (err) {
     console.error(`[INDEXER] decideJobTrigger error for ${stored.eventName}:`, err);
@@ -924,11 +926,42 @@ async function projectEvent(
   stored.processedAt = Date.now();
 }
 
-/** Emit a job trigger — in production this goes to the job queue */
-function emitJobTrigger(trigger: ReturnType<typeof decideJobTrigger>): void {
-  if (!trigger) return;
-  // TODO RB-12: enqueue job trigger into the scheduler/job queue
-  console.log(`[INDEXER] JobTrigger emitted: ${JSON.stringify(trigger)}`);
+/** Emit a job trigger — persist to job store */
+async function emitJobTrigger(
+  trigger: NonNullable<ReturnType<typeof decideJobTrigger>>,
+  jobStorePath: string
+): Promise<void> {
+  const { loadJobStore, saveJobStore, upsertJob, jobExists } = await import('../jobs/job-store.js');
+  const { createJob } = await import('../jobs/scheduler.js');
+
+  const store = await loadJobStore(jobStorePath);
+  const id = `${trigger.leaseAddress}/${trigger.type}`;
+
+  // Idempotent: skip if a non-FAILED job with same lease+type already exists
+  if (jobExists(store, trigger.leaseAddress, trigger.type)) {
+    console.log(`[INDEXER] Job ${id} already exists — skipping`);
+    return;
+  }
+
+  const job = createJob(trigger);
+  upsertJob(store, {
+    id: job.id,
+    type: job.type,
+    leaseAddress: job.leaseAddress,
+    triggerBlock: job.triggerBlock.toString(),
+    triggerTimestamp: job.triggerTimestamp,
+    dueAt: job.dueAt.toString(),
+    caseId: job.caseId?.toString(),
+    status: job.status,
+    attempts: job.attempts,
+    maxAttempts: job.maxAttempts,
+    lastAttemptAt: job.lastAttemptAt,
+    error: job.error,
+    createdAt: job.createdAt,
+  });
+
+  await saveJobStore(jobStorePath, store);
+  console.log(`[INDEXER] Job persisted: ${id} dueAt=${trigger.dueAt}`);
 }
 
 /**

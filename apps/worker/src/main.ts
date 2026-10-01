@@ -17,6 +17,7 @@
 
 import { loadWorkerConfig } from './config.js';
 import { startIndexer } from './indexer/loop.js';
+import { startExecutor } from './jobs/executor.js';
 
 async function main() {
   // Validate all env vars before doing anything else
@@ -33,8 +34,26 @@ async function main() {
     console.log(`[worker] workerGasAccount=${config.workerGasAccount}`);
   }
 
-  // RB-12: start the indexer loop — runs until SIGTERM/SIGINT
-  await startIndexer(config);
+  // Start indexer loop (always)
+  const indexerPromise = startIndexer(config);
+
+  // Start executor only if a gas account is configured
+  let executorPromise: Promise<void> | undefined;
+  if (config.workerGasAccount) {
+    executorPromise = startExecutor({
+      rpcUrl: config.rpcUrl,
+      workerGasAccount: config.workerGasAccount,
+      persistencePath: config.persistencePath,
+      pollIntervalMs: config.pollIntervalMs,
+      chainId: config.chainId,
+    });
+  } else {
+    console.log('[worker] No WORKER_GAS_ACCOUNT — executor not started (read-only mode)');
+  }
+
+  // Wait for whichever exits first (SIGTERM/SIGINT triggers both)
+  await Promise.race([indexerPromise, executorPromise].filter(Boolean));
+  console.log('[worker] Shutdown complete.');
 }
 
 main().catch((err) => {
