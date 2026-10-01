@@ -1,5 +1,7 @@
 # 需求追踪表
 
+2026-10-01：Worker `verifyChainId` 已从恒真占位改为 RPC `eth_chainId` 校验，三项局部测试覆盖匹配、错链和不可用；RB-12 的轮询/持久化仍未完成，相关 FR/SC 状态不提升。
+
 2026-09-30：`CreateDemoShortProfile.s.sol` 与 `deployments/demo-short.example.json` 是尚未部署的短时配置模板；新增 256 组本地 fuzz 检查申索金额、分配和领取守恒，未改变 FR/SC 通过范围。Worker 调度只保存事件区块和 UTC 到期秒数，真实轮询/持久化/链上写入仍在 RB-12；E2E 全跳过现使验收命令失败。相关状态保持 In progress。
 
 2026-09-29 C 实施：实际页面入口为 `apps/web/src/features/live/`，消费固定 ABI、D API 和真实回执；实现位置与验证边界见 [Web README](../apps/web/README.md)。FR-01/03/05—08/10—34 的页面接线与英文展示不改变 SC 金额/权限/截止规则；公网完整流程与设备恢复尚未验收，状态继续 In progress。原模拟模型仅用于历史回归测试。

@@ -90,7 +90,7 @@ node apps/worker/src/main.ts   # RB-12 后可用（Node 24 原生支持 TS）
 | `indexer/allocation.ts` | ✅ 投影逻辑 | 资金守恒投影：Funded→ClaimsClosed→Settlement/Timeout |
 | `indexer/projection.ts` | ✅ Phase 映射 | 合约 Phase→LeaseStatus，含 phaseToStatus 辅助 |
 | `indexer/contracts.ts` | ⚠️ 调用桩 | 7 个 Worker 操作（closeClaims 等），RB-12 替换为 viem |
-| `indexer/providers.ts` | ⚠️ 客户端桩 | viem public/wallet client，RB-12 实现 |
+| `indexer/providers.ts` | ⚠️ 客户端桩 | `verifyChainId` 已通过只读 `eth_chainId` 校验并在 RPC 故障时报错；public/wallet client 仍待 RB-12 |
 | `jobs/scheduler.ts` | ⚠️ 候选调度 | 3 种有明确事件时间的候选任务；尚未接真实 RPC/持久化与执行 |
 | `jobs/` | ⚠️ 执行逻辑 | Job/JobType/JobStatus 已定义，executeJob RB-12 |
 | `notifications/` | ⚠️ 占位 | P1 |
