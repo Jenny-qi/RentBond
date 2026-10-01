@@ -25,7 +25,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-      - run: pnpm install --allow-build=esbuild,core-js
+      - run: pnpm install --allow-build=esbuild --allow-build=core-js
       - run: node scripts/doctor.mjs
 
   check-scaffold:
@@ -39,7 +39,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-      - run: pnpm install --allow-build=esbuild,core-js
+      - run: pnpm install --allow-build=esbuild --allow-build=core-js
       - run: node scripts/check-scaffold.mjs
       - run: node --test scripts/verify-monad-evidence.test.mjs
       - run: node --test scripts/attest-monad-deployment.test.mjs
@@ -55,7 +55,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-      - run: pnpm install --allow-build=esbuild,core-js
+      - run: pnpm install --allow-build=esbuild --allow-build=core-js
       - run: pnpm --filter @rentbond/web run typecheck
 
   test-contracts:
@@ -69,7 +69,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-      - run: pnpm install --allow-build=esbuild,core-js
+      - run: pnpm install --allow-build=esbuild --allow-build=core-js
       - run: pnpm run build:contracts
       - run: pnpm run test:contracts
       - run: pnpm run check:contract-sizes
@@ -85,7 +85,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-      - run: pnpm install --allow-build=esbuild,core-js
+      - run: pnpm install --allow-build=esbuild --allow-build=core-js
       - run: pnpm --filter @rentbond/web run backend:abi
       - run: |
           set +e
@@ -105,7 +105,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-      - run: pnpm install --allow-build=esbuild,core-js
+      - run: pnpm install --allow-build=esbuild --allow-build=core-js
       - run: |
           set +e
           node tests/runner.mjs e2e
