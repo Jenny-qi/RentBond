@@ -4,7 +4,6 @@
   "private": true,
   "description": "Independent Node.js event sync and deadline worker for RentBond",
   "type": "module",
-  "main": "src/main.ts",
   "exports": {
     ".": "./src/index.ts",
     "./main": "./src/main.ts"
