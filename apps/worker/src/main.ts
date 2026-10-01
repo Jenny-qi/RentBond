@@ -16,6 +16,7 @@
  */
 
 import { loadWorkerConfig } from './config.js';
+import { startIndexer } from './indexer/loop.js';
 
 async function main() {
   // Validate all env vars before doing anything else
@@ -32,26 +33,8 @@ async function main() {
     console.log(`[worker] workerGasAccount=${config.workerGasAccount}`);
   }
 
-  // TODO RB-12: initialize RPC provider, load ABI, start indexer loop
-  // TODO RB-12: connect to persistence (DB or file-based queue)
-  // TODO RB-12: start job scheduler
-  // TODO RB-12: graceful shutdown on SIGTERM/SIGINT
-
-  // Placeholder — prevents process from exiting immediately
-  await new Promise<void>((resolve) => {
-    const shutdown = () => {
-      console.log('[worker] Shutting down...');
-      resolve();
-    };
-    process.on('SIGINT', shutdown);
-    process.on('SIGTERM', shutdown);
-
-    // Indefinite hold until signal — prevents accidental early exit
-    setTimeout(() => {
-      console.warn('[worker] Timeout — worker loop not implemented (RB-12 required)');
-      resolve();
-    }, 10_000);
-  });
+  // RB-12: start the indexer loop — runs until SIGTERM/SIGINT
+  await startIndexer(config);
 }
 
 main().catch((err) => {

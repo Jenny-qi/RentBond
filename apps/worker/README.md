@@ -89,10 +89,11 @@ node apps/worker/src/main.ts   # RB-12 后可用（Node 24 原生支持 TS）
 | `indexer/events.ts` | ✅ 类型完整 | 25 个 Escrow 事件 + 2 个 Factory 事件的类型化参数接口 |
 | `indexer/allocation.ts` | ✅ 投影逻辑 | 资金守恒投影：Funded→ClaimsClosed→Settlement/Timeout |
 | `indexer/projection.ts` | ✅ Phase 映射 | 合约 Phase→LeaseStatus，含 phaseToStatus 辅助 |
-| `indexer/contracts.ts` | ⚠️ 调用桩 | 7 个 Worker 操作（closeClaims 等），RB-12 替换为 viem |
-| `indexer/providers.ts` | ⚠️ 客户端桩 | viem public/wallet client，RB-12 实现 |
-| `jobs/scheduler.ts` | ⚠️ 候选调度 | 3 种有明确事件时间的候选任务；尚未接真实 RPC/持久化与执行 |
-| `jobs/` | ⚠️ 执行逻辑 | Job/JobType/JobStatus 已定义，executeJob RB-12 |
+| `indexer/contracts.ts` | ✅ viem 实现 | 7 个 Worker 操作（closeClaims 等）已用 viem 实现，含 idempotent 预检查 |
+| `indexer/providers.ts` | ✅ fetch+viem | native fetch 读 RPC（eth_getLogs/blockNumber/call），viem wallet client 用于写 |
+| `indexer/loop.ts` | ✅ RB-12 完成 | 主循环：Factory 事件发现 + Escrow 轮询 + 幂等存储 + 状态投影 + reorg 回滚 + SIGTERM/SIGINT |
+| `jobs/scheduler.ts` | ✅ 候选调度 | 3 种有明确事件时间的任务触发；dueAt 时间戳截止 |
+| `jobs/` | ⚠️ 持久化 | Job/JobType/JobStatus 已定义；executeJob 需与 loop 的 job queue 连接 |
 | `notifications/` | ⚠️ 占位 | P1 |
 | `exports/` | ⚠️ 占位 | RB-12 |
 
