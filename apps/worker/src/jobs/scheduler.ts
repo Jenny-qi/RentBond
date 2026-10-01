@@ -42,7 +42,6 @@ export function decideJobTrigger(
   }
   switch (event.name) {
     case 'ClaimsOpened': {
-      // Claims window just opened — schedule CLOSE_CLAIMS for when it expires
       const claimDeadline = event.args.claimDeadline;
       if (claimDeadline <= 0n) throw new Error('Invalid claim deadline');
       return {
@@ -90,7 +89,7 @@ export function decideJobTrigger(
 
 /**
  * Generate a deterministic job ID from lease and type.
- * Format: "{leaseAddress}/{jobType}"
+ * Format: "{leaseAddress}/{jobType}[/caseId]"
  */
 export function jobId(leaseAddress: Address, type: JobType, caseId?: bigint): string {
   return `${leaseAddress.toLowerCase()}/${type}/${caseId === undefined ? 'lease' : caseId.toString()}`;

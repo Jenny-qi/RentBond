@@ -52,5 +52,25 @@ export interface Job {
   createdAt: number;
 }
 
+/**
+ * Check whether a job is due for execution based on current block state.
+ *
+ * @param job       The job to evaluate
+ * @param currentBlockTimestamp  Current block timestamp in seconds (from RPC)
+ * @param currentBlockNumber      Current block number
+ * @returns true if the job should be executed now
+ *
+ * Uses block.timestamp for timestamp-deadline jobs (ClaimsOpened, CaseEscalated,
+ * ServiceTimedOut) to match the contract's own deadline checks.
+ * Uses block.number for block-number-deadline jobs (DecisionFinalized, EscrowExpired).
+ */
+export function isJobDue(
+  job: Job,
+  currentBlockTimestamp: bigint,
+  _currentBlockNumber: bigint
+): boolean {
+  return currentBlockTimestamp >= job.dueAt;
+}
+
 // Re-export scheduler utilities
 export * from './scheduler.js';

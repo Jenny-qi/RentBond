@@ -72,7 +72,7 @@ node apps/worker/src/main.ts   # RB-12 后可用（Node 24 原生支持 TS）
 | `CaseEscalated` | `MARK_SERVICE_TIMEOUT` | `fallbackDeadline` |
 | `ServiceTimedOut` | `FINALIZE_TIMEOUT` | `timeoutAt` |
 
-`triggerBlock` 只保存该事件的已确认区块号，不能与 `dueAt` 比较。Worker 执行前还须以已确认区块时间和合约阶段重新检查资格。`CaseOpened` 不含 primaryDeadline；没有读出案件状态前不得猜测。`DecisionFinalized` 和 `EscrowExpired` 已是完成事件，不会触发不存在的 `withdrawUnallocated` 或重复到期交易。到期主结果及 hardEndAt 仍需单独读取合约排程实现。
+`triggerBlock` 只保存该事件的已确认区块号，不能与 `dueAt` 比较。Worker 执行前还须以已确认区块时间和合约阶段重新检查资格。
 
 ## 任务类型（jobs）
 
