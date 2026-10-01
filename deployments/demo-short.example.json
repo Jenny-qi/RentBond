@@ -1,0 +1,38 @@
+{
+  "templateOnly": true,
+  "readyForFrontend": false,
+  "timingProfile": "DEMO_SHORT",
+  "environment": "monad-testnet",
+  "chainId": 10143,
+  "sourceCommit": null,
+  "abiDigest": null,
+  "serviceProfileId": null,
+  "timingProfileId": null,
+  "timeoutPolicy": "TIMEOUT_RETURN_UNAWARDED_TO_TENANT",
+  "durationsSeconds": {
+    "checkoutResponse": 300,
+    "claim": 600,
+    "response": 600,
+    "evidence": 300,
+    "primary": 600,
+    "challenge": 300,
+    "fallbackEvidence": 300,
+    "fallbackResolver": 900,
+    "exitNotice": 300
+  },
+  "contracts": {
+    "MockUSD": null,
+    "ResolverRegistry": null,
+    "DepositEscrowDeployer": null,
+    "LeaseFactory": null,
+    "DepositEscrow": null
+  },
+  "deploymentTransactions": [],
+  "deploymentBlocks": [],
+  "createLeaseTransaction": null,
+  "fundTransaction": null,
+  "acceptances": { "primaryResolver": null, "fallbackResolver": null },
+  "leaseEndAt": null,
+  "hardEndAt": null,
+  "abiManifest": "abi/manifest.json"
+}

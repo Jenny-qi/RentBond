@@ -5,6 +5,52 @@ import {DepositEscrow} from "../src/DepositEscrow.sol";
 import {RentBondTestBase, TestActor} from "./TestHelpers.sol";
 
 contract DepositEscrowTest is RentBondTestBase {
+    function testFuzzPartialAllocationConservesFunds(uint8 acceptedSeed, uint8 disputedSeed, uint8 awardSeed)
+        public
+    {
+        uint256 accepted = (uint256(acceptedSeed) + 1) * 1e6;
+        uint256 disputed = (uint256(disputedSeed) + 1) * 1e6;
+        uint256 award = (uint256(awardSeed) % (disputed / 1e6 + 1)) * 1e6;
+
+        EscrowFixture memory fixture = _newEscrow();
+        _fund(fixture);
+        DepositEscrow.SettlementSchedule memory schedule = _startScheduledSettlement(fixture);
+        DepositEscrow.ClaimInput[] memory claims = new DepositEscrow.ClaimInput[](2);
+        claims[0] = DepositEscrow.ClaimInput(accepted, keccak256("accepted"));
+        claims[1] = DepositEscrow.ClaimInput(disputed, keccak256("disputed"));
+        fixture.landlord.execute(address(fixture.escrow), abi.encodeCall(fixture.escrow.submitClaims, (claims)));
+        vm.warp(schedule.claimDeadline);
+        fixture.escrow.closeClaims();
+        _respondClaim(fixture, 1, true, keccak256("agreed"));
+
+        DepositEscrow.Accounting memory mid = fixture.escrow.getAccounting();
+        require(mid.tenantCredit == DEPOSIT - accepted - disputed, "unclaimed split");
+        require(mid.landlordCredit == accepted && mid.unallocated == disputed, "disputed split");
+
+        vm.warp(schedule.responseDeadline);
+        fixture.escrow.openClaimCase();
+        DepositEscrow.ActiveCase memory activeCase = fixture.escrow.getActiveCase();
+        vm.warp(activeCase.evidenceDeadline);
+        DepositEscrow.DecisionInput[] memory result = new DepositEscrow.DecisionInput[](1);
+        result[0] = DepositEscrow.DecisionInput(2, award);
+        fixture.primary.execute(
+            address(fixture.escrow),
+            abi.encodeCall(fixture.escrow.proposeDecision, (activeCase.caseId, result, keccak256("fuzz-result")))
+        );
+        activeCase = fixture.escrow.getActiveCase();
+        vm.warp(activeCase.challengeDeadline);
+        fixture.escrow.finalizePrimary(activeCase.caseId);
+        DepositEscrow.Accounting memory finalAccounting = fixture.escrow.getAccounting();
+        require(finalAccounting.tenantCredit == DEPOSIT - accepted - award, "tenant total");
+        require(finalAccounting.landlordCredit == accepted + award, "landlord total");
+        require(finalAccounting.unallocated == 0, "funds stranded");
+        fixture.escrow.withdrawFor(address(fixture.tenant));
+        fixture.escrow.withdrawFor(address(fixture.landlord));
+        finalAccounting = fixture.escrow.getAccounting();
+        require(finalAccounting.tenantWithdrawn + finalAccounting.landlordWithdrawn == DEPOSIT, "withdraw conservation");
+        require(fixture.token.balanceOf(address(fixture.escrow)) == 0, "balance mismatch");
+    }
+
     function testExactFundingCreatesActiveEscrow() public {
         EscrowFixture memory fixture = _newEscrow();
         _fund(fixture);

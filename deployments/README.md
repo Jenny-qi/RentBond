@@ -44,3 +44,11 @@ node --test scripts/attest-monad-deployment.test.mjs
 - 正常时间方案、timeoutPolicy 和 R/F 各自接受记录已经核对。
 
 `abi/` 只证明接口来自固定构建，不证明任何地址已经部署。
+
+## DEMO_SHORT 候选（尚未部署）
+
+`contracts/script/CreateDemoShortProfile.s.sol` 定义单独的短时服务方案：交接回应 5 分钟，申索/租客回应各 10 分钟，证据/主处理/挑战/备用处理/退出通知分别为 5/10/5/15/5 分钟，备用证据窗口 5 分钟；`hardEndAt = leaseEndAt + 60 分钟`。在合约真正创建并由 R/F 各自确认前，`demo-short.example.json` 只能作模板，所有地址、区块、交易、profileId 和 ABI digest 保持 null。正常配置和已有 2026-12-31 到期租约不变。
+
+创建前须为本方案使用独立的 `DEMO_SHORT_SERVICE_TERMS_HASH`，明确向参与者显示 `DEMO_SHORT`、UTC 截止时间与 1,000 MockUSD 的测试资产属性；确认 `leaseEndAt` 留有足够时间供 T/L 本人完成条款和入金。R/F 分别对新 profileId 调用 `acceptProfile`；再由 L 创建租约、T 接受/授权/入金。逐笔保存回执、区块、来源 commit、固定构建 ABI 和角色地址后，用只读脚本复核并生成实际记录。任何人不得在脚本中代签 T/L/R/F 的交易，也不得把模板改名当成链上证据。
+
+700/100/200 需要 L 提交 100 与 200 的两项申索、T 接受 100 并争议 200，等待申索窗口截止执行 `closeClaims` 后才能显示 700/100 可领取；处理 200 中 50 归 L 后最终为 850/150。另一份独立租约测试 R/F 超时退出的 900/100，不能拿前一份已结算租约重复演示。合约常量 `CHECKOUT_RETRY_DELAY = 1 day`，短时方案并未缩短失败交接请求的重试间隔；这条异常路径仍须单独验收。
