@@ -1,6 +1,6 @@
 # Member D Stage Two, 2026-10-02
 
-Source baseline: GitHub main b664c0ace75a5604c1c2a61842dbb642b79f6714 (which already includes PR #7 and C's live API implementation). Delivery branch: feat/member-d-stage-two. This report accompanies the implementation; its fixed implementation commit is added below after committing the reviewed tree. No additional open non-PR GitHub issues were returned during this review.
+Source baseline: GitHub main b664c0ace75a5604c1c2a61842dbb642b79f6714 (which already includes PR #7 and C's live API implementation). Delivery branch: feat/member-d-stage-two. Reviewed implementation commit: 4df78b543f5c7c33dc691b3896a2c6264043e356; the following documentation commit pins this evidence to that tree. No additional open non-PR GitHub issues were returned during this review.
 
 ## Progress For The Team
 
