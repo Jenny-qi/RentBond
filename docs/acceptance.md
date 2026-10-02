@@ -1,5 +1,7 @@
 # 验收清单
 
+2026-10-02 main 复核：D 两阶段交付已保留在 main；修复扫描配置 LF/UTC 和回滚后原主链回归的未签名任务重排。当前 Web 69 passed / 0 skipped，真实 PostgreSQL/ClamAV 集成、类型检查、生产构建与 HTTP 通过。总验收仍为 5 passed / 12 skipped、原生退出码 2，C/E 联合场景继续 In progress。命令、失败复现与固定实现 commit 见 [D main 检查记录](../tests/reports/2026-10-02-member-d-main-review.md)。
+
 2026-10-02 D 第二阶段：增加 ClamAV 隔离扫描、C 上传等待/重试、迁移 0003、E 数据库任务适配器与原子回滚；本机 PostgreSQL 16.15 + ClamAV 1.5.4 + 私有目录已实际复验。Web 68 项、真实部署依赖集成 2 项、生产构建与 HTTP 冒烟通过，0 跳过；见 [D 第二阶段报告](../tests/reports/2026-10-02-member-d-stage-two.md)。总验收为 5 passed / 12 skipped，修复混合通过/跳过仍返回成功的问题，现退出 2。完整 Worker、公众环境和真机恢复没有因此 Verified；保留以下历史记录与团队 TS04 状态。
 
 2026-10-02 增量：当前 E2E-01—08 均为未实现占位（8 skipped）。修复运行器与 CI 后，任意 skipped 使验收命令退出非零；绿色的基础检查和五项已运行集成用例不代表完整跨层验收。TS02、TS05 及相关 AT 状态不提升。

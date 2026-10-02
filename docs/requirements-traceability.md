@@ -1,5 +1,7 @@
 # 需求追踪表
 
+2026-10-02 main 复核：D 第一、第二阶段均已合入；修复 Windows 扫描配置换行、ClamAV 日期时区和原主链回归时未签名任务无法重排的问题。实现基线 cbe41fc，Web 69 项、真实环境集成及 HTTP 通过。见 [D main 检查记录](../tests/reports/2026-10-02-member-d-main-review.md)。D 可独立交付项已验证，联合/公网/真机需求仍按以下状态，不提升为整项目 Verified。
+
 2026-10-02 D：FR-10/11/12/24/28/33/34、PRD 9.4、SC-04/12 与 AT27/28/29/33/43/44 的本轮增量为扫描隔离、C 等待扫描、旧版本/旧 ZIP 升级阻断，以及 E 可调用的 PostgreSQL 持久化任务/回滚边界。真实 ClamAV、PostgreSQL 并发/匿名 RLS、HTTP 与本地 EVM 的证据见 [D 第二阶段报告](../tests/reports/2026-10-02-member-d-stage-two.md)。本轮不将 API/数据库切片提升为全链路 Verified。总验收仍有 12 项跳过；现无论全部或部分跳过均返回非零。
 2026-10-02：修复验收运行器对部分 skipped 返回 0、CI 将全部 skipped 的退出码 2 转成成功的问题。E2E 八项仍未实现；该门槛修复不改变任何 FR/SC 的业务验证状态。
 

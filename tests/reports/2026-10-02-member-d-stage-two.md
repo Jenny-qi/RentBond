@@ -1,5 +1,7 @@
 # Member D Stage Two, 2026-10-02
 
+Post-merge follow-up: [main review](2026-10-02-member-d-main-review.md) records scanner LF/UTC setup corrections and the returning-canonical-source unsigned task regression. Current Web coverage is 69 passing tests; the 68-test run below remains the original stage-two evidence.
+
 Source baseline: GitHub main b664c0ace75a5604c1c2a61842dbb642b79f6714 (which already includes PR #7 and C's live API implementation). Delivery branch: feat/member-d-stage-two. Reviewed implementation commit: 4df78b543f5c7c33dc691b3896a2c6264043e356; the following documentation commit pins this evidence to that tree. No additional open non-PR GitHub issues were returned during this review.
 
 ## Progress For The Team

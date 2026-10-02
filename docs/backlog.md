@@ -1,5 +1,7 @@
 # 初始 GitHub Issue 清单
 
+2026-10-02 main 复核：D 的 RB-08 后端与 RB-09/10/11/12 支持接口、扫描隔离及所选环境验证均已交付至 main。补齐 LF/UTC 扫描启动与回滚重排边界，Web 69 项及真实 PostgreSQL/ClamAV/HTTP 复验通过。详见 [D main 检查](../tests/reports/2026-10-02-member-d-main-review.md)；C 真机、E 完整执行器和跨层/公网发布验收仍由团队继续完成，不将整个 RB-08/12/13 标成结束。
+
 本页是可复制到 GitHub 的任务草案，没有创建远端 Issue。所有业务任务均未完成。建议标签：`P0`/`P1`、`area:product/contracts/frontend/backend/qa`、`blocked`。模块范围参考 [team](team.md)。
 
 | ID | 负责人（协作） | 任务与主要输出 | 前置依赖 | 验收 |

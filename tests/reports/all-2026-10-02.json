@@ -1,6 +1,6 @@
 {
   "suite": "all",
-  "generatedAt": "2026-10-02T02:17:04.564Z",
+  "generatedAt": "2026-10-02T11:03:26.551Z",
   "total": 17,
   "passed": 5,
   "failed": 0,
@@ -11,13 +11,13 @@
       "id": "IT-01",
       "description": "SIWE nonce replay is rejected",
       "status": "passed",
-      "completedAt": "2026-10-02T02:16:57.111Z"
+      "completedAt": "2026-10-02T11:03:19.021Z"
     },
     {
       "id": "IT-02",
       "description": "Cross-lease ACL: tenant cannot access another lease's documents",
       "status": "passed",
-      "completedAt": "2026-10-02T02:16:59.496Z"
+      "completedAt": "2026-10-02T11:03:21.456Z"
     },
     {
       "id": "IT-03",
@@ -26,7 +26,7 @@
       "requires": [
         "RB-12"
       ],
-      "completedAt": "2026-10-02T02:16:59.496Z"
+      "completedAt": "2026-10-02T11:03:21.456Z"
     },
     {
       "id": "IT-04",
@@ -35,7 +35,7 @@
       "requires": [
         "RB-12"
       ],
-      "completedAt": "2026-10-02T02:16:59.496Z"
+      "completedAt": "2026-10-02T11:03:21.456Z"
     },
     {
       "id": "IT-05",
@@ -44,7 +44,7 @@
       "requires": [
         "RB-12"
       ],
-      "completedAt": "2026-10-02T02:16:59.496Z"
+      "completedAt": "2026-10-02T11:03:21.456Z"
     },
     {
       "id": "IT-06",
@@ -53,25 +53,25 @@
       "requires": [
         "RB-12"
       ],
-      "completedAt": "2026-10-02T02:16:59.496Z"
+      "completedAt": "2026-10-02T11:03:21.456Z"
     },
     {
       "id": "IT-07",
       "description": "Test gas refills respect quota and do not exceed limits",
       "status": "passed",
-      "completedAt": "2026-10-02T02:17:01.901Z"
+      "completedAt": "2026-10-02T11:03:23.886Z"
     },
     {
       "id": "IT-08",
       "description": "SIWE session expires and forces re-auth after 24h",
       "status": "passed",
-      "completedAt": "2026-10-02T02:17:04.225Z"
+      "completedAt": "2026-10-02T11:03:26.215Z"
     },
     {
       "id": "IT-09",
       "description": "Worker uses confirmed event block and UTC deadline separately",
       "status": "passed",
-      "completedAt": "2026-10-02T02:17:04.564Z"
+      "completedAt": "2026-10-02T11:03:26.550Z"
     },
     {
       "id": "E2E-01",
@@ -80,7 +80,7 @@
       "requires": [
         "RB-12"
       ],
-      "completedAt": "2026-10-02T02:17:04.564Z"
+      "completedAt": "2026-10-02T11:03:26.550Z"
     },
     {
       "id": "E2E-02",
@@ -90,7 +90,7 @@
         "RB-12",
         "RB-07"
       ],
-      "completedAt": "2026-10-02T02:17:04.564Z"
+      "completedAt": "2026-10-02T11:03:26.550Z"
     },
     {
       "id": "E2E-03",
@@ -100,7 +100,7 @@
         "RB-12",
         "RB-06"
       ],
-      "completedAt": "2026-10-02T02:17:04.564Z"
+      "completedAt": "2026-10-02T11:03:26.550Z"
     },
     {
       "id": "E2E-04",
@@ -109,7 +109,7 @@
       "requires": [
         "RB-09"
       ],
-      "completedAt": "2026-10-02T02:17:04.564Z"
+      "completedAt": "2026-10-02T11:03:26.550Z"
     },
     {
       "id": "E2E-05",
@@ -118,7 +118,7 @@
       "requires": [
         "RB-09"
       ],
-      "completedAt": "2026-10-02T02:17:04.564Z"
+      "completedAt": "2026-10-02T11:03:26.550Z"
     },
     {
       "id": "E2E-06",
@@ -127,7 +127,7 @@
       "requires": [
         "RB-08"
       ],
-      "completedAt": "2026-10-02T02:17:04.564Z"
+      "completedAt": "2026-10-02T11:03:26.550Z"
     },
     {
       "id": "E2E-07",
@@ -136,7 +136,7 @@
       "requires": [
         "RB-12"
       ],
-      "completedAt": "2026-10-02T02:17:04.564Z"
+      "completedAt": "2026-10-02T11:03:26.550Z"
     },
     {
       "id": "E2E-08",
@@ -145,7 +145,7 @@
       "requires": [
         "RB-13"
       ],
-      "completedAt": "2026-10-02T02:17:04.564Z"
+      "completedAt": "2026-10-02T11:03:26.551Z"
     }
   ]
 }

@@ -2,6 +2,8 @@
 
 Scope: SIWE/session, drafts/invitations, schema/migrations, private files and ACL, immutable materials, private claim/response/decision text, exports, bounded test MON sponsor, and E's event/job persistence boundary.
 
+Latest main review: [2026-10-02 merged delivery and corrections](../tests/reports/2026-10-02-member-d-main-review.md), implementation cbe41fc. Both D stages are merged. Web regression is now 69 passing tests; selected PostgreSQL/ClamAV and real HTTP checks passed after correcting scanner LF/UTC setup and unsigned task requeue when its original source becomes canonical again.
+
 Latest delivery: [2026-10-02 stage-two evidence](../tests/reports/2026-10-02-member-d-stage-two.md). Based on main b664c0a, including the previously merged D backend and C's real API pages. The new upload scan protocol affects C; the new database task adapter affects E. No ABI or business-money rule changed.
 
 ## Start Locally Without Cloud Services
