@@ -1,15 +1,14 @@
 /**
  * TS04 — Independent clone verification
  *
- * Simulates a brand-new team member cloning the repo and running
- * all documented commands from README with no pre-existing setup.
+ * Checks prerequisite files and documentation for a future independent clone.
  *
  * E owns. This script verifies that the documented startup sequence
  * is actually reproducible without manual intervention.
  *
  * Usage: node scripts/ts04-clone-verify.mjs
  *
- * This is a dry-run that checks each command would succeed.
+ * This is a structural dry-run. It does not execute the documented commands.
  * Full implementation after RB-02 (pnpm lockfile) and RB-03 (local chain).
  */
 
@@ -99,7 +98,7 @@ for (const { cmd, since } of REQUIRED_COMMANDS) {
 // Report
 console.log('\n=== Result ===');
 if (errors.length === 0) {
-  console.log('PASS: Clone verification passed. All required files, env keys, and documented commands are present.');
+  console.log('PASS: Prerequisite structure check passed. Independent clone and startup were NOT verified.');
   console.log('\nNext steps after full implementation:');
   console.log('  pnpm install --frozen-lockfile  # after RB-02');
   console.log('  pnpm infra:up                  # after RB-02');
