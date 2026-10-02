@@ -22,6 +22,7 @@ import { boundedBody, detectMime } from "./storage.ts";
 import { audit } from "./auth.ts";
 import { caseMaterialRefs } from "./presentation.ts";
 import type { z } from "zod";
+import { requireCleanScan } from "./upload-scans.ts";
 
 async function writeAccess(
   ctx: Context,
@@ -133,6 +134,7 @@ export async function uploadIntent(ctx: Context, body: unknown) {
     expiresAt,
     method: "PUT",
     uploadUrl: "/api/documents/" + document.id + "/uploads/" + uploadId,
+    statusUrl: "/api/documents/" + document.id + "/uploads/" + uploadId,
   };
 }
 export async function receiveUpload(
@@ -168,16 +170,16 @@ export async function receiveUpload(
     "File size, type or digest does not match the upload intent.",
   );
   requireThat(
-    await ctx.app.storage.health(),
+    await ctx.app.quarantine.health(),
     503,
     "STORAGE_UNAVAILABLE",
     "Private storage is not correctly configured.",
   );
   try {
-    await ctx.app.storage.put(row.storage_key, bytes, row.mime);
+    await ctx.app.quarantine.put(row.storage_key, bytes, row.mime);
   } catch (error) {
     // A previous upload may have reached storage before its database commit/HTTP response failed.
-    const existing = await ctx.app.storage
+    const existing = await ctx.app.quarantine
       .get(row.storage_key)
       .catch(() => null);
     if (
@@ -191,7 +193,13 @@ export async function receiveUpload(
     "UPDATE document_uploads SET uploaded_at=$1 WHERE id=$2",
     [ctx.now, uploadId],
   );
-  return { documentId, version: row.version, uploaded: true, submitted: false };
+  return {
+    documentId,
+    version: row.version,
+    uploaded: true,
+    submitted: false,
+    scanStatus: "pending",
+  };
 }
 export async function submitDocument(
   ctx: Context,
@@ -216,6 +224,7 @@ export async function submitDocument(
     "UPLOAD_EXPIRED",
     "Upload is missing, expired or already submitted.",
   );
+  requireCleanScan(ctx.app, row);
   const bytes = await ctx.app.storage.get(row.storage_key);
   requireThat(
     bytes.length === row.expected_size &&
@@ -295,6 +304,17 @@ export async function documentAccess(
       "This document was not submitted to your case.",
     );
   }
+  const [scan] = await ctx.sql.query(
+    "SELECT * FROM document_uploads WHERE document_id=$1 AND version=$2",
+    [id, version],
+  );
+  requireThat(
+    scan,
+    409,
+    "SCAN_PENDING",
+    "Original file requires a security scan.",
+  );
+  requireCleanScan(ctx.app, scan);
   return row;
 }
 export async function issueAccess(

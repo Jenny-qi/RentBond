@@ -1,15 +1,30 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { Address } from 'viem';
 import { useLive } from './LiveProvider';
 import type { Data } from './client';
 import { Files, Form } from './ui';
+import { finalizeUpload } from './uploads';
 export function Materials({ data, caseId, refresh }: { data: Data; caseId?: string; refresh: () => void }) {
   const { request, propose, run, busy, wallet } = useLive();
   const [file, setFile] = useState<File | null>(null);
   const [uploaded, setUploaded] = useState<Data | null>(null);
   const [prepared, setPrepared] = useState<Data | null>(null);
+  const [pendingUpload, setPendingUpload] = useState<Data | null>(null);
   const leaseId = data.leaseId ?? data.id;
+  const scope = `${wallet?.address}/${leaseId}/${caseId ?? ''}`;
+  const active = useRef<string | null>(scope);
+  active.current = scope;
+  useEffect(() => {
+    active.current = scope;
+    setPendingUpload(null); setUploaded(null); setPrepared(null);
+    return () => { active.current = null; };
+  }, [scope]);
+  const finalize = async (intent: Data) => {
+    const current = () => active.current === scope;
+    const result = await finalizeUpload(request, intent, current);
+    if (current()) { setUploaded({ ...result, documentId: intent.documentId, version: intent.version }); setPendingUpload(null); refresh(); }
+  };
   const submitBundle = (bundle: Data) => propose({ title: `Submit bundle version ${bundle.manifest.version}`, explanation: 'Record the commitment for this version. This does not prove that a photo or statement is true.', address: data.contractAddress as Address, functionName: 'recordEvidence', args: bundle.transaction.args });
   return <section>
     <Form title="Upload private materials / add a version" fields={[{ name: 'purpose', label: 'Purpose', options: caseId ? [{ value: 'case', label: 'Current case' }] : ['terms', 'move-in', 'repair', 'move-out', 'claim'].map(value => ({ value, label: ({ terms: 'Terms', 'move-in': 'Move-in', repair: 'Repair', 'move-out': 'Move-out', claim: 'Claim' } as Record<string, string>)[value] })) }, { name: 'documentId', label: 'Original document ID (leave blank for a new file; approvals do not carry over)', required: false }]} submit="Upload & finalize this file version" onSubmit={async v => {
@@ -20,9 +35,11 @@ export function Materials({ data, caseId, refresh }: { data: Data; caseId?: stri
       if (!intent.uploadUrl.startsWith('/api/documents/')) throw new Error('Invalid upload URL');
       const response = await fetch(intent.uploadUrl, { method: 'PUT', credentials: 'same-origin', headers: { 'Content-Type': file.type }, body: bytes });
       if (!response.ok) throw new Error('Upload failed. This version has not been submitted.');
-      const result = await request(`/api/documents/${intent.documentId}/submit`, { uploadId: intent.uploadId });
-      setUploaded({ ...result, documentId: intent.documentId, version: intent.version }); refresh();
+      if (active.current !== scope) throw new Error('Account or page changed.');
+      setPendingUpload(intent);
+      await finalize(intent);
     }}><label className="field">Choose a file<input type="file" accept="image/png,image/jpeg,application/pdf" required onChange={e => setFile(e.target.files?.[0] ?? null)} /></label><p>Upload fictional test materials only. Saved files must be included in an evidence bundle and explicitly submitted by their author.</p></Form>
+    {pendingUpload && <p role="status">Document {pendingUpload.documentId}, version {pendingUpload.version}: awaiting security checks. <button className="btn" disabled={busy} onClick={() => void run(() => finalize(pendingUpload))}>Check and finalize upload</button></p>}
     {uploaded && <p>Saved document {uploaded.documentId} · Version {uploaded.version}. Reference this version below.</p>}
     <Form key={uploaded ? `${uploaded.documentId}/${uploaded.version}` : 'bundle'} title="Submit an evidence bundle" fields={[{ name: 'stage', label: 'Stage', options: caseId ? [{ value: 'case', label: 'Evidence for this case' }] : [{ value: 'move-in', label: 'Move-in' }, { value: 'repair', label: 'Repair' }, { value: 'move-out', label: 'Move-out' }] }, { name: 'roomKey', label: 'Room / item' }, { name: 'description', label: 'Condition description', type: 'textarea' }, { name: 'documentId', label: 'Document ID', value: uploaded?.documentId }, { name: 'version', label: 'File version', type: 'number', value: String(uploaded?.version ?? 1) }, { name: 'capturedAt', label: 'Declared capture time (optional)', type: 'datetime-local', required: false }, { name: 'bundleId', label: 'Existing bundle ID (optional, for a new version)', required: false }]} submit="Save bundle & review on-chain submission" onSubmit={async v => {
       const result = await request(caseId ? `/api/cases/${caseId}/evidence` : '/api/inspections', { leaseId, stage: v.stage, ...(v.bundleId ? { bundleId: v.bundleId } : {}), items: [{ roomKey: v.roomKey, description: v.description, documents: [{ documentId: v.documentId, version: Number(v.version) }], ...(v.capturedAt ? { capturedAt: new Date(v.capturedAt).getTime() } : {}) }] });

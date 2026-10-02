@@ -37,6 +37,13 @@ export async function exportAccess(ctx: Context, id: string) {
   );
   requireThat(job, 403, "FORBIDDEN", "You cannot access this export.");
   await scopeAccess(ctx, job.lease_id, job.case_id ?? undefined);
+  if (job.state === "ready")
+    requireThat(
+      job.scan_policy === ctx.app.config.scanMode,
+      409,
+      "SCAN_UPGRADE_REQUIRED",
+      "Create a new export under the current scanning policy.",
+    );
   return job;
 }
 export async function requestGas(ctx: Context, body: unknown) {
@@ -280,8 +287,16 @@ export async function runExportJob(app: App): Promise<boolean> {
       const key = job.lease_id + "/" + randomUUID();
       await app.storage.put(key, bytes, "application/zip");
       await sql.query(
-        "UPDATE exports SET state='ready',storage_key=$1,content_hash=$2,size=$3,attempts=$4,completed_at=$5,error_code=NULL WHERE id=$6",
-        [key, sha256(bytes), bytes.length, attempts, ctx.now, job.id],
+        "UPDATE exports SET state='ready',storage_key=$1,content_hash=$2,size=$3,attempts=$4,completed_at=$5,error_code=NULL,scan_policy=$7 WHERE id=$6",
+        [
+          key,
+          sha256(bytes),
+          bytes.length,
+          attempts,
+          ctx.now,
+          job.id,
+          app.config.scanMode,
+        ],
       );
       await audit(
         sql,
@@ -407,6 +422,7 @@ export async function cleanup(
       [now],
     );
     for (const item of expired) {
+      await app.quarantine.remove(item.storage_key);
       await app.storage.remove(item.storage_key);
       await sql.query("UPDATE document_uploads SET cleaned_at=$1 WHERE id=$2", [
         now,
@@ -425,7 +441,10 @@ export async function cleanup(
         "SELECT v.storage_key FROM document_versions v JOIN documents d ON d.id=v.document_id WHERE d.lease_id=$1 UNION SELECT storage_key FROM exports WHERE lease_id=$1 AND storage_key IS NOT NULL",
         [lease.id],
       );
-      for (const file of files) await app.storage.remove(file.storage_key);
+      for (const file of files) {
+        await app.quarantine.remove(file.storage_key);
+        await app.storage.remove(file.storage_key);
+      }
       await sql.query("UPDATE leases SET purged_at=$1 WHERE id=$2", [
         now,
         lease.id,
@@ -474,7 +493,10 @@ export async function purgeRequestedLease(app: App, id: string) {
       "SELECT v.storage_key FROM document_versions v JOIN documents d ON d.id=v.document_id WHERE d.lease_id=$1 UNION SELECT u.storage_key FROM document_uploads u JOIN documents d ON d.id=u.document_id WHERE d.lease_id=$1 UNION SELECT storage_key FROM exports WHERE lease_id=$1 AND storage_key IS NOT NULL",
       [id],
     );
-    for (const file of files) await app.storage.remove(file.storage_key);
+    for (const file of files) {
+      await app.quarantine.remove(file.storage_key);
+      await app.storage.remove(file.storage_key);
+    }
     await sql.query("UPDATE leases SET purged_at=$1 WHERE id=$2", [
       app.now(),
       id,

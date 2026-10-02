@@ -11,3 +11,14 @@ CREATE POLICY rentbond_private_deny ON storage.objects AS RESTRICTIVE
 FOR ALL TO anon,authenticated
 USING (bucket_id <> 'rentbond-private')
 WITH CHECK (bucket_id <> 'rentbond-private');
+
+INSERT INTO storage.buckets(id,name,public,file_size_limit,allowed_mime_types)
+VALUES ('rentbond-quarantine','rentbond-quarantine',false,10485760,
+  ARRAY['image/jpeg','image/png','application/pdf'])
+ON CONFLICT(id) DO UPDATE SET public=false,file_size_limit=EXCLUDED.file_size_limit,
+  allowed_mime_types=EXCLUDED.allowed_mime_types;
+DROP POLICY IF EXISTS rentbond_quarantine_deny ON storage.objects;
+CREATE POLICY rentbond_quarantine_deny ON storage.objects AS RESTRICTIVE
+FOR ALL TO anon,authenticated
+USING (bucket_id <> 'rentbond-quarantine')
+WITH CHECK (bucket_id <> 'rentbond-quarantine');

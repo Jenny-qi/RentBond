@@ -23,6 +23,12 @@ export interface Config {
   gasCooldownMs: number;
   trustProxy: boolean;
   gasOrganizers: string[];
+  scanMode: "clamav" | "disabled-local";
+  clamavHost: string;
+  clamavPort: number;
+  scanTimeoutMs: number;
+  scanMaxAgeHours: number;
+  quarantineBucket: string;
 }
 
 export function readConfig(env = process.env): Config {
@@ -64,9 +70,13 @@ export function readConfig(env = process.env): Config {
     throw new Error("Set a supported chain ID (Monad testnet 10143).");
   if (env.NEXT_PUBLIC_CHAIN_ID && Number(env.NEXT_PUBLIC_CHAIN_ID) !== chainId)
     throw new Error("Client/server chain IDs disagree.");
-  const positive = (name: string, fallback: number) => {
+  const positive = (
+    name: string,
+    fallback: number,
+    maximum = Number.MAX_SAFE_INTEGER,
+  ) => {
     const n = Number(env[name] ?? fallback);
-    if (!Number.isSafeInteger(n) || n < 1)
+    if (!Number.isSafeInteger(n) || n < 1 || n > maximum)
       throw new Error("Invalid positive configuration: " + name);
     return n;
   };
@@ -77,6 +87,20 @@ export function readConfig(env = process.env): Config {
   if (mode === "testnet" && !env.DATABASE_URL)
     throw new Error("Testnet requires a shared PostgreSQL database.");
   const gasAmount = BigInt(env.TEST_GAS_AMOUNT_WEI ?? "10000000000000000");
+  const scanMode =
+    env.FILE_SCAN_MODE ??
+    (mode === "local" && loopback ? "disabled-local" : "clamav");
+  if (
+    !["clamav", "disabled-local"].includes(scanMode) ||
+    (scanMode === "disabled-local" && !(mode === "local" && loopback))
+  )
+    throw new Error("Public and testnet uploads require ClamAV scanning.");
+  if (scanMode === "clamav" && !env.CLAMAV_HOST)
+    throw new Error("Set CLAMAV_HOST before enabling uploads.");
+  const quarantineBucket =
+    env.STORAGE_QUARANTINE_BUCKET || "rentbond-quarantine";
+  if (quarantineBucket === (env.STORAGE_BUCKET || "rentbond-private"))
+    throw new Error("Quarantine and clean storage must use different buckets.");
   if (gasAmount <= 0n || gasAmount > 100000000000000000n)
     throw new Error(
       "Test gas amount exceeds the 0.1 MON per-transfer ceiling.",
@@ -117,5 +141,11 @@ export function readConfig(env = process.env): Config {
     gasCooldownMs: positive("TEST_GAS_COOLDOWN_SECONDS", 3600) * 1000,
     trustProxy: env.TRUST_PROXY === "true",
     gasOrganizers,
+    scanMode: scanMode as Config["scanMode"],
+    clamavHost: env.CLAMAV_HOST || "127.0.0.1",
+    clamavPort: positive("CLAMAV_PORT", 3310, 65535),
+    scanTimeoutMs: positive("FILE_SCAN_TIMEOUT_SECONDS", 30, 45) * 1000,
+    scanMaxAgeHours: positive("FILE_SCAN_MAX_AGE_HOURS", 72, 168),
+    quarantineBucket,
   };
 }

@@ -14,7 +14,7 @@
  * Exit codes:
  *   0 = all tests passed
  *   1 = one or more tests failed
- *   2 = one or more tests skipped (acceptance suite incomplete)
+ *   2 = incomplete acceptance: one or more tests skipped
  *
  * Output:
  *   - Console: human-readable progress
@@ -114,6 +114,6 @@ console.log(`Failed : ${failed}`);
 console.log(`Skipped: ${skipped}`);
 console.log(`Report : ${reportPath}`);
 
-// A partially implemented suite cannot pass acceptance either.
+// Any skipped requirement makes the suite incomplete, including mixed pass/skip results.
 process.exitCode = failed > 0 ? 1 : skipped > 0 ? 2 : 0;
 if (skipped > 0) console.error(`INCOMPLETE: ${skipped} unimplemented test(s) were skipped.`);

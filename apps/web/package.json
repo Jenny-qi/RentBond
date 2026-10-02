@@ -17,6 +17,8 @@
     "pretest": "node src/server/generate-abi.mjs --solc",
     "db:migrate": "node src/server/cli.mjs migrate",
     "backend:worker": "node src/server/cli.mjs worker",
+    "backend:verify-deployment": "node src/server/cli.mjs verify-deployment",
+    "test:deployment": "node --test src/server/tests/postgres.integration.mjs src/server/tests/deployment.integration.mjs",
     "backend:cleanup": "node src/server/cli.mjs cleanup",
     "backend:abi": "node src/server/generate-abi.mjs --solc"
   },

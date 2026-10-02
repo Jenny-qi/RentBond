@@ -10,6 +10,7 @@ import { createStorage } from "../storage.ts";
 import { handleApi } from "../api.ts";
 import { newCommitment } from "../crypto.ts";
 import { TIMEOUT_POLICY } from "../leases.ts";
+import { runScanJob } from "../upload-scans.ts";
 
 export const addr = (n) => "0x" + n.toString(16).padStart(40, "0");
 export const hash = (n) => "0x" + n.toString(16).padStart(64, "0");
@@ -30,6 +31,8 @@ export async function fixture(t, overrides = {}) {
     gasCooldownMs: 3600000,
     trustProxy: false,
     gasOrganizers: [],
+    scanMode: "clamav",
+    quarantineBucket: "rentbond-quarantine",
     factoryAddress: addr(100),
     registryAddress: addr(101),
     ...overrides,
@@ -38,6 +41,7 @@ export async function fixture(t, overrides = {}) {
   assert.deepEqual(await migrate(db), [
     "0001_member_d.sql",
     "0002_new_account_invitations.sql",
+    "0003_upload_scans_worker_tasks.sql",
   ]);
   assert.deepEqual(await migrate(db), []);
   const snapshots = new Map();
@@ -88,6 +92,17 @@ export async function fixture(t, overrides = {}) {
     config,
     db,
     storage: createStorage(config),
+    quarantine: createStorage(config, true),
+    scanner: {
+      scan: async () => ({
+        clean: true,
+        engine: "ClamAV test-only injected scanner",
+      }),
+      health: async () => ({
+        ready: true,
+        engine: "ClamAV test-only injected scanner",
+      }),
+    },
     chain,
     now: () => now,
   };
@@ -368,6 +383,7 @@ export async function upload(app, actor, leaseId, extra = {}) {
     body: bytes,
   });
   assert.equal(put.status, 200, JSON.stringify(put.data));
+  await runScanJob(app);
   const submitted = await actor.request(
     "/api/documents/" + intent.data.documentId + "/submit",
     { method: "POST", json: { uploadId: intent.data.uploadId } },
