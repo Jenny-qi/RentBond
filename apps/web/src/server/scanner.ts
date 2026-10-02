@@ -91,6 +91,7 @@ export function createScanner(config: Config): FileScanner {
     const engine = await command("VERSION");
     const parts = engine.split("/");
     const date = parts.slice(2).join("/");
+    // VERSION omits the daemon's timezone; run clamd with TZ=UTC.
     const signatureAt = Date.parse(
       /(?:GMT|UTC|[+-]\d{4})$/.test(date) ? date : date + " UTC",
     );

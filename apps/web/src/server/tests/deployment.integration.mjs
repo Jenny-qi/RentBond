@@ -181,6 +181,19 @@ test("selected PostgreSQL + real ClamAV: deployment ACL, EICAR quarantine, two-c
   } finally {
     await third.close();
   }
+  lease.snapshot.blockHash = hash(999);
+  app.chain.blockHash = async () => hash(999);
+  await syncLease(app, lease.leaseId);
+  assert.equal((await a.get(tasks[0].id)).state, "cancelled");
+  lease.snapshot.blockHash = input.sourceHash;
+  app.chain.blockHash = async () => input.sourceHash;
+  await syncLease(app, lease.leaseId);
+  const restored = await Promise.all([a.enqueue(input), b.enqueue(input)]);
+  assert.equal(restored[0].id, tasks[0].id);
+  assert.equal(restored[1].id, tasks[0].id);
+  assert.equal(restored[0].state, "queued");
+  assert.equal(restored[0].attempts, 0);
+  assert.equal(restored[0].lock_token, null);
   // Exercise actual PostgreSQL RLS with SELECT/INSERT privileges granted to an untrusted role.
   const connection = await root.connect();
   try {

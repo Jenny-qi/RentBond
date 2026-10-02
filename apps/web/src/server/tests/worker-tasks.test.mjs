@@ -154,3 +154,32 @@ test("reorg atomically cancels unsigned work, fences signed work and requires co
   await syncLease(app, f.leaseId);
   assert.equal((await store.get(unsigned.id)).state, "cancelled");
 });
+
+test("a returning canonical source requeues cancelled unsigned work without reviving its old lock", async (t) => {
+  const f = await workerFixture(t),
+    { app, store, input, snapshot } = f;
+  const job = await store.enqueue(input),
+    first = await store.claim(input.dueAt);
+  snapshot.blockHash = hash(999);
+  app.chain.blockHash = async () => hash(999);
+  await syncLease(app, f.leaseId);
+  assert.equal((await store.get(job.id)).state, "cancelled");
+
+  snapshot.blockHash = input.sourceHash;
+  app.chain.blockHash = async () => input.sourceHash;
+  await syncLease(app, f.leaseId);
+  const restored = await store.enqueue(input);
+  assert.equal(restored.id, job.id);
+  assert.equal(restored.state, "queued");
+  assert.equal(restored.attempts, 0);
+  assert.equal(restored.lock_token, null);
+  assert.equal(restored.raw_transaction, null);
+  assert.equal(restored.error_code, null);
+  await assert.rejects(
+    store.prepare(job.id, first.lock_token, await sign(f)),
+    /ownership/,
+  );
+  const second = await store.claim(input.dueAt);
+  assert.equal(second.id, job.id);
+  assert.notEqual(second.lock_token, first.lock_token);
+});

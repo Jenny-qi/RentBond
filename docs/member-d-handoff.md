@@ -111,7 +111,16 @@ The [2026-09-27 review](../tests/reports/2026-09-27-member-d-review.md) supersed
 
 The selected verification environment is self-hosted PostgreSQL, local private storage and ClamAV. It requires no paid cloud product or VPS for development. PostgreSQL 16.15 and ClamAV 1.5.4 were exercised on local Ubuntu/WSL; the existing Docker PostgreSQL 17.11 configuration remains available. ClamAV used about 1 GB RAM in this run; allow memory and disk for signatures, quarantined originals and the clean copy.
 
-On Debian/Ubuntu install postgresql, clamav-daemon and clamav-freshclam. Run freshclam to completion, keep its update service running, and run clamd with infra/storage/clamd.conf on loopback (for example: sudo clamd --config-file=/absolute/path/to/infra/storage/clamd.conf). The config is foreground-oriented for a service supervisor. Use a dedicated database owner for the API/worker; never publish its connection string. Do not serve RENTBOND_DATA_DIR via a web server. Set DATABASE_URL, FILE_SCAN_MODE=clamav and CLAMAV_HOST, migrate, then start the web server and backend:worker. For public/testnet use HTTPS and the correct origin/network configuration.
+On Debian/Ubuntu install postgresql, clamav-daemon and clamav-freshclam. Run freshclam to completion and keep its update service running. Install the supplied loopback-only configuration and persistent service from the repository root:
+
+```sh
+sudo install -D -m 0644 infra/storage/clamd.conf /etc/rentbond/clamd.conf
+sudo install -D -m 0644 infra/storage/rentbond-clamd.service /etc/systemd/system/rentbond-clamd.service
+sudo systemctl daemon-reload
+sudo systemctl enable --now rentbond-clamd
+```
+
+The service sets TZ=UTC because ClamAV VERSION omits its timezone. Running clamd in another timezone can incorrectly reject a fresh signature database as future-dated, or shift its expiry. For a manual foreground run use sudo env TZ=UTC clamd --config-file=/absolute/path/to/infra/storage/clamd.conf. Git pins both files to LF; CRLF makes clamd reject numeric options on Windows/WSL checkouts. Use a dedicated database owner for the API/worker; never publish its connection string. Do not serve RENTBOND_DATA_DIR via a web server. Set DATABASE_URL, FILE_SCAN_MODE=clamav and CLAMAV_HOST, migrate, then start the web server and backend:worker. For public/testnet use HTTPS and the correct origin/network configuration.
 
 For upgrade, stop old web/worker processes before applying migration 0003. Existing originals become pending and are blocked until rescanned; previously ready ZIPs become failed with SCAN_UPGRADE_REQUIRED and must be regenerated. Legacy bytes are read from their old storage location, while all new PUTs write only to quarantine. Do not switch back to the old application after this migration.
 

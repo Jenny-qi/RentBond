@@ -1,0 +1,13 @@
+[Unit]
+Description=RentBond private upload scanner
+After=network.target
+
+[Service]
+Type=simple
+Environment=TZ=UTC
+ExecStart=/usr/sbin/clamd --config-file=/etc/rentbond/clamd.conf
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

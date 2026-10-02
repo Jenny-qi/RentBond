@@ -27,6 +27,8 @@ If an unsigned attempt fails, store.retry(id, token, "RPC_UNAVAILABLE") applies 
 
 On checkpoint mismatch, syncLease cancels all unsigned tasks for the lease and marks signed tasks (including previously confirmed ones) reconcile, preserving their raw bytes/hash/receipt and clearing old locks. E must reread the canonical state before enqueuing replacements. Calling syncLease repeatedly on a stable checkpoint does not invalidate good tasks.
 
+If a previously cancelled source becomes canonical again, enqueue requeues the same unsigned task with a fresh attempt budget and no old lock. Current checkpoint/deadline validation still applies. It never requeues a task containing signed bytes; those tasks require receipt reconciliation.
+
 store.reconcile(id) only resolves a reconcile task when the chain adapter finds its confirmed receipt; it never rebroadcasts. A missing receipt keeps the task blocked. If a reorg removed the source or a transaction remains absent, E/operator must inspect canonical state and signer nonce before any manual repair; do not delete the row or prepare another payment. Automatic cancellation/replacement of already signed work is intentionally unsupported.
 
 Jobs carry no role keys or arbitrary payload command. Database access is server-only, protected by RLS/revoked client grants. Log IDs, states and sanitized error codes; do not log raw transactions, credentials or private materials.

@@ -142,7 +142,7 @@ export function createTaskStore(
           input.sourceHash,
         ].join(":");
         const [row] = await sql.query(
-          "INSERT INTO worker_tasks(id,lease_id,kind,case_id,due_at,source_block,source_hash,dedupe_key,payload,created_at,updated_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$10) ON CONFLICT(dedupe_key) DO UPDATE SET dedupe_key=EXCLUDED.dedupe_key RETURNING *",
+          "INSERT INTO worker_tasks(id,lease_id,kind,case_id,due_at,source_block,source_hash,dedupe_key,payload,created_at,updated_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$10) ON CONFLICT(dedupe_key) DO UPDATE SET state='queued',attempts=0,next_attempt_at=0,lock_token=NULL,locked_until=NULL,error_code=NULL,updated_at=EXCLUDED.updated_at WHERE worker_tasks.state='cancelled' AND worker_tasks.raw_transaction IS NULL RETURNING *",
           [
             randomUUID(),
             input.leaseId,
@@ -155,6 +155,12 @@ export function createTaskStore(
             JSON.stringify(input),
             app.now(),
           ],
+        );
+        requireThat(
+          row,
+          409,
+          "TASK_CONFLICT",
+          "Reconcile existing signed work before rescheduling.",
         );
         return row;
       });

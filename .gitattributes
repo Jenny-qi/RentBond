@@ -10,3 +10,5 @@
 *.png binary
 *.docx binary
 infra/migrations/*.sql text eol=lf
+infra/storage/clamd.conf text eol=lf
+infra/storage/*.service text eol=lf
