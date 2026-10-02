@@ -53,3 +53,8 @@ SDK 首次安装发生 ECONNRESET，重试后成功；该下载故障已解决�
 ## 2026-09-27 D 复核
 
 D 分支已合入 main d26ddab 的 B/E 变更，修复与补充内容见 [复核报告](../tests/reports/2026-09-27-member-d-review.md)。D 分支推送不等于合并 main。PR #6 提供的公开测试网核验证据仍按其 PR 范围审查，不能推导出 Web/API/Worker 已完成公网联调。正式开放公众上传前，PRD 9.4 要求的文件扫描与隔离仍是发布阻断项；当前类型/大小/摘要及下载安全头不能替代扫描。
+
+## 2026-10-02 Worker RPC 与事件索引复核
+
+- RPC provider 现在对无 `result` 的响应明确报错，并拒绝无效的预期 chain ID；隔离单元测试 6/6 通过。IT-06 尚未运行真实投影故障场景。
+- `apps/worker/src/indexer/loop.ts` 的 Factory topic 和 Escrow topic 仍为占位值，手写事件字段与固定 ABI 的 indexed 定义也不一致；真实日志发现/解码尚不能作为已验收能力。该文件的 BigInt 状态 JSON 持久化及重组检测也需独立修复并跑 IT-03—06。不要用 provider 单测或脚手架 CI 关闭 BL12。
