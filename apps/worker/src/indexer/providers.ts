@@ -6,7 +6,7 @@
  * E owns; B reviews chain config.
  */
 
-import { MONAD_TESTNET, type NetworkConfig } from '@rentbond/shared';
+import type { NetworkConfig } from '@rentbond/shared';
 
 // TODO RB-12: replace with real viem import for wallet client
 // import { createPublicClient, createWalletClient, http, fallback } from 'viem';
@@ -31,8 +31,14 @@ async function rpcCall<T>(url: string, method: string, params: unknown[] = []): 
     signal: AbortSignal.timeout(8_000),
   });
   if (!res.ok) throw new Error(`RPC ${method} failed: HTTP ${res.status}`);
-  const payload = (await res.json()) as { result?: T; error?: { message: string } };
+  const payload = (await res.json()) as { result?: T; error?: { message: string } } | null;
+  if (payload === null || typeof payload !== 'object') {
+    throw new Error(`RPC ${method} returned an invalid response`);
+  }
   if (payload.error) throw new Error(`RPC ${method} error: ${payload.error.message}`);
+  if (!Object.hasOwn(payload, 'result') || payload.result === null || payload.result === undefined) {
+    throw new Error(`RPC ${method} returned no result`);
+  }
   return payload.result as T;
 }
 
@@ -91,6 +97,9 @@ export async function buildPublicClient(config: RpcConfig): Promise<PublicClient
 
 /** Verify the connected chain matches the expected chainId. Throws on mismatch. */
 export async function verifyChainId(rpcUrl: string, expectedChainId: number): Promise<boolean> {
+  if (!Number.isSafeInteger(expectedChainId) || expectedChainId <= 0) {
+    throw new Error('Expected chain ID must be a positive safe integer');
+  }
   const chainId = await rpcCall<string>(rpcUrl, 'eth_chainId', []).then((hex) => Number(BigInt(hex)));
   if (chainId !== expectedChainId) {
     throw new Error(

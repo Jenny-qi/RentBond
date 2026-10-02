@@ -43,6 +43,7 @@ jobs:
       - run: node scripts/check-scaffold.mjs
       - run: node --test scripts/verify-monad-evidence.test.mjs
       - run: node --test scripts/attest-monad-deployment.test.mjs
+      - run: node apps/worker/src/indexer/providers.test.mjs
 
   typecheck:
     name: Type check
@@ -87,6 +88,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
       - run: pnpm install --allow-build=esbuild --allow-build=core-js
       - run: pnpm --filter @rentbond/web run test
+      - run: pnpm --filter @rentbond/web run backend:abi
       - run: node tests/runner.mjs integration --only=IT-01,IT-02,IT-07,IT-08,IT-09
 
   test-e2e:

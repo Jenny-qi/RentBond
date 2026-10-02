@@ -1,6 +1,7 @@
 # 需求追踪表
 
 2026-10-02 D：FR-10/11/12/24/28/33/34、PRD 9.4、SC-04/12 与 AT27/28/29/33/43/44 的本轮增量为扫描隔离、C 等待扫描、旧版本/旧 ZIP 升级阻断，以及 E 可调用的 PostgreSQL 持久化任务/回滚边界。真实 ClamAV、PostgreSQL 并发/匿名 RLS、HTTP 与本地 EVM 的证据见 [D 第二阶段报告](../tests/reports/2026-10-02-member-d-stage-two.md)。本轮不将 API/数据库切片提升为全链路 Verified。总验收仍有 12 项跳过；现无论全部或部分跳过均返回非零。
+2026-10-02：修复验收运行器对部分 skipped 返回 0、CI 将全部 skipped 的退出码 2 转成成功的问题。E2E 八项仍未实现；该门槛修复不改变任何 FR/SC 的业务验证状态。
 
 2026-09-30：`CreateDemoShortProfile.s.sol` 与 `deployments/demo-short.example.json` 是尚未部署的短时配置模板；新增 256 组本地 fuzz 检查申索金额、分配和领取守恒，未改变 FR/SC 通过范围。Worker 调度只保存事件区块和 UTC 到期秒数，真实轮询/持久化/链上写入仍在 RB-12；E2E 全跳过现使验收命令失败。相关状态保持 In progress。
 
@@ -70,3 +71,5 @@ FR/SC 来自 v1.2。合约切片已填写实现文件和本地测试证据；跨
 | SC-16 | PRD 10/11章：同一材料作者的同一 bundleId/version 只能提交一次；回应必须引用已存在的精确承诺值 | B | contracts/src/ | `DepositEscrow.sol` | AT35 | In progress | pending | [local report](../tests/reports/2026-09-21-contracts-local.md) |
 
 AT 的逐条状态与来源完整场景见 [acceptance](acceptance.md)。展示变化 CH01—09 见 [changes](changes.md)，这些文档变化不代表 FR/SC 业务已完成。
+
+2026-10-02 Worker RPC provider 单元回归 6/6 通过，仅覆盖缺失/空 RPC 结果和链 ID 输入；IT-06 的故障期间投影不被改写尚未跨层执行，其余 Worker 事件/重组用例仍待实现。本次不提升 FR/SC/AT 状态。
