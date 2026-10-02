@@ -104,6 +104,14 @@ assert.equal(
     .status,
   200,
 );
+let scan;
+for (let attempt = 0; attempt < 45; attempt++) {
+  scan = await owner.request(intent.data.statusUrl);
+  assert.equal(scan.status, 200, JSON.stringify(scan.data));
+  if (["clean", "rejected"].includes(scan.data.scanStatus)) break;
+  await setTimeout(1000);
+}
+assert.equal(scan.data.scanStatus, "clean", JSON.stringify(scan.data));
 assert.equal(
   (
     await owner.request(

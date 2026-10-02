@@ -7,6 +7,8 @@ import { readConfig } from "./config.ts";
 import { openDatabase, migrate } from "./db.ts";
 import { createChain } from "./chain.ts";
 import { createStorage } from "./storage.ts";
+import { createScanner } from "./scanner.ts";
+import { runScanJob } from "./upload-scans.ts";
 import {
   runExportJob,
   runGasJob,
@@ -50,10 +52,15 @@ const app = {
   db,
   chain: createChain(config),
   storage: createStorage(config),
+  quarantine: createStorage(config, true),
+  scanner: createScanner(config),
   now: Date.now,
 };
 try {
-  if (command === "migrate")
+  if (command === "verify-deployment") {
+    const { verifyDeployment } = await import("./deployment-check.ts");
+    console.log(JSON.stringify(await verifyDeployment(app)));
+  } else if (command === "migrate")
     console.log(JSON.stringify({ applied: await migrate(db) }));
   else if (command === "worker") {
     let stopping = false;
@@ -65,6 +72,7 @@ try {
     });
     let cycle = 0;
     do {
+      await runScanJob(app);
       await runExportJob(app);
       await runGasJob(app);
       if (cycle++ % 12 === 0) {
@@ -134,7 +142,7 @@ try {
     console.log(JSON.stringify(await seedLocal(app)));
   } else
     throw new Error(
-      "Commands: init, migrate, worker [--once], cleanup, purge-requested LEASE_ID, profile-import FILE, sync LEASE_ID, seed",
+      "Commands: init, migrate, verify-deployment, worker [--once], cleanup, purge-requested LEASE_ID, profile-import FILE, sync LEASE_ID, seed",
     );
 } finally {
   await db.close();

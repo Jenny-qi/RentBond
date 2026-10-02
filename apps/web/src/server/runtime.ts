@@ -5,6 +5,8 @@ import { createStorage } from "./storage.ts";
 import type { App } from "./context.ts";
 import { runExportJob, runGasJob, cleanup } from "./jobs.ts";
 import { syncLease } from "./projections.ts";
+import { createScanner } from "./scanner.ts";
+import { runScanJob } from "./upload-scans.ts";
 
 const state = globalThis as typeof globalThis & {
   rentbondBackend?: Promise<App>;
@@ -15,7 +17,7 @@ export async function getApp(): Promise<App> {
       db = await openDatabase(config);
     try {
       const migrations = await db.query(
-        "SELECT name FROM schema_migrations WHERE name='0002_new_account_invitations.sql'",
+        "SELECT name FROM schema_migrations WHERE name='0003_upload_scans_worker_tasks.sql'",
       );
       if (!migrations.length)
         throw new Error("Run db:migrate before starting the API.");
@@ -23,6 +25,8 @@ export async function getApp(): Promise<App> {
         config,
         db,
         storage: createStorage(config),
+        quarantine: createStorage(config, true),
+        scanner: createScanner(config),
         chain: createChain(config),
         now: Date.now,
       };
@@ -33,6 +37,7 @@ export async function getApp(): Promise<App> {
           if (running) return;
           running = true;
           try {
+            await runScanJob(app);
             await runExportJob(app);
             await runGasJob(app);
             if (cycle++ % 12 === 0) {

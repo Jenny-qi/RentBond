@@ -1,6 +1,6 @@
 # 依赖与环境验证矩阵
 
-当前 Node 骨架和本地合约工具已运行；网页供应商版本和 Monad 兼容性仍不是验证结果。尚无 pnpm 锁文件。
+当前 Node 骨架和本地合约工具已运行；网页供应商版本和 Monad 兼容性仍不是验证结果。主分支已有 pnpm workspace 与锁文件；D 本轮沿用 Web 的固定依赖验证，统一安装链路仍由 E 维护。
 
 | 组件 | 基线选择 | 精确版本/状态 | 验证责任与证据 |
 | --- | --- | --- | --- |
@@ -35,6 +35,8 @@ All versions are pinned in the npm lockfiles. Executed evidence is in the [D rep
 | [tmp](https://github.com/raszi/node-tmp) | override 0.2.7 | MIT | Patch transitive development dependency advisory |
 | [PostCSS](https://github.com/postcss/postcss) | override 8.5.28 | MIT | Patch transitive build dependency advisory |
 | [sharp](https://github.com/lovell/sharp) | override 0.35.4 | Apache-2.0 | Patched image dependency; Next build validation |
+| [ClamAV](https://www.clamav.net/) | 1.5.4; Ubuntu package 1.5.4+dfsg-0ubuntu0.24.04.1 | GPL-2.0 | External INSTREAM daemon; real EICAR/PDF rejection and fresh-signature checks on 2026-10-02; no npm dependency added |
+| [PostgreSQL](https://www.postgresql.org/) | 16.15; Ubuntu package 16.15-0ubuntu0.24.04.1 | PostgreSQL License | Additional native self-hosted validation on 2026-10-02; existing pinned Docker 17.11 option retained |
 
 Supabase uses its documented REST Storage protocol, without an additional SDK dependency. Protocol tests use a local server; hosted bucket policy acceptance remains pending. D's root commands delegate to the web package; E still owns the unified monorepo tooling.
 

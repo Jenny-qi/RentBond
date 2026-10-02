@@ -1,5 +1,13 @@
 # 阻塞与待核事项
 
+## 2026-10-02 D 第二阶段复验
+
+- BL08：C 主分支已经接上真实 API/ABI；本轮补扫描状态消费、保留待处理上传与账号/页面切换中止。真实 SIWE、材料、导出、Gas 的后端与本地 EVM 继续通过；完整浏览器多角色/真机同址恢复仍需 C/E 验收。
+- BL13：D 已交付 migration 0003、apps/worker/src/persistence/backend.mjs、幂等/锁/持久化签名交易/原子 reorg 测试，并完成真实 PostgreSQL 多连接复验。E 原 JSON 主执行器尚未切换到该接口，真实到期签名/执行与完整停运恢复仍 Open。接入步骤见 [Worker 接口](interfaces/worker-persistence.md)。
+- BL15：D 扫描/隔离实现与所选本机 PostgreSQL + ClamAV + 私有目录复验已完成；真实 EICAR PDF 被拒绝，干净文件与导出通过。公网域名/TLS/主机 ACL、可选 Supabase 托管策略，以及 B 的 DEMO_SHORT 公网闭环仍待各自验收，整体不关闭。
+- BL12：实跑发现混合 passed/skipped 仍退出 0，本轮修复，并移除 CI 把退出 2 转回成功的逻辑、加入 Web 回归；总验收 5 passed / 12 skipped 现退出 2。D/Web 68 项和独立部署依赖 2 项均 0 skipped，不混算总验收；远程 CI 安装链路及完整 E2E 仍需 E 验收。
+- 本机 Docker 启动失败，未以它作为本轮通过环境。改用原生 Ubuntu/WSL PostgreSQL 16.15、ClamAV 1.5.4 完成真实验证；无云部署或收费服务。详见 [证据和边界](../tests/reports/2026-10-02-member-d-stage-two.md)。
+
 ## 2026-09-30 进展与剩余门槛
 
 - BL12：运行器对任何 skipped 退出非零；四个已有 D 权限用例及 Worker 时间单位回归可单独在 CI 运行。全量 Integration 仍有四项未实现，E2E 八项未实现；CI 全量 E2E 将明确失败，直至真实跨层用例落地。**未关闭**。

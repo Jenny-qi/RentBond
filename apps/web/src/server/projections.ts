@@ -8,6 +8,7 @@ import { canonicalJson } from "./crypto.ts";
 import { hash } from "./schemas.ts";
 import { z } from "zod";
 import { audit } from "./auth.ts";
+import { invalidateWorkerTasks } from "./worker-tasks.ts";
 
 function checkTerms(lease: Row, live: ChainSnapshot) {
   verifyManifest(lease);
@@ -224,6 +225,7 @@ export async function syncLease(app: App, id: string): Promise<void> {
         [JSON.stringify({ canonical: false }), id],
       );
       start = deploymentBlock;
+      await invalidateWorkerTasks(sql, id, app.now());
     }
     // Bound each job's RPC work and keep its snapshot at the same checkpoint as its events.
     const target =
