@@ -68,3 +68,5 @@ FR/SC 来自 v1.2。合约切片已填写实现文件和本地测试证据；跨
 | SC-16 | PRD 10/11章：同一材料作者的同一 bundleId/version 只能提交一次；回应必须引用已存在的精确承诺值 | B | contracts/src/ | `DepositEscrow.sol` | AT35 | In progress | pending | [local report](../tests/reports/2026-09-21-contracts-local.md) |
 
 AT 的逐条状态与来源完整场景见 [acceptance](acceptance.md)。展示变化 CH01—09 见 [changes](changes.md)，这些文档变化不代表 FR/SC 业务已完成。
+
+2026-10-02 Worker RPC provider 单元回归 6/6 通过，仅覆盖缺失/空 RPC 结果和链 ID 输入；IT-06 的故障期间投影不被改写尚未跨层执行，其余 Worker 事件/重组用例仍待实现。本次不提升 FR/SC/AT 状态。
