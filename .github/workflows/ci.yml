@@ -43,6 +43,7 @@ jobs:
       - run: node scripts/check-scaffold.mjs
       - run: node --test scripts/verify-monad-evidence.test.mjs
       - run: node --test scripts/attest-monad-deployment.test.mjs
+      - run: node apps/worker/src/indexer/providers.test.mjs
 
   typecheck:
     name: Type check
