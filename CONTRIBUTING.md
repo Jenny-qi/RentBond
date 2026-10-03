@@ -1,6 +1,6 @@
 # 协作规范
 
-先读 [分工](docs/team.md)、[MVP](docs/MVP-SPEC.md)、[工程 PRD](docs/PRD.md)。当前仓库是启动框架，业务未实现。
+先读 [分工](docs/team.md)、[MVP](docs/MVP-SPEC.md)、[工程 PRD](docs/PRD.md)。当前仓库已有合约、Web/API、Worker 与本地跨层测试；公网、真机和独立复核尚未验收，最新状态见 README。
 
 ## 开发步骤
 
@@ -26,4 +26,4 @@
 
 需求状态仅为 `Not started`、`In progress`、`Blocked`、`Verified`。单次测试运行结果另记 `Not run`、`Passed`、`Failed`，失败不应伪装成未开始。`Verified` 必须有 commit、命令和可检查证据，见 [acceptance](docs/acceptance.md)。
 
-当前 CI 只检查骨架。E 在 RB-02/13 逐步添加格式、TypeScript、合约、权限、integration/e2e 和构建，启用真实测试后才更改 CI 名称及保护规则。
+当前 CI 已运行环境、骨架、TypeScript、合约、Web/权限/Integration 和 Chromium E2E 检查。PR #17 的 7 项检查均通过，E2E 8 passed / 0 skipped；CI 不替代公网、真机或非作者审阅，分支保护仍由团队按实际规则配置。
