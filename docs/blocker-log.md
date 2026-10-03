@@ -1,5 +1,18 @@
 # 阻塞与待核事项
 
+## 当前基线：PR #17 合并后的 main（2026-10-03）
+
+源码基线 `ffe56a8c8cb7654ae0864a7d3c8e2a426b815be0`，已包含 PR #14/#15 的 Worker 与 PR #17 的浏览器测试。PR #17 的 7 项自动检查通过；本地 Integration 为 9 passed / 0 skipped、Chromium E2E 为 8 passed / 0 skipped、Web 为 79 passed。证据见 [Worker 报告](../tests/reports/2026-10-03-worker-runtime.md)、[后续复查](../tests/reports/2026-10-03-worker-followup.md)及[浏览器报告](../tests/reports/2026-10-03-browser-e2e.md)。以下按日期保留的旧状态是历史快照，以本节为当前进度。
+
+真实 Monad DEMO_SHORT 的 700/100/200 → 850/150 和 900/100 分配/领取、Mera/WebAuthn PRF 两类真机同址恢复、所选公网 PostgreSQL/Worker/TLS/私有文件 ACL 验收、第二人新 clone 复现与独立资金审查仍待完成。CI 通过不将这些需求提升为 Verified。
+
+### 当前剩余门槛（历史 BL 表的更新）
+
+- BL12：本地全跳过/假成功与未实现 E2E 已解决，9 项 Integration + 8 项 E2E 均实际执行并通过；公网、真机、独立复核仍 In progress。
+- BL13：主执行器已接 D 持久化接口、固定 ABI、真实本地日志与到期签名/重启；所选 PostgreSQL/Monad 部署与故障恢复演练仍 Open。
+- BL15：扫描隔离已有本机 PostgreSQL/ClamAV 证据；公网 ACL、明确 DEMO_SHORT 部署及完整链上结算仍 Open。
+- BL06、TS04、TS05：独立资金审查、第二人完整复现及真实设备同址恢复仍待完成。
+
 ## 2026-10-02 D main 检查与修复
 
 - 已核实 PR #7/#12 及全部 D 提交在 main。复验发现并修复 clamd.conf 被 Windows 转成 CRLF、ClamAV 日期缺时区导致新库误判，以及回滚后原区块恢复时未签名任务仍 cancelled 的问题。Web 69 项、真实 PostgreSQL/ClamAV、HTTP 与构建通过；见 [证据](../tests/reports/2026-10-02-member-d-main-review.md)。

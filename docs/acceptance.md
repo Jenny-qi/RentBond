@@ -1,5 +1,11 @@
 # 验收清单
 
+## 当前基线：PR #17 合并后的 main（2026-10-03）
+
+源码基线 `ffe56a8c8cb7654ae0864a7d3c8e2a426b815be0`，已包含 PR #14/#15 的 Worker 与 PR #17 的浏览器测试。PR #17 的 7 项自动检查通过；本地 Integration 为 9 passed / 0 skipped、Chromium E2E 为 8 passed / 0 skipped、Web 为 79 passed。证据见 [Worker 报告](../tests/reports/2026-10-03-worker-runtime.md)、[后续复查](../tests/reports/2026-10-03-worker-followup.md)及[浏览器报告](../tests/reports/2026-10-03-browser-e2e.md)。以下按日期保留的旧状态是历史快照，以本节为当前进度。
+
+真实 Monad DEMO_SHORT 的 700/100/200 → 850/150 和 900/100 分配/领取、Mera/WebAuthn PRF 两类真机同址恢复、所选公网 PostgreSQL/Worker/TLS/私有文件 ACL 验收、第二人新 clone 复现与独立资金审查仍待完成。CI 通过不将这些需求提升为 Verified。
+
 2026-10-02 main 复核：D 两阶段交付已保留在 main；修复扫描配置 LF/UTC 和回滚后原主链回归的未签名任务重排。当前 Web 69 passed / 0 skipped，真实 PostgreSQL/ClamAV 集成、类型检查、生产构建与 HTTP 通过。总验收仍为 5 passed / 12 skipped、原生退出码 2，C/E 联合场景继续 In progress。命令、失败复现与固定实现 commit 见 [D main 检查记录](../tests/reports/2026-10-02-member-d-main-review.md)。
 
 2026-10-02 D 第二阶段：增加 ClamAV 隔离扫描、C 上传等待/重试、迁移 0003、E 数据库任务适配器与原子回滚；本机 PostgreSQL 16.15 + ClamAV 1.5.4 + 私有目录已实际复验。Web 68 项、真实部署依赖集成 2 项、生产构建与 HTTP 冒烟通过，0 跳过；见 [D 第二阶段报告](../tests/reports/2026-10-02-member-d-stage-two.md)。总验收为 5 passed / 12 skipped，修复混合通过/跳过仍返回成功的问题，现退出 2。完整 Worker、公众环境和真机恢复没有因此 Verified；保留以下历史记录与团队 TS04 状态。
@@ -12,7 +18,7 @@
 
 2026-09-29 阶段复查：当前 HEAD 为 `0dcc55f`；阶段复查 记录跨层运行实际为 0 通过、16 跳过且返回成功，以及本机依赖缺失导致的 Web 检查失败。历史模块通过不等于当前跨层通过；AT12/23/26、AT29—31/47/51、TS04/05 等仍待完整证据，本次不提升验收状态。
 
-以下保留原 PRD 15.2 的全部 AT 场景及预期。合约切片已有本地测试，跨层、测试网和独立复核仍未完成；骨架检查不计入 AT。负责人是初始分配，可在 team 确认后调整。
+以下保留原 PRD 15.2 的全部 AT 场景及预期。合约与本地跨层切片已有测试，测试网、真机和独立复核仍未完成；骨架检查不计入 AT。负责人是初始分配，可在 team 确认后调整。
 
 需求状态：Not started / In progress / Blocked / Verified。运行结果独立记 Not run / Passed / Failed。Verified 必须有固定 commit、命令、环境与证据；失败记录不可删除或改成通过。
 
@@ -34,7 +40,7 @@
 | --- | --- | --- | --- | --- | --- | --- |
 | AT01 | R/F 服务方案未授权、已撤销或不覆盖本租约时，T 尝试 fund。 | 拒绝，余额和状态不变。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md) |
 | AT02 | T/L 已接受且服务有效，T 精确存入 D；再次存入。 | 第一次成功；第二次拒绝，不多收押金。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md) |
-| AT03 | approve 成功但 fund 未签或失败。 | 显示未存入；可重试／撤销授权。 | C/D/E | In progress | Not run | [C local slice](../tests/reports/2026-09-25-member-c.md) |
+| AT03 | approve 成功但 fund 未签或失败。 | 显示未存入；可重试／撤销授权。 | C/D/E | In progress | Passed (local browser slice) | [C local slice](../tests/reports/2026-09-25-member-c.md); [local browser slice](../tests/reports/2026-10-03-browser-e2e.md) |
 | AT04 | 无关地址尝试 submitClaims、proposeDecision、withdraw。 | 全部被合约拒绝。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-23-member-b-contracts-local.md) |
 | AT05 | 租约自然到期但未交接。 | 没有自动全额退款。 | B/E | Not started | Not run | — |
 | AT06 | 双方确认交接。 | 从确认时刻启动固定申索窗口。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md) |
@@ -43,21 +49,21 @@
 | AT09 | 房东未申索，窗口结束。 | closeClaims 将 D 全部分配给 T。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md) |
 | AT10 | 房东提交超过 D 的金额或第 11 项。 | 合约拒绝整个提交，不留下半份清单。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md); [C local slice](../tests/reports/2026-09-25-member-c.md) |
 | AT11 | 房东清单已提交，尝试再次提交或提高金额。 | 拒绝；追加资料不能改原金额。 | B/E | In progress | Not run | [C local slice](../tests/reports/2026-09-25-member-c.md) |
-| AT12 | 1,000 押金，申索 100＋200，认可 100、争议 200。 | 截止后 T 可领 700、L 可领 100、U=200。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md); [C local slice](../tests/reports/2026-09-25-member-c.md) |
+| AT12 | 1,000 押金，申索 100＋200，认可 100、争议 200。 | 截止后 T 可领 700、L 可领 100、U=200。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md); [C local slice](../tests/reports/2026-09-25-member-c.md); [local browser slice](../tests/reports/2026-10-03-browser-e2e.md) |
 | AT13 | 租客对 200 不回应。 | 回应截止后该金额进入处理，不自动给 L。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md); [C local slice](../tests/reports/2026-09-25-member-c.md) |
 | AT14 | 房东在 closeClaims 前撤回 200。 | 截止结算时相应金额归 T，且不重复计入 D-C。 | B/E | In progress | Not run | [C local slice](../tests/reports/2026-09-25-member-c.md) |
 | AT15 | 房东在 closeClaims 后、案件创建前撤回未分配 200。 | 200 即时记入 T credit，不影响已分配款。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md) |
-| AT16 | 主结果给争议 200 中的 50 给 L。 | 提出时不转钱；无挑战并到期后 T 增 150，L 增 50。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md); [C local slice](../tests/reports/2026-09-25-member-c.md) |
+| AT16 | 主结果给争议 200 中的 50 给 L。 | 提出时不转钱；无挑战并到期后 T 增 150，L 增 50。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md); [C local slice](../tests/reports/2026-09-25-member-c.md); [local browser slice](../tests/reports/2026-10-03-browser-e2e.md) |
 | AT17 | 在主结果窗口内挑战。 | 进入 F；原 finalizePrimary 无法生效。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md); [C local slice](../tests/reports/2026-09-25-member-c.md) |
 | AT18 | 主处理人超时后才提交结果。 | 旧提交失败；可升级给 F。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md); [C local slice](../tests/reports/2026-09-25-member-c.md) |
 | AT19 | F 补充材料期尚未结束就裁决。 | 拒绝；过早终结不成立。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md); [C local slice](../tests/reports/2026-09-25-member-c.md) |
 | AT20 | CLAIMS 的 F 固定期限到达仍无结果。 | 进入 ExitPending；旧 credit 可领；3 天后可 finalizeTimeout，剩余争议款给 T。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md); [C local slice](../tests/reports/2026-09-25-member-c.md) |
 | AT21 | 已领取 700 和 100 后，双方和解剩余 200。 | 只结算 U=200；不再分配已付 800。 | B/E | In progress | Not run | [C local slice](../tests/reports/2026-09-25-member-c.md) |
 | AT22 | 和解提出后发生其他分配，再确认旧提案。 | StaleProposal；要求重新确认。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md); [C local slice](../tests/reports/2026-09-25-member-c.md) |
-| AT23 | 同一项目、同一结果、同一领取重复调用。 | 不重复分配或支付；不变量成立。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md); [C local slice](../tests/reports/2026-09-25-member-c.md) |
-| AT24 | withdraw 转账失败或模拟恶意代币回调。 | 回滚并保留可领取额；重入不导致超付。 | B/E | Not started | Not run | — |
+| AT23 | 同一项目、同一结果、同一领取重复调用。 | 不重复分配或支付；不变量成立。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md); [C local slice](../tests/reports/2026-09-25-member-c.md); [local browser slice](../tests/reports/2026-10-03-browser-e2e.md) |
+| AT24 | withdraw 转账失败或模拟恶意代币回调。 | 回滚并保留可领取额；重入不导致超付。 | B/E | Not started | Passed (local browser slice) | —; [local browser slice](../tests/reports/2026-10-03-browser-e2e.md) |
 | AT25 | 外部地址直接给合约多转 1 MockUSD。 | 已登记 D 不变，业务不能把额外转入当作新押金。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md) |
-| AT26 | deadline-1 秒、deadline、deadline+1 秒分别操作。 | 提交和推进权限符合统一边界，无双重合法路径。 | B/E | In progress | Not run | [C local slice](../tests/reports/2026-09-25-member-c.md) |
+| AT26 | deadline-1 秒、deadline、deadline+1 秒分别操作。 | 提交和推进权限符合统一边界，无双重合法路径。 | B/E | In progress | Passed (local browser slice) | [C local slice](../tests/reports/2026-09-25-member-c.md); [local browser slice](../tests/reports/2026-10-03-browser-e2e.md) |
 | AT27 | 用另一个租约用户读取照片、导出包和处理页。 | 返回 403 或不暴露资源的等价响应。 | D/E | In progress | Passed (D local slice) | [D local slice](../tests/reports/2026-09-26-member-d.md) |
 | AT28 | 重放 SIWE nonce、替换域、换链或过期。 | 登录失败；不建立新会话。 | D/E | In progress | Passed (D local slice) | [D local slice](../tests/reports/2026-09-26-member-d.md) |
 | AT29 | 链上成功后数据库暂时故障，随后重放事件。 | 状态补齐且只有一条有效金额记录。 | E（B/C/D协作） | Not started | Not run | — |
@@ -77,12 +83,12 @@
 | AT43 | 测试补给中断、余额不足、重复补给与限额超出。 | 不代签用户；展示真实失败，可受限重试；押金不被用作 Gas。 | C/D/E | In progress | Passed (D local slice) | [D local slice](../tests/reports/2026-09-26-member-d.md) |
 | AT44 | 未升级时 F 请求读取争议材料；升级后读取。 | 前者拒绝，后者仅限该案；失效链接和跨案访问仍被拒绝。 | D/E | In progress | Passed (D local slice) | [D local slice](../tests/reports/2026-09-26-member-d.md) |
 | AT45 | Active 无人交接，直到 leaseEndAt 后才启动。 | 申索与回应按固定日期计算；在截止前可提交清单，迟调用不能延后。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md) |
-| AT46 | T 已领 700、L 已领 100、争议 200；R/F 均超时。 | timeoutAt 前禁止释放；到期 200 给 T；最终 T900/L100；重复调用不重复分配。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md); [C local slice](../tests/reports/2026-09-25-member-c.md) |
+| AT46 | T 已领 700、L 已领 100、争议 200；R/F 均超时。 | timeoutAt 前禁止释放；到期 200 给 T；最终 T900/L100；重复调用不重复分配。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md); [C local slice](../tests/reports/2026-09-25-member-c.md); [local browser slice](../tests/reports/2026-10-03-browser-e2e.md) |
 | AT47 | Worker 全程停止，直到 hardEndAt 后才执行。 | 固定受益人金额守恒、U 归零；延迟开案/升级不增加期限，第三方可触发。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md); [C local slice](../tests/reports/2026-09-25-member-c.md) |
 | AT48 | 已认可扣款或未被挑战且已成熟主结果，调用 expireEscrow。 | 先尊重及时成立的有效金额权利，再退剩余 U；已挑战结果不复活。 | B/E | In progress | Not run | [C local slice](../tests/reports/2026-09-25-member-c.md) |
 | AT49 | 双方和解、R/F 旧结果、退出交易交错。 | 每种顺序最多分配一次；退出后旧提案/案件失效；所有 credit 保留。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md); [C local slice](../tests/reports/2026-09-25-member-c.md) |
 | AT50 | 请求提前交接且服务失效；再次请求、拖到约定到期。 | 不会因提前请求超时立即退全部；leaseEndAt 与 hardEndAt 不变，不可无限循环延期。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md) |
-| AT51 | 停止主站、API、数据库、Worker 和官方 Gas 补给；使用独立工具。 | 从原账户/链上记录恢复；第三方提供费用并通过 withdrawFor 向原受益人支付；无后台权限依赖。若同账户恢复不可行则验收失败。 | E（B/C/D协作） | In progress | Passed (local contract slice only) | [local report](../tests/reports/2026-09-21-contracts-local.md); [D local slice](../tests/reports/2026-09-26-member-d.md) |
+| AT51 | 停止主站、API、数据库、Worker 和官方 Gas 补给；使用独立工具。 | 从原账户/链上记录恢复；第三方提供费用并通过 withdrawFor 向原受益人支付；无后台权限依赖。若同账户恢复不可行则验收失败。 | E（B/C/D协作） | In progress | Passed (local contract slice only) | [local report](../tests/reports/2026-09-21-contracts-local.md); [D local slice](../tests/reports/2026-09-26-member-d.md); [local browser slice](../tests/reports/2026-10-03-browser-e2e.md) |
 | AT52 | 核对双方确认的自然语言条款、参数和部署合约。 | UTC 日期、timeoutPolicy、hardEndAt、条款哈希一致；禁止创建无最终期限或服务范围不匹配的租约。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md) |
 
 ## 证据记录格式
