@@ -20,7 +20,9 @@
     "backend:verify-deployment": "node src/server/cli.mjs verify-deployment",
     "test:deployment": "node --test src/server/tests/postgres.integration.mjs src/server/tests/deployment.integration.mjs",
     "backend:cleanup": "node src/server/cli.mjs cleanup",
-    "backend:abi": "node src/server/generate-abi.mjs --solc"
+    "backend:abi": "node src/server/generate-abi.mjs --solc",
+    "test:worker": "node --test src/server/tests/worker-runtime.test.mjs",
+    "pretest:worker": "node src/server/generate-abi.mjs --solc"
   },
   "dependencies": {
     "@category-labs/mera": "0.2.0",
