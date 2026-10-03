@@ -1,62 +1,61 @@
-/**
- * Worker main process entry point.
- *
- * Independent long-running Node.js process. Cannot rely on web request lifecycle.
- *
- * Usage:
- *   node apps/worker/src/main.ts
- *
- * Environment (from .env):
- *   RPC_URL, RPC_FALLBACK_URL, CHAIN_ID,
- *   FACTORY_ADDRESS, RESOLVER_REGISTRY_ADDRESS,
- *   DEPLOYMENT_BLOCK, PERSISTENCE_PATH,
- *   WORKER_BATCH_SIZE, WORKER_POLL_INTERVAL_MS, WORKER_GAS_ACCOUNT
- *
- * E owns; B/D collaborate on event schema and projection mapping.
- */
+import { readFile } from 'node:fs/promises';
+import { setTimeout } from 'node:timers/promises';
+import { pathToFileURL } from 'node:url';
+import { privateKeyToAccount } from 'viem/accounts';
+import { loadWorkerConfig } from './config.ts';
+import { createWorkerRpc } from './rpc.mjs';
+import { runIndexerCycle } from './indexer/loop.ts';
+import { runExecutorCycle } from './jobs/executor.ts';
+import { openDatabase, migrate } from '../../web/src/server/db.ts';
+import { createChain } from '../../web/src/server/chain.ts';
+import { createStorage } from '../../web/src/server/storage.ts';
+import { createScanner } from '../../web/src/server/scanner.ts';
 
-import { loadWorkerConfig } from './config.js';
-import { startIndexer } from './indexer/loop.js';
-import { startExecutor } from './jobs/executor.js';
-
-async function main() {
-  // Validate all env vars before doing anything else
-  const config = loadWorkerConfig();
-
-  console.log('[worker] Starting RentBond Worker');
-  console.log(`[worker] chain=${config.chainId}`);
-  console.log(`[worker] factory=${config.factoryAddress}`);
-  console.log(`[worker] registry=${config.resolverRegistryAddress}`);
-  console.log(`[worker] deploymentBlock=${config.deploymentBlock}`);
-  console.log(`[worker] batchSize=${config.batchSize} pollInterval=${config.pollIntervalMs}ms`);
-  console.log(`[worker] persistence=${config.persistencePath}`);
-  if (config.workerGasAccount) {
-    console.log(`[worker] workerGasAccount=${config.workerGasAccount}`);
+export async function runWorker(app: any, rpc: any, config: any, options: { once?: boolean; signal?: AbortSignal } = {}) {
+  while (!options.signal?.aborted) {
+    try {
+      const indexed = await runIndexerCycle(app, rpc, config);
+      // Catch up before signing: an outdated projection is not a write preflight.
+      if (config.execute && indexed.caughtUp) await runExecutorCycle(app, rpc);
+    } catch {
+      console.error('[worker] CYCLE_FAILED; writes paused for this cycle');
+      if (options.once) throw new Error('WORKER_CYCLE_FAILED');
+    }
+    if (options.once) break;
+    try { await setTimeout(config.pollIntervalMs, undefined, { signal: options.signal }); }
+    catch (error) { if (!options.signal?.aborted) throw error; }
   }
-
-  // Start indexer loop (always)
-  const indexerPromise = startIndexer(config);
-
-  // Start executor only if a gas account is configured
-  let executorPromise: Promise<void> | undefined;
-  if (config.workerGasAccount) {
-    executorPromise = startExecutor({
-      rpcUrl: config.rpcUrl,
-      workerGasAccount: config.workerGasAccount,
-      persistencePath: config.persistencePath,
-      pollIntervalMs: config.pollIntervalMs,
-      chainId: config.chainId,
-    });
-  } else {
-    console.log('[worker] No WORKER_GAS_ACCOUNT — executor not started (read-only mode)');
-  }
-
-  // Wait for whichever exits first (SIGTERM/SIGINT triggers both)
-  await Promise.race([indexerPromise, executorPromise].filter(Boolean));
-  console.log('[worker] Shutdown complete.');
 }
 
-main().catch((err) => {
-  console.error('[worker] Fatal:', err);
-  process.exit(1);
-});
+export async function main() {
+  const config = loadWorkerConfig();
+  let account;
+  if (config.execute) {
+    const key = (await readFile(config.keyFile!, 'utf8')).trim();
+    if (!/^0x[0-9a-fA-F]{64}$/.test(key)) throw new Error('Invalid Worker key file');
+    account = privateKeyToAccount(key as `0x${string}`);
+    if (account.address.toLowerCase() !== config.workerGasAccount) throw new Error('WORKER_SIGNER_MISMATCH');
+    if (config.sponsorKey && privateKeyToAccount(config.sponsorKey as `0x${string}`).address.toLowerCase() === config.workerGasAccount) throw new Error('Worker and gas sponsor must be separate accounts');
+  }
+  const db = await openDatabase(config);
+  const stop = new AbortController();
+  const shutdown = () => stop.abort();
+  process.once('SIGINT', shutdown);
+  process.once('SIGTERM', shutdown);
+  try {
+    await migrate(db);
+    const app = { config, db, chain: createChain(config), storage: createStorage(config),
+      quarantine: createStorage(config, true), scanner: createScanner(config), now: Date.now };
+    const rpc = createWorkerRpc(config, account);
+    console.log(`[worker] chain=${config.chainId} execution=${config.execute} storage=database`);
+    await runWorker(app, rpc, config, { once: process.argv.includes('--once'), signal: stop.signal });
+  } finally {
+    process.removeListener('SIGINT', shutdown);
+    process.removeListener('SIGTERM', shutdown);
+    await db.close();
+  }
+}
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main().catch(() => { console.error('[worker] START_OR_CYCLE_FAILED; check configuration and service availability'); process.exitCode = 1; });
+}

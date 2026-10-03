@@ -11,23 +11,19 @@ import type { Sql, Row } from "./db.ts";
 import { escrowAbi } from "./chain.ts";
 import { hash, uuid } from "./schemas.ts";
 import { requireThat } from "./errors.ts";
+import { workerActions, actionDeadline, type WorkerKind } from "./worker-actions.ts";
 
 const uint = z.string().regex(/^(0|[1-9][0-9]{0,19})$/);
 const inputSchema = z
   .object({
     leaseId: uuid,
-    kind: z.enum(["CLOSE_CLAIMS", "MARK_SERVICE_TIMEOUT", "FINALIZE_TIMEOUT"]),
+    kind: z.enum(Object.keys(workerActions) as [WorkerKind, ...WorkerKind[]]),
     caseId: uint.optional(),
     dueAt: uint.refine((v) => BigInt(v) > 0n && BigInt(v) < 100000000000n),
     sourceBlock: uint,
     sourceHash: hash,
   })
   .strict();
-const functions = {
-  CLOSE_CLAIMS: "closeClaims",
-  MARK_SERVICE_TIMEOUT: "markServiceTimeout",
-  FINALIZE_TIMEOUT: "finalizeTimeout",
-} as const;
 
 /** Called in the same transaction as event/checkpoint rollback. Signed work needs reconciliation. */
 export async function invalidateWorkerTasks(
@@ -106,15 +102,10 @@ export function createTaskStore(
         );
         const snapshot = lease.projection,
           active = snapshot.activeCase;
-        const deadline =
-          input.kind === "CLOSE_CLAIMS"
-            ? snapshot.schedule.claimDeadline
-            : input.kind === "MARK_SERVICE_TIMEOUT"
-              ? active.fallbackDeadline
-              : active.timeoutAt;
+        const deadline = actionDeadline(snapshot, input.kind);
         requireThat(
           input.dueAt === String(deadline) &&
-            (input.kind === "CLOSE_CLAIMS"
+            (!workerActions[input.kind].case
               ? input.caseId === undefined
               : active.exists && input.caseId === String(active.caseId)),
           422,
@@ -220,7 +211,7 @@ export function createTaskStore(
         const tx = parseTransaction(raw);
         const data = encodeFunctionData({
           abi: escrowAbi,
-          functionName: functions[job.kind as keyof typeof functions],
+          functionName: workerActions[job.kind as WorkerKind].fn,
           args: job.case_id === null ? [] : [BigInt(job.case_id)],
         });
         requireThat(
@@ -319,6 +310,12 @@ export function createTaskStore(
           "UPDATE worker_tasks SET state=$1,error_code=$2,lock_token=NULL,locked_until=NULL,next_attempt_at=$3,updated_at=$4 WHERE id=$5",
           [state, code, app.now() + 10000, app.now(), id],
         );
+      });
+    },
+    async cancel(id: string, token: string) {
+      return app.db.transaction(async (sql) => {
+        await owned(sql, id, token, ["running"]);
+        await sql.query("UPDATE worker_tasks SET state='cancelled',error_code='OBSOLETE_STATE',lock_token=NULL,locked_until=NULL,updated_at=$1 WHERE id=$2 AND raw_transaction IS NULL", [app.now(), id]);
       });
     },
     async get(id: string): Promise<Row | null> {

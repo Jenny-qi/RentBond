@@ -100,3 +100,7 @@
 全部 P0、关键权限/金额/边界/恢复通过，第二人复核；没有执行的不写通过。测试网交易、ABI、条款与 hardEndAt 对齐；主 Demo 三角色不能豁免备用与异常验收。
 
 2026-10-02 Worker RPC 小范围回归：`node apps/worker/src/indexer/providers.test.mjs` 在隔离本地副本中 6/6 通过，覆盖错误链、RPC 错误、正常读取和缺失结果拒绝。此结果只验证 provider，不构成 IT-03—06、TS02、AT51 或真实链上 Worker 验收；事件解码、持久化与完整恢复仍 Not run。
+
+## 2026-10-03 Worker runtime evidence
+
+RB-12 now has canonical ABI event discovery, D database synchronization, persisted signed public deadline execution and restart recovery. IT-01–IT-09 passed locally with no skips. See [runtime report](../tests/reports/2026-10-03-worker-runtime.md). This does not mark ATs Verified: Monad full allocation/withdrawal, real PostgreSQL Worker deployment, eight browser E2E scenarios, independent reproduction and nonauthor funds review remain required.

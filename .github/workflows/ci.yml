@@ -89,7 +89,7 @@ jobs:
       - run: pnpm install --allow-build=esbuild --allow-build=core-js
       - run: pnpm --filter @rentbond/web run test
       - run: pnpm --filter @rentbond/web run backend:abi
-      - run: node tests/runner.mjs integration --only=IT-01,IT-02,IT-07,IT-08,IT-09
+      - run: node tests/runner.mjs integration
 
   test-e2e:
     name: E2E tests

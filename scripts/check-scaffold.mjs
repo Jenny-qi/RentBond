@@ -52,7 +52,7 @@ checkIDs('docs/acceptance.md', 'TS', 5);
 checkIDs('docs/backlog.md', 'RB-', 14);
 const pkg = JSON.parse(readFileSync('package.json', 'utf8'));
 for (const [name, command] of Object.entries(pkg.scripts)) {
-  const script = /^node ([^ ]+)/.exec(command)?.[1];
+  const script = /^node (?:--env-file-if-exists=[^ ]+ )?([^ ]+)/.exec(command)?.[1];
   if (script) requireFile(script);
 }
 const fixture = JSON.parse(readFileSync('fixtures/alice-partial-settlement.json', 'utf8'));

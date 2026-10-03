@@ -3,7 +3,7 @@
  * event idempotency/rollback, RPC fault, Worker stop/start.
  *
  * E owns; D provides permission test cases.
- * D's IT-01/02/07/08 are runnable; E's IT-03/04/05/06 await RB-12.
+ * IT-03/04/05/06 run the real local EVM and durable Worker recovery fixtures.
  *
  * @typedef {{ id: string, description: string, requires: string[], run: () => Promise<{passed: boolean, output: string}> }} IntegrationTest
  */
@@ -30,33 +30,33 @@ export const integrationTests = [
   {
     id: 'IT-03',
     description: 'Event idempotency: same chain event processed once only',
-    requires: ['RB-12'],
+    requires: [],
     async run() {
-      return { passed: false, output: 'Not implemented — RB-12 required' };
+      return memberDTest('worker-runtime.test.mjs', 'IT-03 ');
     },
   },
   {
     id: 'IT-04',
     description: 'Event rollback: re-org invalidates projection and replays correctly',
-    requires: ['RB-12'],
+    requires: [],
     async run() {
-      return { passed: false, output: 'Not implemented — RB-12 required' };
+      return memberDTest('worker-runtime.test.mjs', 'IT-04 ');
     },
   },
   {
     id: 'IT-05',
     description: 'Worker stop/start does not double-allocate funds',
-    requires: ['RB-12'],
+    requires: [],
     async run() {
-      return { passed: false, output: 'Not implemented — RB-12 required' };
+      return memberDTest('worker-runtime.test.mjs', 'IT-05 ');
     },
   },
   {
     id: 'IT-06',
     description: 'RPC fault: read failure does not corrupt balance to zero',
-    requires: ['RB-12'],
+    requires: [],
     async run() {
-      return { passed: false, output: 'Not implemented — RB-12 required' };
+      return memberDTest('worker-runtime.test.mjs', 'IT-06 ');
     },
   },
   {

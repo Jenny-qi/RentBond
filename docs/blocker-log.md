@@ -72,3 +72,7 @@ D 分支已合入 main d26ddab 的 B/E 变更，修复与补充内容见 [复核
 
 - RPC provider 现在对无 `result` 的响应明确报错，并拒绝无效的预期 chain ID；隔离单元测试 6/6 通过。IT-06 尚未运行真实投影故障场景。
 - `apps/worker/src/indexer/loop.ts` 的 Factory topic 和 Escrow topic 仍为占位值，手写事件字段与固定 ABI 的 indexed 定义也不一致；真实日志发现/解码尚不能作为已验收能力。该文件的 BigInt 状态 JSON 持久化及重组检测也需独立修复并跑 IT-03—06。不要用 provider 单测或脚手架 CI 关闭 BL12。
+
+## 2026-10-03 Worker runtime evidence
+
+RB-12 now has canonical ABI event discovery, D database synchronization, persisted signed public deadline execution and restart recovery. IT-01–IT-09 passed locally with no skips. See [runtime report](../tests/reports/2026-10-03-worker-runtime.md). This does not mark ATs Verified: Monad full allocation/withdrawal, real PostgreSQL Worker deployment, eight browser E2E scenarios, independent reproduction and nonauthor funds review remain required.

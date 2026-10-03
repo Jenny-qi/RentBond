@@ -2,11 +2,11 @@
 
 Delivered 2026-10-02 against main b664c0a. Import createTaskStore and syncLease from apps/worker/src/persistence/backend.mjs using Node 24.14.x. The adapter shares D's PostgreSQL connection/configuration and migration 0003. Embedded PGlite supports a single process only. No HTTP endpoint accepts a task, event, arbitrary snapshot or transaction bytes.
 
-E's existing JSON executor is still separate. This document and the executable integration tests are the integration contract; they do not claim that E's production loop has adopted it.
+E's main loop now uses this adapter. JSON queues are not used by the production entry point. Local EVM and disk-backed restart evidence is in tests/reports/2026-10-03-worker-runtime.md; public-chain acceptance remains open.
 
 ## Data Contract
 
-enqueue accepts exactly leaseId (database UUID), kind, optional caseId, dueAt, sourceBlock and sourceHash. Kinds are CLOSE_CLAIMS, MARK_SERVICE_TIMEOUT and FINALIZE_TIMEOUT, mapping to the fixed ABI's closeClaims(), markServiceTimeout(caseId) and finalizeTimeout(caseId). These are public deadline actions, never a party/resolver action or withdrawal.
+enqueue accepts exactly leaseId (database UUID), kind, optional caseId, dueAt, sourceBlock and sourceHash. Kinds and fixed ABI dispatch are defined in apps/web/src/server/worker-actions.ts: START_SETTLEMENT, CLOSE_CLAIMS, OPEN_CLAIM_CASE, ESCALATE_TIMEOUT, FINALIZE_PRIMARY, MARK_SERVICE_TIMEOUT, FINALIZE_TIMEOUT and EXPIRE_ESCROW. These are public deadline actions, never a party/resolver action or withdrawal.
 
 dueAt is a decimal UTC-second string and must equal the appropriate deadline in the stored confirmed snapshot. sourceBlock is a decimal block-number string, sourceHash a bytes32 hash, and both must match the current checkpoint AND projection. Use the checkpoint returned by synchronization, not the original triggering event height if synchronization has moved beyond it. caseId must match the snapshot's exact active case. Milliseconds and a block height used as a deadline are rejected. Database next_attempt_at, locked_until and audit times are epoch milliseconds.
 
@@ -37,4 +37,4 @@ Jobs carry no role keys or arbitrary payload command. Database access is server-
 
 - apps/web/src/server/tests/worker-tasks.test.mjs imports the E-facing adapter and tests deduplication, UTC boundaries, concurrent ownership, stale locks, durable signed bytes, receipt handling and transactional reorg invalidation.
 - apps/web/src/server/tests/deployment.integration.mjs repeats enqueue/claim races over two real PostgreSQL connections and recovers an expired claim through a newly opened third connection.
-- These verify the D persistence boundary. E still owns actual deadline dispatch, a dedicated signer, full Worker restart/manual-advance scenarios, and public-chain acceptance.
+- These verify the D persistence boundary. The new runtime tests cover actual local deadline dispatch, a dedicated signer, process restart and manual advance. Public-chain acceptance and independent review remain open.
