@@ -14,7 +14,7 @@ import { runScanJob } from "../upload-scans.ts";
 
 export const addr = (n) => "0x" + n.toString(16).padStart(40, "0");
 export const hash = (n) => "0x" + n.toString(16).padStart(64, "0");
-export async function fixture(t, overrides = {}) {
+export async function fixture(t, overrides = {}, memory = true) {
   const directory = await mkdtemp(join(tmpdir(), "rentbond-"));
   const config = {
     mode: "local",
@@ -37,7 +37,7 @@ export async function fixture(t, overrides = {}) {
     registryAddress: addr(101),
     ...overrides,
   };
-  const db = await openDatabase(config, true);
+  const db = await openDatabase(config, memory);
   assert.deepEqual(await migrate(db), [
     "0001_member_d.sql",
     "0002_new_account_invitations.sql",
@@ -107,7 +107,7 @@ export async function fixture(t, overrides = {}) {
     now: () => now,
   };
   t.after(async () => {
-    await db.close();
+    await app.db.close();
     await rm(directory, { recursive: true, force: true });
   });
   return {
