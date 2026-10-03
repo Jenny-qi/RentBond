@@ -90,7 +90,7 @@ RentBond/
 
 ## 当前能运行的检查
 
-骨架检查依赖 Node.js **24.14.0**。合约命令通过 npx 使用固定的 `@foundry-rs/forge@1.7.1`；网页包已有精确依赖和 npm 锁文件，仓库级 pnpm workspace 仍待 RB-02 统一。
+骨架检查依赖 Node.js **24.14.0**。合约命令通过 npx 使用固定的 `@foundry-rs/forge@1.7.1`；网页包已有精确依赖和 npm 锁文件，仓库级 pnpm workspace 与真实锁文件已提交，CI 固定 pnpm 12.8.1 并按锁文件安装。
 
 ```sh
 node scripts/doctor.mjs
@@ -102,26 +102,26 @@ npm run check:contract-sizes
 npm run contracts:export:abi
 ```
 
-已有 pnpm 时可运行 `pnpm doctor` 与 `pnpm check`。`doctor` 只检查骨架运行环境；`check` 检查本地文档链接、JSON、需求覆盖及目录；`ts04` 目前仍是骨架级 clone 检查。合约测试已经实现；网页可单独运行 `npm run test --prefix apps/web`、`npm run typecheck --prefix apps/web`、`npm run build --prefix apps/web`。这些不是跨层验收；独立 lint 和跨层业务测试仍未实现。
+已有 pnpm 时可运行 `pnpm doctor` 与 `pnpm check`。`doctor` 只检查骨架运行环境；`check` 检查本地文档链接、JSON、需求覆盖及目录；`ts04` 目前仍是骨架级 clone 检查。合约测试已经实现；网页可单独运行 `npm run test --prefix apps/web`、`npm run typecheck --prefix apps/web`、`npm run build --prefix apps/web`。这些不是跨层验收；本地跨层测试已实现（9 项 Integration、8 项浏览器 E2E）；独立 lint、第二人完整复现和公网验收仍未完成。
 
-**跨层测试命令（RB-12/RB-13 后可运行）：**
+**已实现的本地跨层测试命令：**
 
 ```sh
-node tests/runner.mjs integration  # IT-01 — IT-08
+node tests/runner.mjs integration  # IT-01 — IT-09
 node tests/runner.mjs e2e         # E2E-01 — E2E-08
 node tests/runner.mjs all          # 全部
 pnpm test:integration              # 同上 via pnpm
 pnpm test:e2e                     # 同上 via pnpm
 ```
 
-根目录预留 pnpm workspace。RB-02 要固定 packageManager、依赖精确版本与真实生成的 `pnpm-lock.yaml`，不能把“安装最新版”作为长期说明。详见 [依赖矩阵](docs/dependency-matrix.md)。
+先按 [测试说明](tests/README.md) 安装锁定依赖、生成 API ABI 并安装 Playwright Chromium，再运行跨层命令。真实依赖与环境边界见 [依赖矩阵](docs/dependency-matrix.md)。
 
 ### 后续完整启动目标
 
-除 `test:contracts` 外，下列应用/基础设施命令仍未实现；占位命令会明确报错并指出责任 Issue。实现后须由另一位成员从新 clone 验证，再更新本节。
+以下为完整启动目标，不能整段当作已验证的一键启动。根脚本 `infra:up`、`chain:local`、`contracts:deploy:local`、`dev`、`build` 仍为明确失败的占位；`db:migrate`、`fixtures:seed`、`worker:dev` 和测试命令已有实现。网页可从 `apps/web` 启动，Worker 步骤见 [Worker README](apps/worker/README.md)。第二人新 clone 的完整启动验收仍待完成。
 
 ```sh
-pnpm install --frozen-lockfile   # RB-02 提交锁文件后使用
+pnpm install --frozen-lockfile   # 锁文件已提交
 pnpm doctor
 pnpm infra:up
 pnpm db:migrate
@@ -170,4 +170,4 @@ git push -u origin HEAD
 
 ## 已知限制
 
-合约已有本地实现和部分 Monad 部署/入金证据，但仍缺完整边界/fuzz/invariant、独立安全复核、测试网分配/领取证据；网页、钱包兼容、私有权限、Worker 和停运恢复尚未完成。AT 状态在固定 commit 与独立复核前不能写成 Verified。原 PRD 中的比赛日期和供应商能力是历史来源，正式资格、团队人数和截止时区仍待核对。项目未选择对外开源许可证；发布前由团队决定并记录第三方许可。
+合约已有本地实现和部分 Monad 部署/入金证据，但仍缺完整边界/fuzz/invariant、独立安全复核、测试网分配/领取证据；网页真实接线、私有权限、Worker 和停运退出已有本地实现及测试；真实钱包/设备、部署环境及测试网全流程仍未完成验收。AT 状态在固定 commit 与独立复核前不能写成 Verified。原 PRD 中的比赛日期和供应商能力是历史来源，正式资格、团队人数和截止时区仍待核对。项目未选择对外开源许可证；发布前由团队决定并记录第三方许可。
