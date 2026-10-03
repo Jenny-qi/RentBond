@@ -6,11 +6,11 @@
 >
 > RentBond helps cross-border renters and small landlords settle rental deposits remotely. Once the claim window closes, undisputed funds become claimable while disputed deductions follow the agreed resolution process.
 
-**当前状态：合约模块已有本地实现和 41 个通过的 Foundry 测试（含 256 组金额分配 fuzz），固定构建 ABI 已导出；P01–P12 已切换全英文真实 API/ABI 页面，接入 Mera/SIWE、本人交易确认、材料和导出；D 的后端、私有存储、数据库、导出与 Gas 补给已有本地 API/合约联调证据。** 主分支已记录用户报告的 Monad 测试网手工部署及入金，只读核验材料见 deployments 与已合并的证据记录。Web 58项本地测试、类型检查与构建已通过；完整 Worker、真实设备恢复和浏览器测试网资金流程尚未验收。文档和本地检查不能替代独立审查或真实链上证据。范围与缺口见 [Web 实现与验证](apps/web/README.md) 和 [D 交接](docs/member-d-handoff.md)。
+**当前状态：合约模块已有本地实现和 41 个通过的 Foundry 测试（含 256 组金额分配 fuzz），固定构建 ABI 已导出；P01–P12 已切换全英文真实 API/ABI 页面，接入 Mera/SIWE、本人交易确认、材料和导出；D 的后端、私有存储、数据库、导出与 Gas 补给已有本地 API/合约联调证据。** 主分支已记录用户报告的 Monad 测试网手工部署及入金，只读核验材料见 deployments 与已合并的证据记录。Web 79项本地测试、类型检查与构建已通过；完整 Worker、真实设备恢复和浏览器测试网资金流程尚未验收。文档和本地检查不能替代独立审查或真实链上证据。范围与缺口见 [Web 实现与验证](apps/web/README.md) 和 [D 交接](docs/member-d-handoff.md)。
 
 ## 2026-10-03 工程复查
 
-Worker 真实本地事件同步、持久化到期任务和进程重启测试已随 PR #14 合入 main；IT-01–IT-09 全部通过，无跳过。后续复查补齐八种公开推进动作的本地执行覆盖，并统一健康检查与运行配置。详情见 [复查报告](tests/reports/2026-10-03-worker-followup.md)。八项浏览器 E2E、测试网完整分配/领取、真实设备恢复和独立资金审查仍未完成；以下启动目标中的其他占位命令仍须逐项实现。
+Worker 真实本地事件同步、持久化到期任务和进程重启测试已随 PR #14 合入 main；IT-01–IT-09 全部通过，无跳过。后续复查补齐八种公开推进动作的本地执行覆盖，并统一健康检查与运行配置。详情见 [复查报告](tests/reports/2026-10-03-worker-followup.md)。八项浏览器 E2E 已在隔离本地链通过（0 失败、0 跳过），涵盖 700/100/200、850/150、900/100、取消、拒签和停运后领取；详见 [浏览器报告](tests/reports/2026-10-03-browser-e2e.md)。外部钱包为测试替身，真实通行密钥/设备恢复、测试网完整分配/领取和独立资金审查仍未完成；以下启动目标中的其他占位命令仍须逐项实现。
 
 ## 产品面向谁
 
