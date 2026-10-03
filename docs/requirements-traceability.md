@@ -75,3 +75,7 @@ FR/SC 来自 v1.2。合约切片已填写实现文件和本地测试证据；跨
 AT 的逐条状态与来源完整场景见 [acceptance](acceptance.md)。展示变化 CH01—09 见 [changes](changes.md)，这些文档变化不代表 FR/SC 业务已完成。
 
 2026-10-02 Worker RPC provider 单元回归 6/6 通过，仅覆盖缺失/空 RPC 结果和链 ID 输入；IT-06 的故障期间投影不被改写尚未跨层执行，其余 Worker 事件/重组用例仍待实现。本次不提升 FR/SC/AT 状态。
+
+## 2026-10-03 Worker runtime evidence
+
+RB-12 now has canonical ABI event discovery, D database synchronization, persisted signed public deadline execution and restart recovery. IT-01–IT-09 passed locally with no skips. See [runtime report](../tests/reports/2026-10-03-worker-runtime.md). This does not mark ATs Verified: Monad full allocation/withdrawal, real PostgreSQL Worker deployment, eight browser E2E scenarios, independent reproduction and nonauthor funds review remain required.
