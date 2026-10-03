@@ -161,12 +161,12 @@ export async function attachDeployment(
 export async function recordEvents(
   sql: Sql,
   chainId: number,
-  leaseId: string,
+  leaseId: string | null,
   events: Row[],
 ) {
   for (const event of events) {
     await sql.query(
-      "INSERT INTO chain_events(chain_id,tx_hash,log_index,block_hash,block_number,contract_address,lease_id,event_name,payload,canonical) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,true) ON CONFLICT(chain_id,tx_hash,log_index) DO UPDATE SET block_hash=EXCLUDED.block_hash,block_number=EXCLUDED.block_number,canonical=true,payload=EXCLUDED.payload",
+      "INSERT INTO chain_events(chain_id,tx_hash,log_index,block_hash,block_number,contract_address,lease_id,event_name,payload,canonical) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,true) ON CONFLICT(chain_id,tx_hash,log_index) DO UPDATE SET block_hash=EXCLUDED.block_hash,block_number=EXCLUDED.block_number,canonical=true,payload=EXCLUDED.payload,lease_id=COALESCE(EXCLUDED.lease_id,chain_events.lease_id)",
       [
         chainId,
         event.transactionHash,
