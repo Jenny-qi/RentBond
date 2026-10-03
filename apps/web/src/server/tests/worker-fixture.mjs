@@ -21,7 +21,7 @@ import { syncLease } from "../projections.ts";
 import { runGasJob, runExportJob } from "../jobs.ts";
 import { readLease as readFrontendLease } from "../../features/live/client.ts";
 
-export async function liveWorkerFixture(t, { persistent = false, beforeAttach } = {}) {
+export async function liveWorkerFixture(t, { persistent = false, beforeAttach, setupOnly = false } = {}) {
     const server = await network.createServer(
       { network: "default", override: { chainId: 10143 } },
       "127.0.0.1",
@@ -186,6 +186,12 @@ export async function liveWorkerFixture(t, { persistent = false, beforeAttach } 
     );
     assert.equal(available.status, 200, JSON.stringify(available.data));
     assert.equal(available.data.items.length, 1);
+    const tokenAbi = compiled["src/MockUSD.sol"].MockUSD.abi;
+    const config = { ...app.config, deploymentBlock: 0n, batchSize: 1000, execute: true,
+      maxFeeWei: 1000000000000000000n, pollIntervalMs: 1000 };
+    const base = { app, config, f, accounts, keys, wallets, publicClient, l, tenant, r, fallback,
+      lw, tw, rw, fw, write, tokenAbi, token, registry, factory, rpc, profileKey };
+    if (setupOnly) return base;
     const leaseId = await draft(app, l, tenant, {
       serviceProfileId: profileKey,
     });
@@ -212,7 +218,6 @@ export async function liveWorkerFixture(t, { persistent = false, beforeAttach } 
     const frontendBefore = await readFrontendLease(frontendConfig, escrow, prepare.data.commitment);
     assert.equal(frontendBefore.accounting.fundedAmount, '0');
     await assert.rejects(readFrontendLease(frontendConfig, escrow, hash(999)), /terms commitment mismatch/);
-    const tokenAbi = compiled["src/MockUSD.sol"].MockUSD.abi;
     await write(tw, escrow, escrowAbi, "acceptTerms", [
       prepare.data.commitment,
     ]);
@@ -235,9 +240,6 @@ export async function liveWorkerFixture(t, { persistent = false, beforeAttach } 
     const details = await l.request("/api/leases/" + leaseId);
     assert.equal(details.data.projection.accounting.fundedAmount, "1000000000");
 
-    const config = { ...app.config, deploymentBlock: 0n, batchSize: 1000, execute: true,
-      maxFeeWei: 1000000000000000000n, pollIntervalMs: 1000 };
-    return { app, config, f, accounts, keys, wallets, publicClient, l, tenant, r, fallback,
-      lw, tw, rw, fw, escrow, leaseId, prepare, write, tokenAbi, token,
+    return { ...base, escrow, leaseId, prepare,
       fundingTx, creationTx: tx, beforeFunding };
 }

@@ -73,14 +73,16 @@ for (const test of tests) {
   try {
     const result = await test.run();
     const durationMs = Date.now() - start;
+    const testDurationMs = result.durationMs ?? durationMs;
 
     if (result.passed) {
-      console.log(`PASS ${id} (${durationMs}ms)`);
-      results.push({ id, description, status: 'passed', completedAt: new Date().toISOString() });
+      console.log(`PASS ${id} (${testDurationMs}ms)`);
+      results.push({ id, description, status: 'passed', durationMs: result.durationMs ?? durationMs,
+        ...(result.evidence ? { evidence: result.evidence } : {}), completedAt: new Date().toISOString() });
       passed++;
     } else {
       const output = result.output ?? result.evidence;
-      console.log(`FAIL ${id} (${durationMs}ms)`);
+      console.log(`FAIL ${id} (${testDurationMs}ms)`);
       console.log(`     → ${output}`);
       results.push({ id, description, status: 'failed', output, completedAt: new Date().toISOString() });
       failed++;

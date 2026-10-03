@@ -103,4 +103,13 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
       - run: pnpm install --allow-build=esbuild --allow-build=core-js
+      - run: pnpm --filter @rentbond/web run backend:abi
+      - run: pnpm --filter @rentbond/web exec playwright install --with-deps chromium
       - run: node tests/runner.mjs e2e
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: local-browser-e2e-evidence
+          path: |
+            test-results/e2e-local/
+            tests/reports/e2e-*.json

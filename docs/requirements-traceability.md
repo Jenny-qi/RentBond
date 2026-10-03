@@ -83,3 +83,9 @@ RB-12 now has canonical ABI event discovery, D database synchronization, persist
 ### Worker follow-up review (2026-10-03)
 
 PR #14 is merged into main f843b46. Its implementation CI checks passed; browser E2E still fails as incomplete. Follow-up fixes remove stale health validation/URL logging and restrict Worker networks/intervals; local runtime tests now exercise all eight public action types. See [follow-up report](../tests/reports/2026-10-03-worker-followup.md). No AT is promoted to Verified without independent and deployment evidence.
+
+## 2026-10-03 local browser E2E (Issue #16)
+
+Eight executable Chromium scenarios now cover real page → HTTP API → local EVM funds flows, replacing skipped placeholders without changing the runner's fail-on-skip policy. 700/100/200, final 850/150, timeout 900/100, cancel/reject, same-address external-wallet reauthentication, duplicate withdrawal and local full-service shutdown were executed. See [browser report](../tests/reports/2026-10-03-browser-e2e.md). FR-15–21/24/31–32, SC-06/07/09/12/13 and AT12/16/23/24/26/41/42/51 gain local evidence slices only.
+
+AT41/42/51 and TS05 remain In progress: the EIP-1193 wallet and clean scanner are test substitutes; real Mera/WebAuthn PRF, two-device recovery, public Monad allocation/withdrawal, deployed PostgreSQL and independent funds/reproduction review are not certified. No requirement is promoted to Verified. The previous skipped E2E blocker is addressed by runnable local tests; deployment/device acceptance blockers remain.
