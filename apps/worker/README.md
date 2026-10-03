@@ -11,6 +11,7 @@ npm run backend:abi --prefix apps/web
 npm run worker:dev
 # One cycle, for operators:
 node --env-file-if-exists=apps/web/.env.local apps/worker/src/main.ts --once
+npm run worker:health # configuration only; no RPC/database connectivity probe
 npm run test:worker
 ```
 
@@ -18,7 +19,7 @@ Use the API's configuration: SESSION_SECRET, CHAIN_ID, RPC_URL, optional RPC_FAL
 
 Separate API/Worker processes require PostgreSQL. Embedded PGlite is supported only for a single process and the disk-backed restart test, never concurrent processes sharing one directory.
 
-For public deadline execution explicitly set WORKER_EXECUTE=true, WORKER_PRIVATE_KEY_FILE to an operator-managed secret file, and WORKER_GAS_ACCOUNT to its expected address. The account must differ from T/L/R/F and the Gas sponsor. Do not commit keys. WORKER_MAX_FEE_WEI bounds gas times maximum fee (default 0.05 test MON; maximum 1). No real-money network is allowed.
+For public deadline execution explicitly set WORKER_EXECUTE=true, WORKER_PRIVATE_KEY_FILE to an operator-managed secret file, and WORKER_GAS_ACCOUNT to its expected address. The account must differ from T/L/R/F and the Gas sponsor. Do not commit keys. WORKER_MAX_FEE_WEI bounds gas times maximum fee (default 0.05 test MON; maximum 1). Supported Worker chains are 31337 (local EVM) and 10143 (Monad testnet); other chain IDs are rejected even in local mode. Poll interval must be 1000–300000 ms.
 
 ## Public actions
 
@@ -41,4 +42,4 @@ Factory/escrow checkpoint mismatch invalidates canonical events and projections,
 
 ## Evidence and remaining work
 
-See [local runtime report](../../tests/reports/2026-10-03-worker-runtime.md). Real local EVM tests cover replay, reorg, RPC fault, process restart, manual progress and service timeout dispatch. These do not prove deployed Monad execution, all eight actions on Monad, real PostgreSQL runtime recovery, a second person's reproduction, device restoration or the eight browser E2E scenarios. Notifications and asynchronous exports remain outside this loop.
+See [local runtime report](../../tests/reports/2026-10-03-worker-runtime.md). Real local EVM tests cover replay, reorg, RPC fault, process restart, manual progress service timeout dispatch, primary finalization and hard-end expiry. These do not prove deployed Monad execution, all eight actions on Monad, real PostgreSQL runtime recovery, a second person's reproduction, device restoration or the eight browser E2E scenarios. Notifications and asynchronous exports remain outside this loop.
