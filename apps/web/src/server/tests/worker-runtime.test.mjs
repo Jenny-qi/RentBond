@@ -191,3 +191,47 @@ test('Worker dispatches service timeout and final allocation separately', { time
   const done = await f.app.db.query("SELECT kind FROM worker_tasks WHERE state='confirmed'");
   for (const kind of ['CLOSE_CLAIMS','OPEN_CLAIM_CASE','ESCALATE_TIMEOUT','MARK_SERVICE_TIMEOUT','FINALIZE_TIMEOUT']) assert.ok(done.some(j => j.kind === kind));
 });
+
+test('Worker finalizes an unchallenged primary award only at its fixed deadline', { timeout: 180000 }, async (t) => {
+  const f = await liveWorkerFixture(t), rpc = rpcFor(f);
+  let live = await openClaims(f);
+  await f.write(f.lw, f.escrow, escrowAbi, 'submitClaims', [[{amount: 100000000n, commitment: '0x' + '67'.repeat(32)}]]);
+  await mineAt(f, live.schedule.claimDeadline);
+  await runUntilConfirmed(f, rpc);
+  await mineAt(f, live.schedule.responseDeadline);
+  await runUntilConfirmed(f, rpc);
+  live = await f.app.chain.lease(f.escrow, true);
+  await mineAt(f, live.activeCase.evidenceDeadline);
+  await f.write(f.rw, f.escrow, escrowAbi, 'proposeDecision', [BigInt(live.activeCase.caseId), [{claimId: 1n, landlordAmount: 50000000n}], '0x' + '78'.repeat(32)]);
+  live = await f.app.chain.lease(f.escrow, true);
+  await mineAt(f, BigInt(live.activeCase.challengeDeadline) - 1n);
+  await runIndexerCycle(f.app, rpc, f.config);
+  const nonce = await f.publicClient.getTransactionCount({address: f.accounts[6].address});
+  assert.equal((await runExecutorCycle(f.app, rpc)).state, 'cancelled'); // obsolete escalation
+  assert.equal((await runExecutorCycle(f.app, rpc)).state, 'idle');
+  assert.equal(await f.publicClient.getTransactionCount({address: f.accounts[6].address}), nonce);
+  assert.equal((await f.app.chain.lease(f.escrow, true)).accounting.unallocated, '100000000');
+  await mineAt(f, live.activeCase.challengeDeadline);
+  await runUntilConfirmed(f, rpc);
+  live = await f.app.chain.lease(f.escrow, true);
+  assert.equal(live.accounting.tenantCredit, '950000000');
+  assert.equal(live.accounting.landlordCredit, '50000000');
+  assert.equal(live.accounting.unallocated, '0');
+  assert.equal((await f.app.db.query("SELECT * FROM worker_tasks WHERE kind='FINALIZE_PRIMARY' AND state='confirmed'")).length, 1);
+});
+
+test('Worker hard-end expiry preserves accepted credit and cancels overdue ordinary actions', { timeout: 180000 }, async (t) => {
+  const f = await liveWorkerFixture(t), rpc = rpcFor(f);
+  await openClaims(f);
+  await f.write(f.lw, f.escrow, escrowAbi, 'submitClaims', [[{amount: 100000000n, commitment: '0x' + '89'.repeat(32)}]]);
+  await f.write(f.tw, f.escrow, escrowAbi, 'respondClaim', [1n, true, '0x' + '90'.repeat(32)]);
+  await runIndexerCycle(f.app, rpc, f.config);
+  await mineAt(f, f.prepare.data.terms.hardEndAt);
+  await runUntilConfirmed(f, rpc);
+  const live = await f.app.chain.lease(f.escrow, true);
+  assert.equal(live.accounting.tenantCredit, '900000000');
+  assert.equal(live.accounting.landlordCredit, '100000000');
+  assert.equal(live.accounting.unallocated, '0');
+  assert.equal((await f.app.db.query("SELECT * FROM worker_tasks WHERE kind='EXPIRE_ESCROW' AND state='confirmed'")).length, 1);
+  assert.equal((await f.app.db.query("SELECT * FROM worker_tasks WHERE kind='CLOSE_CLAIMS' AND state='cancelled'")).length, 1);
+});
