@@ -1,5 +1,11 @@
 # 阻塞与待核事项
 
+2026-10-04 BL03 部分澄清：按用户提供官方条款，测试网允许，视频上限 3 分钟，截止为北京时间 2026-10-14 11:59；人数／资格／完整构建窗口仍待核。用户已选择 MIT，根 [LICENSE](../LICENSE) 已添加，项目自身许可证缺项已处理。RB-14 仍缺完整第三方许可及团队 AI 披露、公共仓库访问核查、公开视频、第三方完整复现和平台提交回执。
+
+## 2026-10-04 提交文档整理
+
+成员 D 交接稿、过时实施排期及建仓初始化清单已删除；有效运行内容保留在后端 README，协作要求归入 CONTRIBUTING。公开 Demo/视频、正式规则核查与现有部署/真机/独立审查缺口继续保留，不因提交材料整理关闭。
+
 ## 当前基线：PR #17 合并后的 main（2026-10-03）
 
 源码基线 `ffe56a8c8cb7654ae0864a7d3c8e2a426b815be0`，已包含 PR #14/#15 的 Worker 与 PR #17 的浏览器测试。PR #17 的 7 项自动检查通过；本地 Integration 为 9 passed / 0 skipped、Chromium E2E 为 8 passed / 0 skipped、Web 为 79 passed。证据见 [Worker 报告](../tests/reports/2026-10-03-worker-runtime.md)、[后续复查](../tests/reports/2026-10-03-worker-followup.md)及[浏览器报告](../tests/reports/2026-10-03-browser-e2e.md)。以下按日期保留的旧状态是历史快照，以本节为当前进度。
@@ -64,7 +70,7 @@
 | ID | 状态 | 复现与影响 | 负责人 / 下一步 / 关闭证据 |
 | --- | --- | --- | --- |
 | BL11 | Open | 固定构建 ABI 已导出，但正式网络部署 manifest（源码、地址、区块、确认策略）仍未核验；前端不能声称真实入金或领取 | B/E → C；核验并交付部署 manifest 后接真实读写，附跨层及链上证据 |
-| BL08 | Closed (D local implementation) | D 已提供 SIWE、草稿、邀请、私有材料、导出、Gas、schema 与权限测试；C 仍需把页面接入真实接口 | D → C/E；[接口](interfaces/api.md)、[交接](member-d-handoff.md)、[本地证据](../tests/reports/2026-09-26-member-d.md) |
+| BL08 | Closed (D local implementation) | D 已提供 SIWE、草稿、邀请、私有材料、导出、Gas、schema 与权限测试；C 仍需把页面接入真实接口 | D → C/E；[接口](interfaces/api.md)、[后端运行说明](../apps/web/src/server/README.md)、[本地证据](../tests/reports/2026-09-26-member-d.md) |
 | BL09 | In progress | Mera 0.2.0 已接地址试验并通过替身单测；无真实手机/桌面 PRF、同址恢复和签名设备证据 | C/D/E；本人在目标设备/HTTPS RP 域名完成 TS05，不能以模拟通过关闭 |
 | BL10 | In progress | CHECKOUT/材料版本/交易回执、替换核对与恢复/历史/导出已接线，页面为英文；尚无本人设备和完整浏览器测试网流程证据 | C/D/E；见 [Web 实现](../apps/web/README.md)，在已核验 DEMO_SHORT 环境由角色本人完成端到端验收 |
 
@@ -99,3 +105,5 @@ PR #14 is merged into main f843b46. Its implementation CI checks passed; browser
 Eight executable Chromium scenarios now cover real page → HTTP API → local EVM funds flows, replacing skipped placeholders without changing the runner's fail-on-skip policy. 700/100/200, final 850/150, timeout 900/100, cancel/reject, same-address external-wallet reauthentication, duplicate withdrawal and local full-service shutdown were executed. See [browser report](../tests/reports/2026-10-03-browser-e2e.md). FR-15–21/24/31–32, SC-06/07/09/12/13 and AT12/16/23/24/26/41/42/51 gain local evidence slices only.
 
 AT41/42/51 and TS05 remain In progress: the EIP-1193 wallet and clean scanner are test substitutes; real Mera/WebAuthn PRF, two-device recovery, public Monad allocation/withdrawal, deployed PostgreSQL and independent funds/reproduction review are not certified. No requirement is promoted to Verified. The previous skipped E2E blocker is addressed by runnable local tests; deployment/device acceptance blockers remain.
+
+2026-10-04 品牌接入：团队彩色 Logo 已用于导航，账户区重复图标已按用户要求移除，浏览器图标保留；素材来源已记录。仅完成显示接入，不关闭真实设备、测试网或发布验收缺项。

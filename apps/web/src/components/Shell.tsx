@@ -9,6 +9,7 @@ import { useLease } from '@/features/leases/LeaseProvider';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { TxStatusBar } from '@/components/TxStatus';
 import { DemoScenarios } from '@/components/DemoScenarios';
+import { BrandLogo } from '@/components/BrandLogo';
 export function Shell({ children, title }: { children: ReactNode; title?: string }) {
   const { session, signOut, switchRole } = useAccount();
   const { lease } = useLease();
@@ -30,7 +31,7 @@ export function Shell({ children, title }: { children: ReactNode; title?: string
     </div></header>
     <div className="split">
       <aside className="app-sidebar">
-        <Link href="/" className="brand"><span className="brand-mark" aria-hidden="true">↗</span>RentBond<span className="brand-period">.</span></Link>
+        <Link href="/" className="brand" aria-label="RentBond home"><BrandLogo /></Link>
         <p className="brand-caption">A little more peace of mind.</p>
         <p className="nav-label">工作空间 / WORKSPACE</p>
         <nav className="side-nav" aria-label="主要页面">{links.map(l => <Link key={l.href} href={l.href} aria-current={path === l.href ? 'page' : undefined}><span aria-hidden="true">{l.icon}</span>{l.label}</Link>)}</nav>

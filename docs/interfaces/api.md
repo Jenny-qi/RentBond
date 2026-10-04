@@ -84,7 +84,7 @@ POST /api/test-gas/request 为 {leaseId}，返回 202 {id,state,amount,statusUrl
 
 POST /api/leases/:id/cleanup-request 为 {confirm:true}。返回 requested:true、deleted:false；双方都请求后由维护命令清原件，普通用户没有单方面删除对方材料的接口。
 
-更多运行参数、E 的同步与队列接口见 [D 交接](../member-d-handoff.md)。金额真相始终来自合约；C 仍负责每次签名的明确确认和真实页面接线。
+更多运行参数、E 的同步与队列接口见 [后端运行说明](../../apps/web/src/server/README.md)。金额真相始终来自合约；C 仍负责每次签名的明确确认和真实页面接线。
 
 2026-09-29 C 消费接口：`GET /api/cases/:id` 在既有案件授权检查后增加 `contractAddress`、`role`，供当前 R/F 页面核对链上合约和身份；未新增写权限或扩大材料范围。C 的真实页面与英文确认流程已接入，验证边界见 [Web README](../../apps/web/README.md)。
 

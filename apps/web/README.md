@@ -51,8 +51,12 @@ npm run dev --prefix apps/web
 
 仍需 B/E 的 DEMO_SHORT 已核验环境，C/D/E 的网页全链端到端演练、两类真实设备 HTTPS 同址恢复、真实钱包取消/替换/刷新流程与公网 700/100/200→850/150 证据。AT51 全站停运恢复由 E 联合验收；本页面登录仍依赖 API，不声称已完成停运独立入口。公众上传扫描/隔离为 D 的发布前提。上述完成前不标记 TS05 或 RB-08—11 为整体 Verified。
 
-历史模拟页面验证保留在 [2026-09-25 原始测试记录](../../tests/reports/2026-09-25-member-c.md)，D 的运行方式见 [后端说明](../../docs/member-d-handoff.md)。旧报告描述其当时版本，不代表当前页面仍为模拟。
+历史模拟页面验证保留在 [2026-09-25 原始测试记录](../../tests/reports/2026-09-25-member-c.md)，D 的运行方式见 [后端说明](src/server/README.md)。旧报告描述其当时版本，不代表当前页面仍为模拟。
 
 ## 2026-10-03 local browser automation
 
 The shared E2E runner now drives the actual English pages, separate wallet confirmations, HTTP API and local EVM transactions through all eight local scenarios. Run from the repository root after generating ABIs and installing Chromium as described in [tests README](../../tests/README.md). See [browser report](../../tests/reports/2026-10-03-browser-e2e.md). This adds browser evidence to the prior 79-test Node suite; it does not certify real passkeys/devices or public Monad. No production page or API behavior was changed for testing.
+
+## 品牌素材（2026-10-04）
+
+按用户指定位置，导航使用原炭灰／暖金图形与白色字标组合，账户卡片不再单独展示图标，metadata 配置 favicon 与 Apple touch icon。素材未重绘，来源见 [品牌资源](public/brand/README.md)。本地 1280px 桌面与 375px 手机视口已检查图片加载及无横向溢出；TypeScript 检查通过。此项不涉及资金、权限、ABI 或账户逻辑。

@@ -1,5 +1,13 @@
 # 验收清单
 
+2026-10-04 许可证：按用户选择添加根 MIT LICENSE，并同步 README 与比赛清单。仅完成项目自身许可文件，不代表第三方授权核查、公共发布或任何 AT/TS 业务验收通过。
+
+2026-10-04 官方条款同步：用户提供条款允许 Monad 测试网，要求公开源码、开源许可证、外部代码与 AI 披露、第三方可运行及不超过 3 分钟的真实操作视频。详见 contest/contest-requirements.md；本次为文档补齐，不新增 AT/TS 通过证据。
+
+## 2026-10-04 提交文档整理
+
+本次只整理提交入口及运行文档，不新增业务测试证据，不将任何 AT/TS 提升为 Verified。测试网完整分配/领取、真机恢复、部署环境验收、独立复现与资金审查仍待完成。
+
 ## 当前基线：PR #17 合并后的 main（2026-10-03）
 
 源码基线 `ffe56a8c8cb7654ae0864a7d3c8e2a426b815be0`，已包含 PR #14/#15 的 Worker 与 PR #17 的浏览器测试。PR #17 的 7 项自动检查通过；本地 Integration 为 9 passed / 0 skipped、Chromium E2E 为 8 passed / 0 skipped、Web 为 79 passed。证据见 [Worker 报告](../tests/reports/2026-10-03-worker-runtime.md)、[后续复查](../tests/reports/2026-10-03-worker-followup.md)及[浏览器报告](../tests/reports/2026-10-03-browser-e2e.md)。以下按日期保留的旧状态是历史快照，以本节为当前进度。
@@ -120,3 +128,5 @@ PR #14 is merged into main f843b46. Its implementation CI checks passed; browser
 Eight executable Chromium scenarios now cover real page → HTTP API → local EVM funds flows, replacing skipped placeholders without changing the runner's fail-on-skip policy. 700/100/200, final 850/150, timeout 900/100, cancel/reject, same-address external-wallet reauthentication, duplicate withdrawal and local full-service shutdown were executed. See [browser report](../tests/reports/2026-10-03-browser-e2e.md). FR-15–21/24/31–32, SC-06/07/09/12/13 and AT12/16/23/24/26/41/42/51 gain local evidence slices only.
 
 AT41/42/51 and TS05 remain In progress: the EIP-1193 wallet and clean scanner are test substitutes; real Mera/WebAuthn PRF, two-device recovery, public Monad allocation/withdrawal, deployed PostgreSQL and independent funds/reproduction review are not certified. No requirement is promoted to Verified. The previous skipped E2E blocker is addressed by runnable local tests; deployment/device acceptance blockers remain.
+
+2026-10-04 品牌检查：npm run typecheck --prefix apps/web 通过；本地首页／登录页检查 Logo 加载、回首页导航与 1280px／375px 响应式布局，无横向溢出。随后按用户指定位置将彩色图标移至导航、移除账户卡片图标；浏览器确认仅有导航品牌图，TypeScript 再次通过。未运行资金业务测试，不提升任何 AT/TS。

@@ -1,173 +1,155 @@
 # RentBond — Programmable Deposit Settlement
 
-**面向在海外租房并需要远程处理押金结算的人群，包括国际学生、海外工作者和陪读／随迁家庭。** 房东逐项提出扣款，租客逐项确认；申索窗口关闭后，无争议部分先分配，争议部分继续锁定并进入处理流程。
-
 > **Dispute 200, not your entire 1,000 deposit.**
->
-> RentBond helps cross-border renters and small landlords settle rental deposits remotely. Once the claim window closes, undisputed funds become claimable while disputed deductions follow the agreed resolution process.
 
-**当前状态：合约模块已有本地实现和 41 个通过的 Foundry 测试（含 256 组金额分配 fuzz），固定构建 ABI 已导出；P01–P12 已切换全英文真实 API/ABI 页面，接入 Mera/SIWE、本人交易确认、材料和导出；D 的后端、私有存储、数据库、导出与 Gas 补给已有本地 API/合约联调证据。** 主分支已记录用户报告的 Monad 测试网手工部署及入金，只读核验材料见 deployments 与已合并的证据记录。Web 79项本地测试、类型检查与构建已通过；完整 Worker、真实设备恢复和浏览器测试网资金流程尚未验收。文档和本地检查不能替代独立审查或真实链上证据。范围与缺口见 [Web 实现与验证](apps/web/README.md) 和 [D 交接](docs/member-d-handoff.md)。
+RentBond 帮助跨境租客与小型房东远程结算租房押金：房东逐项提出扣款，租客逐项认可或争议。申索窗口关闭并完成链上分配后，无争议资金可先领取，争议部分继续按双方预先接受的程序处理。
 
-## 2026-10-03 工程复查
+**Monad 测试网原型 · MockUSD 测试资产，无现金价值。** 核心流程已有本地自动化测试；测试网完整结算、真实设备恢复及独立验收仍待完成。
 
-Worker 真实本地事件同步、持久化到期任务和进程重启测试已随 PR #14 合入 main；IT-01–IT-09 全部通过，无跳过。后续复查补齐八种公开推进动作的本地执行覆盖，并统一健康检查与运行配置。详情见 [复查报告](tests/reports/2026-10-03-worker-followup.md)。八项浏览器 E2E 已在隔离本地链通过（0 失败、0 跳过），涵盖 700/100/200、850/150、900/100、取消、拒签和停运后领取；详见 [浏览器报告](tests/reports/2026-10-03-browser-e2e.md)。外部钱包为测试替身，真实通行密钥/设备恢复、测试网完整分配/领取和独立资金审查仍未完成；以下启动目标中的其他占位命令仍须逐项实现。
+## 为什么做 RentBond
 
-## 产品面向谁
+退租后离开当地的租客，仍需要与房东核对扣款、交换材料和等待结算。RentBond 将每项扣款、双方回应、处理期限与资金状态放在同一流程中，让一项争议不必拖住已经可以分配的其余押金。房东也能提交清楚的扣款依据，获得已认可或有效处理结果支持的款项。
 
-| 用户 | 第一版定位 |
-| --- | --- |
-| Primary user | 跨境租房、即将退租或已离境，需要远程结算押金的海外租客 |
-| 首批场景 | 国际学生、海外工作者、陪读／随迁家庭；这些是获客场景，不是代码准入限制 |
-| Adoption-side user | 经常服务跨境租客的私人房东及小型物业管理方 |
-| 暂不优先 | 已有成熟押金系统的大型机构公寓；不泛化为所有租房交易 |
+首批目标是海外学生、海外工作者、陪读／随迁家庭，以及服务这些租客的私人房东和小型物业。这是待验证的用户假设，目前没有真实采用数据。
 
-用户需要在**入金前双方接受规则并将押金存入合约**。RentBond 无法追回已交给房东的旧押金；“已离境”描述结算时的场景，不代表可以事后单方迁入旧押金。当前定位是首批用户假设，尚无真实采用数据。
+**使用前提：双方在入金前接受规则，并把押金存入租约合约。** RentBond 无法追回此前已交给房东的押金。
 
-## 核心 Demo：1,000 → 700 / 100 / 200
+## 核心演示：1,000 → 700 / 100 / 200
 
-Alice 是跨境租客，退租后已离开当地。她与房东在入住前确认了押金规则并存入 **1,000 MockUSD**。房东申索清洁 100、桌面损坏 200；Alice 认可清洁费，对原有划痕提出异议。
+虚构租客 Alice 存入 1,000 MockUSD。退租时，房东申索清洁费 100、桌面损坏费 200；Alice 认可清洁费，对原有划痕提出争议。
 
-| 申索窗口关闭后的资金 | 数额 | 状态 |
+| 申索窗口关闭并确认分配后 | 金额（MockUSD） | 状态 |
 | --- | ---: | --- |
-| 未申索部分 → 租客 | 700 MockUSD | 可领取 |
-| 已认可扣款 → 房东 | 100 MockUSD | 可领取 |
-| 争议部分 | 200 MockUSD | 待处理，尚未分配 |
+| 未申索部分 → 租客 | 700 | 可领取 |
+| 已认可扣款 → 房东 | 100 | 可领取 |
+| 有争议的扣款 | 200 | 待处理 |
 
-若有效处理结果支持其中 50 给房东，最终租客 850、房东 150；若主备处理均超时，按事先接受的退出政策最终租客 900、房东 100。领取交易确认后才显示“已领取”。上述仍是**虚构案例，不是真实用户数据**；对应本地合约流程测试已通过，尚无这套 700/100/200 结算流程的 Monad 测试网验收证据。
+处理人若支持争议款中 50 给房东，结果经过挑战期并生效后，最终租客获得 850、房东获得 150。另一条演示路径中，主、备用处理均超时，按事先接受的退出规则最终分配为 900 / 100。
 
-主 Demo 展示 Tenant / Landlord / Resolver 三种角色。备用处理、服务预授权、超时退出、Worker 和故障恢复保留在完整实现及技术附录中。详见 [MVP 规格](docs/MVP-SPEC.md) 与 [Demo 脚本](docs/contest/demo.md)。
+页面区分 **预计拆分 → 可领取 → 已领取**。申索窗口关闭前不提前分配未申索部分；授权代币不等于入金；分配不等于到账。上述流程已有本地浏览器测试，尚无完整 Monad 测试网分配与领取验收。
 
-## 工程范围
+[三角色演示脚本](docs/contest/demo.md) · [部署与链上证据](deployments/README.md) · [本地浏览器测试报告](tests/reports/2026-10-03-browser-e2e.md)
 
-- Monad 测试网，MockUSD 为 6 位小数测试资产，无现金价值；不接真实押金、不收平台费、不生息。
-- 单租客、单房东、单笔押金；每份租约一个不可升级的合约；最多 10 项申索。
-- R/F 预授权服务方案，T/L 逐约确认；资金受益人仅限固定 T/L。
-- 默认 Mera passkey 与受限测试 MON 补给属于 P0；若兼容性试验失败按 PRD 8.5 评估替代，不静默换账户。
-- 到期进入结算，不立即退全款。正常配置最迟 `hardEndAt = leaseEndAt + 37 天`；有效扣款先落实，剩余按固定政策退出。
-- 不做 AI 裁决、房源市场、NFT、信誉代币、收益或 DAO。邮件与完整双语为 P1。
+公开体验地址和演示视频尚未提供。正式投稿需提供公开可观看、**不超过 3 分钟**的视频，展示实际操作及 Monad 链上交互；本地测试录像不能替代 Monad 集成证据。
 
-## 五人如何分工
+## 链上规则与技术实现
 
-| 成员 | 主责 | 主要目录 | 首项交付 |
-| --- | --- | --- | --- |
-| A 产品与协作 | 需求、交互验收、比赛规则、看板、Demo | `docs/`、`fixtures/` | 冻结 MVP 与提交规则 |
-| B 智能合约 | 注册表、Factory、资金状态机、合约测试与部署 | `contracts/`、`deployments/` | 最小资金闭环与越权测试 |
-| C 前端与账户 | 页面、passkey、恢复、链上交互与确认体验 | `apps/web/src/app/` 页面、`components/`、`features/` | 账户试验与 700/100/200 资金拆分界面 |
-| D 后端与数据 | SIWE、API、ACL、私有存储、导出、测试补给 | `apps/web/src/app/api/`、`server/`、`infra/` | 登录与跨租约访问拒绝试验 |
-| E 集成与质量 | Worker、CI、端到端、故障恢复、发布复现 | `apps/worker/`、`tests/`、`scripts/`、`.github/` | 独立 clone 检查与测试基线 |
+合约将双方事先同意的金额、受益人和期限绑定到已存入的押金，平台不能通过修改数据库转走资金。数据库负责私有材料和协作记录，链上负责资金状态与执行规则。链上记录不判断照片真伪，也不保证处理人判断公平。
 
-五位成员不是五个链上角色。开发用 A–E，运行角色用 T/L/R/F/O/K；详见 [团队分工与交接](docs/team.md)。
-
-## 目录结构
-
-```text
-RentBond/
-├── apps/
-│   ├── web/src/               # Next.js 页面与服务端 API
-│   └── worker/src/            # 独立 Node.js 事件同步与到期任务
-├── packages/shared/src/       # 类型、金额、schema、承诺值、网络适配
-├── contracts/                 # Solidity 源码、Foundry 测试及部署
-├── infra/                     # 数据库迁移、私有 Storage 策略
-├── deployments/               # 真实部署记录；当前只有模板
-├── fixtures/                  # 明确标记的虚构租约案例
-├── tests/                     # integration 与 e2e
-├── scripts/                   # 骨架检查及后续开发工具
-├── docs/                      # PRD、MVP、分工、接口、ADR、验收、运维
-├── .github/                   # Issue/PR 模板、骨架 CI、CODEOWNERS 示例
-├── .env.example               # 无密钥配置模板
-├── AGENTS.md                  # 开发 Agent 的仓库约定
-└── CONTRIBUTING.md            # 分支、审查、合并及交付规范
-```
-
-每个模块有自己的 README，列明负责人、允许改动范围和输入输出；Git 会保留这些目录。
-
-## 新成员从哪里开始
-
-1. 阅读 [MVP-SPEC](docs/MVP-SPEC.md)，再读 [PRD](docs/PRD.md) 第 6、7、11 章。
-2. 在 [team](docs/team.md) 填写姓名和 GitHub 账号，在 [backlog](docs/backlog.md) 领取 Issue。
-3. 阅读 [架构](docs/architecture.md) 和 [接口约定](docs/interfaces/README.md)，先确认交接再并行实现。
-4. 按 [CONTRIBUTING](CONTRIBUTING.md) 建分支；PR 写需求编号、实际测试结果和交接影响。
-
-## 当前能运行的检查
-
-骨架检查依赖 Node.js **24.14.0**。合约命令通过 npx 使用固定的 `@foundry-rs/forge@1.7.1`；网页包已有精确依赖和 npm 锁文件，仓库级 pnpm workspace 与真实锁文件已提交，CI 固定 pnpm 12.8.1 并按锁文件安装。
-
-```sh
-node scripts/doctor.mjs
-node scripts/check-scaffold.mjs
-node scripts/ts04-clone-verify.mjs   # TS04：独立 clone 验证
-npm run build:contracts
-npm run test:contracts
-npm run check:contract-sizes
-npm run contracts:export:abi
-```
-
-已有 pnpm 时可运行 `pnpm doctor` 与 `pnpm check`。`doctor` 只检查骨架运行环境；`check` 检查本地文档链接、JSON、需求覆盖及目录；`ts04` 目前仍是骨架级 clone 检查。合约测试已经实现；网页可单独运行 `npm run test --prefix apps/web`、`npm run typecheck --prefix apps/web`、`npm run build --prefix apps/web`。这些不是跨层验收；本地跨层测试已实现（9 项 Integration、8 项浏览器 E2E）；独立 lint、第二人完整复现和公网验收仍未完成。
-
-**已实现的本地跨层测试命令：**
-
-```sh
-node tests/runner.mjs integration  # IT-01 — IT-09
-node tests/runner.mjs e2e         # E2E-01 — E2E-08
-node tests/runner.mjs all          # 全部
-pnpm test:integration              # 同上 via pnpm
-pnpm test:e2e                     # 同上 via pnpm
-```
-
-先按 [测试说明](tests/README.md) 安装锁定依赖、生成 API ABI 并安装 Playwright Chromium，再运行跨层命令。真实依赖与环境边界见 [依赖矩阵](docs/dependency-matrix.md)。
-
-### 后续完整启动目标
-
-以下为完整启动目标，不能整段当作已验证的一键启动。根脚本 `infra:up`、`chain:local`、`contracts:deploy:local`、`dev`、`build` 仍为明确失败的占位；`db:migrate`、`fixtures:seed`、`worker:dev` 和测试命令已有实现。网页可从 `apps/web` 启动，Worker 步骤见 [Worker README](apps/worker/README.md)。第二人新 clone 的完整启动验收仍待完成。
-
-```sh
-pnpm install --frozen-lockfile   # 锁文件已提交
-pnpm doctor
-pnpm infra:up
-pnpm db:migrate
-pnpm chain:local                 # 独立终端 1，常驻
-pnpm contracts:deploy:local      # 新终端，等待本地链就绪
-pnpm fixtures:seed
-pnpm dev                         # 独立终端 2，常驻
-pnpm worker:dev                  # 独立终端 3，常驻
-pnpm check
-npm run test:contracts            # 已实现
-pnpm test:integration
-pnpm test:e2e
-pnpm build
-```
-
-从 `.env.example` 配置服务环境，实际加载路径由 RB-02 固定。密钥、私有文件和真实合同不进入 Git。`npm run contracts:preflight:testnet` 只读核对网络；`npm run contracts:deploy:testnet` 仅允许显式选择 Monad Testnet、RPC 返回 chainId 10143、使用本地 Forge keystore 且二次确认后广播，不会缺配置时回退其他网络。
-
-## GitHub 协作
-
-仓库已经存在。每位成员从最新 `main` 创建自己的功能分支，通过 PR 合并，不要在 GitHub 网页和本地同时改同一文件：
-
-```sh
-git switch main
-git pull --ff-only
-git switch -c <type/member-topic>
-# 修改并运行对应测试
-git add <本任务文件>
-git diff --cached
-git commit -m "<type>: <summary>"
-git push -u origin HEAD
-```
-
-提交前检查差异中没有密钥和私人资料。A 邀请成员，按 [GitHub 设置清单](docs/github-setup.md) 配置分支保护、任务看板和真实 CODEOWNERS。仓库内的模板不会自动设置远端规则。
-
-## 文档导航
-
-| 内容 | 入口 |
+| 层 | 实现 |
 | --- | --- |
-| 需求与修改对照 | [PRD](docs/PRD.md)、[MVP](docs/MVP-SPEC.md)、[changes](docs/changes.md)、[来源](docs/sources/README.md) |
-| 分工与计划 | [team](docs/team.md)、[backlog](docs/backlog.md)、[implementation-plan](docs/implementation-plan.md) |
-| 架构与接口 | [architecture](docs/architecture.md)、[interfaces](docs/interfaces/README.md) |
-| 验收与追踪 | [requirements-traceability](docs/requirements-traceability.md)、[acceptance](docs/acceptance.md) |
-| 依赖与阻塞 | [dependency-matrix](docs/dependency-matrix.md)、[blocker-log](docs/blocker-log.md) |
-| 发布与恢复 | [deployment](docs/runbooks/deployment.md)、[recovery](docs/runbooks/recovery.md) |
-| 比赛与展示 | [contest-requirements](docs/contest/contest-requirements.md)、[demo](docs/contest/demo.md) |
+| 合约 | Solidity / Foundry；服务预授权 Registry、租约 Factory、每份租约独立 Escrow |
+| 网页与账户 | Next.js / React / TypeScript / viem；Mera passkey 接入、SIWE 会话、本人交易确认 |
+| 数据与材料 | PostgreSQL / 本地 PGlite；私有文件、版本承诺、访问控制、ClamAV 扫描及导出 |
+| Worker | 独立 Node.js 进程；事件同步、持久化到期任务、重放与重启恢复 |
+| 验证 | Foundry、Node 测试、Playwright Chromium、本地 EVM 与链上只读核验 |
 
-## 已知限制
+每份租约仅一个租客和一个房东，最多 10 项申索，收款人固定。合约不可升级，无管理员提款、平台费、收益或 AI 裁决。主处理、备用处理、双方和解与固定超时退出均保留；正常配置的最终退出点为租约到期后 37 天。演示短时配置必须单独标注 `DEMO_SHORT`。
 
-合约已有本地实现和部分 Monad 部署/入金证据，但仍缺完整边界/fuzz/invariant、独立安全复核、测试网分配/领取证据；网页真实接线、私有权限、Worker 和停运退出已有本地实现及测试；真实钱包/设备、部署环境及测试网全流程仍未完成验收。AT 状态在固定 commit 与独立复核前不能写成 Verified。原 PRD 中的比赛日期和供应商能力是历史来源，正式资格、团队人数和截止时区仍待核对。项目未选择对外开源许可证；发布前由团队决定并记录第三方许可。
+## 如何使用 Monad
+
+RentBond 在 Monad 测试网上执行租约创建、MockUSD 入金、扣款回应、结果生效和领取。项目使用其 EVM 执行环境承载 Solidity 资金状态机，并通过 viem、JSON-RPC 和合约事件将网页操作与可核验的资金记录连接起来。逐项回应和多阶段结算需要多次交易；交易成本与确认等待是选择和验证网络时关注的体验指标，本项目尚未提供性能实测，不宣称独有性能优势。
+
+下列地址来自仓库保存的 **2026-09-26 只读核验快照**，网络为 Monad Testnet，chainId 为 `10143`。它们是已有部署证据，不是已验收的 DEMO_SHORT 发布配置；正式视频必须标明其实际使用的地址。
+
+| 合约 | 地址 |
+| --- | --- |
+| MockUSD | `0x36f5486ADcFC3Cd1076F2aFaFC720E24EdFf23B1` |
+| ResolverRegistry | `0x61f13f0c0DAaC2802EeD3Cd4DD9FD67c93d0ce30` |
+| DepositEscrowDeployer | `0x7E717703E2bf6cF0b7562DA8cdEb718e65A4f13f` |
+| LeaseFactory | `0x6ed49Bf8EE5E9ba2cbE2977fe100342Fe2999a7E` |
+| 示例 DepositEscrow | `0x80753a6Dd914177fE8AD8cE28B325Fe1B677C479` |
+
+已有入金交易：`0xf7e1cfef92efa9ba94fcffc94a7d66e5dde6c53ba19eedadce2ff1e1590286fa`。源码关联、部署块、回执及核验边界见[链上快照](deployments/monad-testnet-2026-09-26.chain-evidence.json)与[部署说明](deployments/README.md)。该笔入金不证明后续分配和领取已完成。
+
+MockUSD 为团队测试资产，不由赛事组织者或赞助方发行、认可或批准。
+
+## 已有验证与当前边界
+
+以下为仓库保存的测试结果，不代表每次打开本页时重新运行，也不等于独立安全审计。
+
+| 范围 | 已保存的证据 |
+| --- | --- |
+| 合约 | [41 项本地测试通过，含 256 组金额分配 fuzz](tests/reports/2026-09-30-ci-gate-demo-short.md) |
+| Web / API | [79 项本地测试通过](tests/reports/2026-10-03-browser-e2e.md) |
+| 集成 | [9 项通过，无跳过](tests/reports/2026-10-03-worker-runtime.md) |
+| 浏览器 | [8 项通过，无跳过](tests/reports/2026-10-03-browser-e2e.md)：资金拆分、处理、超时、取消、拒签、重复领取及本地停运恢复 |
+| Monad 测试网 | [部署、创建及 1,000 MockUSD 入金只读证据](deployments/README.md)；尚无完整结算和领取证据 |
+
+浏览器测试使用外部钱包及扫描器替身，在本地 EVM 执行真实签名和交易；不能据此宣称真实 passkey、跨设备恢复或公网扫描服务已经验收。部署环境的 PostgreSQL/Worker 联调、真实设备同地址恢复、第二人完整复现与独立资金审查仍待完成。详见[验收清单](docs/acceptance.md)和[剩余问题](docs/blocker-log.md)。
+
+## 本地运行与复现
+
+使用 Node.js 24.x（仓库声明 24.14.0）及 pnpm 12.8.1，按锁文件安装依赖。在仓库根目录执行：
+
+```sh
+pnpm install --frozen-lockfile
+npm run backend:abi --prefix apps/web
+npm run backend:init
+npm run db:migrate
+npm run fixtures:seed
+npm run dev --prefix apps/web
+```
+
+打开 `http://localhost:3000`。初始化生成被 Git 忽略的 `apps/web/.env.local`；seed 只创建虚构草稿和邀请，不伪造入金。完成交互还需要配置可用 RPC、已核验合约和 R/F 已接受的服务方案，详见 [Web 配置](apps/web/README.md)与[后端运行说明](apps/web/src/server/README.md)。以上不是自动部署合约的一键完整 Demo。
+
+如需直接复现隔离的本地浏览器资金流程，在安装依赖和生成 ABI 后执行：
+
+```sh
+pnpm --filter @rentbond/web exec playwright install --with-deps chromium
+node tests/runner.mjs integration
+node tests/runner.mjs e2e
+```
+
+测试会自行启动本地链、临时数据服务及测试钱包，不需要真实私钥或测试网资金。环境边界与产物位置见[测试说明](tests/README.md)。
+
+其他检查：
+
+```sh
+node scripts/check-scaffold.mjs
+npm run test:contracts
+npm run test --prefix apps/web
+npm run typecheck --prefix apps/web
+npm run build --prefix apps/web
+```
+
+独立 Worker 启动与 PostgreSQL 要求见 [Worker README](apps/worker/README.md)。根脚本 `infra:up`、`chain:local`、`contracts:deploy:local`、`dev`、`build` 仍为未实现占位，请使用上述模块命令。第二人全新 clone 的完整复现尚未验收。
+
+## 外部代码、AI 与开发历史
+
+外部组件用于基础设施和开发工具，不作为本团队原创代码申报：
+
+| 外部代码／库 | 使用范围 |
+| --- | --- |
+| OpenZeppelin Contracts 5.0.2 | 仓库内保留的 ReentrancyGuard 防重入代码，位于 `contracts/lib/openzeppelin-contracts/` |
+| Next.js、React、React DOM、TypeScript | 网页、服务端 API 与类型检查 |
+| @category-labs/mera、viem | passkey 账户接入、签名适配及 EVM 交互 |
+| PGlite、node-postgres、PostgreSQL | 本地及独立服务数据库 |
+| Zod、fflate | 请求校验与 ZIP 导出 |
+| ClamAV | 独立文件扫描服务 |
+| Foundry、solc-js、Hardhat、Playwright | 合约编译、测试、本地链与浏览器自动化 |
+| jsPDF | Worker 包声明的依赖；不将其视为已完成 PDF 导出能力的证据 |
+
+完整直接依赖及版本范围见 [Web 清单](apps/web/package.json)、[Worker 清单](apps/worker/package.json)、[Shared 清单](packages/shared/package.json)；锁定版本和传递依赖见 [pnpm 锁文件](pnpm-lock.yaml)。已记录的来源与许可见[依赖矩阵](docs/dependency-matrix.md)。正式发布前仍需核对第三方许可、保留必要声明，并补齐直接收录代码的许可文件。
+
+**AI 使用披露：** 本项目使用 AI 辅助工作；已确认使用 OpenAI Codex 辅助仓库审阅、README 和提交文档编辑。其他成员使用的 AI 工具及代码生成范围仍需在提交前汇总补充。AI 不参与产品中的争议裁决，测试通过与部署状态以实际记录为准。
+
+**开发历史：** 本仓库最早提交为 `aaab8a4`（2026-09-18），后续历史记录合约状态机、网页/API、私有材料、Worker 和本地端到端测试的开发。保留完整 Git 历史，使用 `git log --reverse --date=iso-strict` 查看。提交日期本身不能证明全部内容原创；已有代码／资源、构建窗口前组件及比赛期间新增功能的归属仍需团队核对。外部基础组件按上表披露，不将其计入原创实现。
+
+## 提交要求与许可证
+
+按团队于 2026-10-04 提供的官方条款摘录，最终截止为 **2026-10-13 23:59 美国东部时间（EDT，UTC−4）**，即 **北京时间 2026-10-14 11:59**。必须通过黑客松网站提交，以平台记录的提交时间及截止时保存的版本为准。
+
+当前仍需完成：公共 GitHub 访问核查、外部代码许可与完整 AI 披露、第三方按 README 独立运行、公开三分钟内视频，以及最终版本与链上证据的对应。原型支持范围和内部完整验收状态分别见[比赛清单](docs/contest/contest-requirements.md)与[验收清单](docs/acceptance.md)。
+
+本项目原创代码采用 [MIT License](LICENSE)，版权声明为 `Copyright (c) 2026 RentBond contributors`。第三方代码、库和资源保留各自的许可与版权声明，不因本项目采用 MIT 而重新授权；第三方许可核查仍需完成。
+
+## 项目资料
+
+- [产品范围](docs/MVP-SPEC.md)与[架构](docs/architecture.md)
+- [合约源码与构建](contracts/README.md)、[API 与接口](docs/interfaces/README.md)
+- [部署手册](docs/runbooks/deployment.md)与[停运恢复](docs/runbooks/recovery.md)
+- [验收清单](docs/acceptance.md)、[需求追踪](docs/requirements-traceability.md)与[比赛要求核查](docs/contest/contest-requirements.md)
+- [团队分工](docs/team.md)与[贡献规范](CONTRIBUTING.md)
+
+团队人数与资格、完整构建窗口定义及平台具体提交字段仍需补充核实；本页已确定要求依据团队提供的条款摘录，未声称已登录提交平台或完成投稿。

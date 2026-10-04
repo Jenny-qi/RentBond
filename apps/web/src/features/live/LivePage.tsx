@@ -7,11 +7,12 @@ import { readLease, type Data } from './client';
 import { Form, Details, History, ExportGas, DateText, money, units, seconds } from './ui';
 import { LeaseActions } from './LeaseActions';
 import { Materials } from './Materials';
+import { BrandLogo } from '@/components/BrandLogo';
 
 export default function LivePage() {
   const { wallet, logout, generation, config, busy, message } = useLive();
   const path = usePathname(), params = useParams();
-  return <div className="sky"><div className="stage live-stage"><div className="banner">{config.mode === 'local' ? 'Local test chain' : 'Monad testnet'} · MockUSD test assets have no cash value</div><header className="topbar"><Link href="/" className="brand">RentBond.</Link><nav className="actions"><Link href="/leases">My leases</Link><Link href="/resolver">Resolver</Link><Link href="/login">Account & recovery</Link>{wallet && <button className="btn" disabled={busy} onClick={logout}>Sign out</button>}</nav></header><main className="live-main" key={`${generation}:${path}`}>
+  return <div className="sky"><div className="stage live-stage"><div className="banner">{config.mode === 'local' ? 'Local test chain' : 'Monad testnet'} · MockUSD test assets have no cash value</div><header className="topbar"><Link href="/" className="brand" aria-label="RentBond home"><BrandLogo /></Link><nav className="actions"><Link href="/leases">My leases</Link><Link href="/resolver">Resolver</Link><Link href="/login">Account & recovery</Link>{wallet && <button className="btn" disabled={busy} onClick={logout}>Sign out</button>}</nav></header><main className="live-main" key={`${generation}:${path}`}>
     {path === '/' && <section className="glass glass-pad"><p className="kicker">PROGRAMMABLE DEPOSIT SETTLEMENT</p><h1>Dispute 200, not your entire 1,000 deposit.</h1><p>Review deductions one by one. Once the claim window closes, undisputed funds can be allocated and withdrawn.</p><p>Illustrative example: 1,000 MockUSD becomes 700 claimable by the tenant, 100 by the landlord, and 200 awaiting resolution. Your workspace shows actual contract balances.</p><p>Both parties must agree before funding. RentBond cannot recover deposits already paid to a landlord.</p><Link className="btn btn-primary" href="/leases">Open my leases</Link></section>}
     {!wallet || path === '/login' ? <Login /> : path.startsWith('/invite/') ? <Invite token={String(params.token)} /> : path === '/leases/new' ? <NewLease /> : path === '/resolver' ? <List resolver /> : params.id ? <LeasePage id={String(params.id)} caseId={params.caseId ? String(params.caseId) : undefined} /> : <List />}
     {busy && <p role="status">Processing. Please do not submit again. {message}</p>}

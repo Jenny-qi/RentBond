@@ -1,5 +1,13 @@
 # 需求追踪表
 
+2026-10-04 RB-14 许可材料：用户选择 MIT，已添加根 LICENSE 并更新 README 和提交清单。第三方组件沿用自身许可；本次不改变 FR/SC/AT 验证状态。
+
+2026-10-04 提交映射：README 增加 Monad 地址／入金交易、外部组件、AI 披露、开发历史与官方截止；演示脚本调整为 165 秒。对应 CH02/04/08 与 RB-14 的提交说明，不改变 FR/SC 规则或验证状态。
+
+## 2026-10-04 提交文档整理
+
+README 改为评委入口；删除旧交接、排期和建仓清单，后端运行内容归并至 apps/web/src/server/README.md。仅整理文档及引用，FR/SC 实现和验证状态不变。
+
 ## 当前基线：PR #17 合并后的 main（2026-10-03）
 
 源码基线 `ffe56a8c8cb7654ae0864a7d3c8e2a426b815be0`，已包含 PR #14/#15 的 Worker 与 PR #17 的浏览器测试。PR #17 的 7 项自动检查通过；本地 Integration 为 9 passed / 0 skipped、Chromium E2E 为 8 passed / 0 skipped、Web 为 79 passed。证据见 [Worker 报告](../tests/reports/2026-10-03-worker-runtime.md)、[后续复查](../tests/reports/2026-10-03-worker-followup.md)及[浏览器报告](../tests/reports/2026-10-03-browser-e2e.md)。以下按日期保留的旧状态是历史快照，以本节为当前进度。
@@ -95,3 +103,5 @@ PR #14 is merged into main f843b46. Its implementation CI checks passed; browser
 Eight executable Chromium scenarios now cover real page → HTTP API → local EVM funds flows, replacing skipped placeholders without changing the runner's fail-on-skip policy. 700/100/200, final 850/150, timeout 900/100, cancel/reject, same-address external-wallet reauthentication, duplicate withdrawal and local full-service shutdown were executed. See [browser report](../tests/reports/2026-10-03-browser-e2e.md). FR-15–21/24/31–32, SC-06/07/09/12/13 and AT12/16/23/24/26/41/42/51 gain local evidence slices only.
 
 AT41/42/51 and TS05 remain In progress: the EIP-1193 wallet and clean scanner are test substitutes; real Mera/WebAuthn PRF, two-device recovery, public Monad allocation/withdrawal, deployed PostgreSQL and independent funds/reproduction review are not certified. No requirement is promoted to Verified. The previous skipped E2E blocker is addressed by runnable local tests; deployment/device acceptance blockers remain.
+
+2026-10-04 品牌展示：C 页面在导航指定位置接入团队彩色曲线 Logo，移除账户卡片重复图标，保留 favicon 和 Apple touch icon；仅展示调整，不改变 FR/SC 实现及验证状态。素材来源见 [品牌资源](../apps/web/public/brand/README.md)。

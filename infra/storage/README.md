@@ -12,4 +12,4 @@ JPG/PNG/PDF，单文件10MB、单租约100MB；拒绝 SVG/HTML；版本不可覆
 
 已 Closed 且全部领取后 90 天清原件与隔离副本，保留不可变摘要/审计；提前清理由双方提交请求后执行。扫描失败、超时、病毒库过旧均不放行，三次耗尽需调查后重新上传。ClamAV 是扫描控制，不证明材料真实，也不是端到端加密。Supabase REST 适配有协议测试，真实托管项目需部署方另跑匿名及 authenticated 拒绝验证。
 
-2026-10-02 选定本地 PostgreSQL + 私有目录 + ClamAV 1.5.4 完成复验，含真实 EICAR PDF 附件拒绝、干净文件、导出与跨会话 ACL。配置见 clamd.conf，命令与升级步骤见 [D 交接](../../docs/member-d-handoff.md)。clamd TCP 协议没有鉴权，只能在回环或受限的私有服务网络中使用；freshclam 需持续更新病毒库。开放公网前仍需复验实际域名、TLS、服务账户与目录权限。
+2026-10-02 选定本地 PostgreSQL + 私有目录 + ClamAV 1.5.4 完成复验，含真实 EICAR PDF 附件拒绝、干净文件、导出与跨会话 ACL。配置见 clamd.conf，命令与升级步骤见 [后端运行说明](../../apps/web/src/server/README.md)。clamd TCP 协议没有鉴权，只能在回环或受限的私有服务网络中使用；freshclam 需持续更新病毒库。开放公网前仍需复验实际域名、TLS、服务账户与目录权限。
