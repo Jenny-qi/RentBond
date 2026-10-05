@@ -1,124 +1,67 @@
-/**
- * providers.test.mjs — RB-12 RPC provider unit tests.
- *
- * Tests verifyChainId and buildPublicClient using a mock HTTP server.
- * Uses Node.js native test runner (no external test framework).
- *
- * E owns.
- */
-
 import assert from 'node:assert/strict';
-import { createServer } from 'node:http';
-import { after, before, describe, it } from 'node:test';
+import { afterEach, test } from 'node:test';
 import { buildPublicClient, verifyChainId } from './providers.ts';
 
-// ---------------------------------------------------------------------------
-// Mock RPC server
-// ---------------------------------------------------------------------------
+const originalFetch = globalThis.fetch;
+afterEach(() => { globalThis.fetch = originalFetch; });
 
-/** Echo server that returns a configurable hex result for eth_chainId */
-function createMockRpcServer(chainIdHex = '0x279F') {
-  return new Promise((resolve, reject) => {
-    const server = createServer(async (req, res) => {
-      let body = '';
-      for await (const chunk of req) body += chunk;
-      const payload = JSON.parse(body);
-
-      if (payload.method === 'eth_chainId') {
-        res.setHeader('content-type', 'application/json');
-        res.end(JSON.stringify({ jsonrpc: '2.0', id: payload.id, result: chainIdHex }));
-        return;
-      }
-      if (payload.method === 'eth_blockNumber') {
-        res.setHeader('content-type', 'application/json');
-        res.end(JSON.stringify({ jsonrpc: '2.0', id: payload.id, result: '0x10D4C0' }));
-        return;
-      }
-      if (payload.method === 'eth_getLogs') {
-        res.setHeader('content-type', 'application/json');
-        res.end(JSON.stringify({ jsonrpc: '2.0', id: payload.id, result: [] }));
-        return;
-      }
-      if (payload.method === 'eth_call') {
-        res.setHeader('content-type', 'application/json');
-        res.end(JSON.stringify({ jsonrpc: '2.0', id: payload.id, result: '0x' }));
-        return;
-      }
-      res.writeHead(400);
-      res.end();
-    });
-    server.listen(0, '127.0.0.1', () => resolve(server));
-  });
+function mockRpc(handler) {
+  globalThis.fetch = async (_url, options) => {
+    const request = JSON.parse(options.body);
+    const response = handler(request.method, request.params);
+    return Response.json({ jsonrpc: '2.0', id: request.id, ...response });
+  };
 }
 
-describe('verifyChainId', () => {
-  it('returns true when RPC chain ID matches expected (Monad testnet 10143)', async () => {
-    const server = await createMockRpcServer('0x279F'); // 10143
-    const url = `http://127.0.0.1:${server.address().port}`;
-    try {
-      const result = await verifyChainId(url, 10143);
-      assert.equal(result, true);
-    } finally {
-      server.close();
-    }
-  });
+const network = { chainId: 10143 };
+const rpcUrl = 'https://example.invalid/rpc';
 
-  it('throws when RPC chain ID does not match expected', async () => {
-    const server = await createMockRpcServer('0x1'); // chain 1 (mainnet)
-    const url = `http://127.0.0.1:${server.address().port}`;
-    try {
-      await assert.rejects(verifyChainId(url, 10143), /Chain ID mismatch/);
-    } finally {
-      server.close();
-    }
-  });
-
-  it('throws on invalid expected chain ID', async () => {
-    await assert.rejects(verifyChainId('http://127.0.0.1:8545', NaN), /positive safe integer/);
-    await assert.rejects(verifyChainId('http://127.0.0.1:8545', -1), /positive safe integer/);
-  });
-
-  it('throws when RPC server is unreachable', async () => {
-    await assert.rejects(verifyChainId('http://127.0.0.1:0', 10143));
-  });
+test('accepts the expected chain and rejects a different chain', async () => {
+  mockRpc(() => ({ result: '0x279f' }));
+  assert.equal(await verifyChainId(rpcUrl, 10143), true);
+  mockRpc(() => ({ result: '0x1' }));
+  await assert.rejects(verifyChainId(rpcUrl, 10143), /Chain ID mismatch/);
 });
 
-describe('buildPublicClient', () => {
-  let server;
-  let url;
+test('invalid expected chain ID is rejected before making an RPC request', async () => {
+  globalThis.fetch = () => { throw new Error('fetch must not run'); };
+  await assert.rejects(verifyChainId(rpcUrl, NaN), /positive safe integer/);
+  await assert.rejects(verifyChainId(rpcUrl, -1), /positive safe integer/);
+});
 
-  before(async () => {
-    server = await createMockRpcServer();
-    url = `http://127.0.0.1:${server.address().port}`;
-  });
+test('RPC transport and error responses are propagated', async () => {
+  globalThis.fetch = async () => { throw new Error('connection failed'); };
+  await assert.rejects(verifyChainId(rpcUrl, 10143), /connection failed/);
+  mockRpc(() => ({ error: { message: 'backend unavailable' } }));
+  await assert.rejects(verifyChainId(rpcUrl, 10143), /backend unavailable/);
+});
 
-  after(() => {
-    server.close();
-  });
+test('read methods preserve valid values', async () => {
+  mockRpc((method) => ({
+    result: {
+      eth_blockNumber: '0x10d4c0',
+      eth_chainId: '0x279f',
+      eth_getLogs: [],
+      eth_call: '0x',
+    }[method],
+  }));
+  const client = await buildPublicClient({ primaryUrl: rpcUrl, network });
+  assert.equal(await client.getBlockNumber(), BigInt('0x10d4c0'));
+  assert.equal(await client.getChainId(), 10143);
+  assert.deepEqual(await client.getLogs({ fromBlock: '0x1', toBlock: '0x1' }), []);
+  assert.equal(await client.call({ to: '0x0000000000000000000000000000000000000000' }), '0x');
+});
 
-  it('getBlockNumber returns bigint', async () => {
-    const client = await buildPublicClient({ primaryUrl: url, network: { chainId: 10143 } });
-    const block = await client.getBlockNumber();
-    assert.equal(typeof block, 'bigint');
-    assert.ok(block > 0n);
-  });
+test('missing RPC results reject rather than masquerade as an empty read', async () => {
+  mockRpc(() => ({}));
+  const client = await buildPublicClient({ primaryUrl: rpcUrl, network });
+  await assert.rejects(client.getLogs({ fromBlock: '0x1', toBlock: '0x1' }), /eth_getLogs returned no result/);
+  await assert.rejects(client.call({ to: '0x0000000000000000000000000000000000000000' }), /eth_call returned no result/);
+  await assert.rejects(client.getBlockNumber(), /eth_blockNumber returned no result/);
+});
 
-  it('getChainId returns correct number', async () => {
-    const client = await buildPublicClient({ primaryUrl: url, network: { chainId: 10143 } });
-    const chainId = await client.getChainId();
-    assert.equal(chainId, 10143);
-  });
-
-  it('getLogs returns array', async () => {
-    const client = await buildPublicClient({ primaryUrl: url, network: { chainId: 10143 } });
-    const logs = await client.getLogs({ address: '0x1234', fromBlock: '0x0', toBlock: 'latest' });
-    assert.ok(Array.isArray(logs));
-  });
-
-  it('call returns hex string', async () => {
-    const client = await buildPublicClient({ primaryUrl: url, network: { chainId: 10143 } });
-    const result = await client.call({ to: '0x0000000000000000000000000000000000000000' });
-    assert.ok(typeof result === 'string');
-    assert.ok(result.startsWith('0x'));
-  });
+test('null RPC results reject rather than masquerade as an empty read', async () => {
+  mockRpc(() => ({ result: null }));
+  const client = await buildPublicClient({ primaryUrl: rpcUrl, network });
+  await assert.rejects(client.getLogs({ fromBlock: '0x1', toBlock: '0x1' }), /eth_getLogs returned no result/);
 });

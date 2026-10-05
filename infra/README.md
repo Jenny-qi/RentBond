@@ -1,6 +1,6 @@
 # 数据库与私有存储
 
-负责人 D，E 复核。已实现 PostgreSQL/PGlite 同源迁移、本地私有对象目录和 Supabase REST 适配。开发无需云账号；启动、队列和可选 Docker 步骤见 [D 交接](../docs/member-d-handoff.md)。
+负责人 D，E 复核。已实现 PostgreSQL/PGlite 同源迁移、本地私有对象目录和 Supabase REST 适配。开发无需云账号；启动、队列和可选 Docker 步骤见 [后端运行说明](../apps/web/src/server/README.md)。
 
 users/sessions、leases、service_profiles、lease_members、document_versions、inspections/items、claims、cases/decisions、chain_events、notifications、audit_log 见 PRD 9.2。
 

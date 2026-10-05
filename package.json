@@ -3,9 +3,13 @@
   "version": "0.0.0",
   "private": true,
   "description": "RentBond programmable rental-deposit settlement workspace",
-  "engines": { "node": "24.14.0" },
+  "engines": {
+    "node": "24.14.0"
+  },
   "pnpm": {
-    "onlyBuiltDependencies": ["esbuild"]
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
   },
   "scripts": {
     "doctor": "node scripts/doctor.mjs",
@@ -24,14 +28,15 @@
     "backend:worker": "npm run backend:worker --prefix apps/web",
     "test:backend": "npm run test:backend --prefix apps/web",
     "dev": "node scripts/not-implemented.mjs dev RB-02",
-    "worker:dev": "node scripts/not-implemented.mjs worker:dev RB-12",
-    "worker:health": "node scripts/worker-health.mjs",
+    "worker:dev": "node --env-file-if-exists=apps/web/.env.local apps/worker/src/main.ts",
+    "worker:health": "node --env-file-if-exists=apps/web/.env.local scripts/worker-health.mjs",
     "test:contracts": "npx --yes @foundry-rs/forge@1.7.1 test --root contracts -vv",
     "build:contracts": "npx --yes @foundry-rs/forge@1.7.1 build --root contracts",
     "check:contract-sizes": "npx --yes @foundry-rs/forge@1.7.1 build --root contracts --sizes --skip test --skip script",
     "test:integration": "node tests/runner.mjs integration",
     "test:e2e": "node tests/runner.mjs e2e",
     "test:all": "node tests/runner.mjs all",
-    "build": "node scripts/not-implemented.mjs build RB-02"
+    "build": "node scripts/not-implemented.mjs build RB-02",
+    "test:worker": "npm run test:worker --prefix apps/web"
   }
 }

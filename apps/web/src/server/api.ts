@@ -40,6 +40,7 @@ import { createExport, exportAccess, requestGas } from "./jobs.ts";
 import { attachDeployment } from "./projections.ts";
 import { createDecision, createStatement } from "./statements.ts";
 import { privateHistory, evidenceStatus } from "./presentation.ts";
+import { scanStatus } from "./upload-scans.ts";
 
 interface Reply {
   data: unknown;
@@ -285,6 +286,8 @@ async function dispatch(
     return { data: await uploadIntent(ctx, body), status: 201 };
   if (path[0] === "documents" && path[1] && path[1] !== "upload-intent") {
     const id = uuid.parse(path[1]);
+    if (path.length === 4 && path[2] === "uploads" && method === "GET")
+      return { data: await scanStatus(ctx, id, uuid.parse(path[3])) };
     if (path.length === 4 && path[2] === "uploads" && method === "PUT") {
       return {
         data: await receiveUpload(ctx, id, uuid.parse(path[3]), request),
@@ -539,13 +542,34 @@ export async function handleApi(app: App, request: Request): Promise<Response> {
         () => false,
       );
       const storage = await app.storage.health().catch(() => false);
+      const quarantine = await app.quarantine.health().catch(() => false);
+      const scanner = await app.scanner.health().then(
+        (s) => s.ready,
+        () => false,
+      );
       const rpc = app.config.rpcUrl
         ? await app.chain.health().catch(() => false)
         : null;
       return respond(
         {
-          data: { database: db, storage, rpc: rpc ?? "not_configured" },
-          status: db && storage && rpc !== false ? 200 : 503,
+          data: {
+            database: db,
+            storage,
+            quarantine,
+            scanner:
+              app.config.scanMode === "disabled-local"
+                ? "disabled-local"
+                : scanner,
+            rpc: rpc ?? "not_configured",
+          },
+          status:
+            db &&
+            storage &&
+            quarantine &&
+            (scanner || app.config.scanMode === "disabled-local") &&
+            rpc !== false
+              ? 200
+              : 503,
         },
         requestId,
       );

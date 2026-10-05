@@ -17,8 +17,12 @@
     "pretest": "node src/server/generate-abi.mjs --solc",
     "db:migrate": "node src/server/cli.mjs migrate",
     "backend:worker": "node src/server/cli.mjs worker",
+    "backend:verify-deployment": "node src/server/cli.mjs verify-deployment",
+    "test:deployment": "node --test src/server/tests/postgres.integration.mjs src/server/tests/deployment.integration.mjs",
     "backend:cleanup": "node src/server/cli.mjs cleanup",
-    "backend:abi": "node src/server/generate-abi.mjs --solc"
+    "backend:abi": "node src/server/generate-abi.mjs --solc",
+    "test:worker": "node --test src/server/tests/worker-runtime.test.mjs src/server/tests/worker-config.test.mjs",
+    "pretest:worker": "node src/server/generate-abi.mjs --solc"
   },
   "dependencies": {
     "@category-labs/mera": "0.2.0",
@@ -42,6 +46,7 @@
     "@types/react": "19.1.13",
     "@types/react-dom": "19.1.9",
     "hardhat": "3.18.0",
+    "playwright": "1.62.1",
     "solc": "0.8.24",
     "typescript": "5.9.2"
   }

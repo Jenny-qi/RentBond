@@ -18,10 +18,15 @@ const safeKey = (key: string) => {
   );
   return key;
 };
-export function createStorage(config: Config): ObjectStorage {
+export function createStorage(
+  config: Config,
+  quarantine = false,
+): ObjectStorage {
   if (config.storageUrl && config.storageKey) {
     const base = config.storageUrl.replace(/\/$/, "") + "/storage/v1";
-    const bucket = encodeURIComponent(config.storageBucket);
+    const bucket = encodeURIComponent(
+      quarantine ? config.quarantineBucket : config.storageBucket,
+    );
     const headers = {
       authorization: "Bearer " + config.storageKey,
       apikey: config.storageKey,
@@ -67,19 +72,17 @@ export function createStorage(config: Config): ObjectStorage {
         const info = await response.json();
         return (
           info.public === false &&
-          Number(info.file_size_limit) >= 115343360 &&
+          Number(info.file_size_limit) >= (quarantine ? 10485760 : 115343360) &&
           Number(info.file_size_limit) <= 157286400 &&
-          [
-            "image/jpeg",
-            "image/png",
-            "application/pdf",
-            "application/zip",
-          ].every((mime) => info.allowed_mime_types?.includes(mime))
+          (quarantine
+            ? ["image/jpeg", "image/png", "application/pdf"]
+            : ["image/jpeg", "image/png", "application/pdf", "application/zip"]
+          ).every((mime) => info.allowed_mime_types?.includes(mime))
         );
       },
     };
   }
-  const base = resolve(config.dataDir, "objects");
+  const base = resolve(config.dataDir, quarantine ? "quarantine" : "objects");
   const path = (key: string) => {
     const result = resolve(base, safeKey(key));
     requireThat(

@@ -90,6 +90,7 @@ test("local database survives close/reopen and refuses concurrent file owners", 
     assert.equal((await second.query("SELECT * FROM users")).length, 1);
     assert.deepEqual(await migrate(second), [
       "0002_new_account_invitations.sql",
+      "0003_upload_scans_worker_tasks.sql",
     ]);
     assert.deepEqual(await migrate(second), []);
   } finally {

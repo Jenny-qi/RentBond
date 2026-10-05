@@ -1,12 +1,32 @@
 # 验收清单
 
+2026-10-04 许可证：按用户选择添加根 MIT LICENSE，并同步 README 与比赛清单。仅完成项目自身许可文件，不代表第三方授权核查、公共发布或任何 AT/TS 业务验收通过。
+
+2026-10-04 官方条款同步：用户提供条款允许 Monad 测试网，要求公开源码、开源许可证、外部代码与 AI 披露、第三方可运行及不超过 3 分钟的真实操作视频。详见 contest/contest-requirements.md；本次为文档补齐，不新增 AT/TS 通过证据。
+
+## 2026-10-04 提交文档整理
+
+本次只整理提交入口及运行文档，不新增业务测试证据，不将任何 AT/TS 提升为 Verified。测试网完整分配/领取、真机恢复、部署环境验收、独立复现与资金审查仍待完成。
+
+## 当前基线：PR #17 合并后的 main（2026-10-03）
+
+源码基线 `ffe56a8c8cb7654ae0864a7d3c8e2a426b815be0`，已包含 PR #14/#15 的 Worker 与 PR #17 的浏览器测试。PR #17 的 7 项自动检查通过；本地 Integration 为 9 passed / 0 skipped、Chromium E2E 为 8 passed / 0 skipped、Web 为 79 passed。证据见 [Worker 报告](../tests/reports/2026-10-03-worker-runtime.md)、[后续复查](../tests/reports/2026-10-03-worker-followup.md)及[浏览器报告](../tests/reports/2026-10-03-browser-e2e.md)。以下按日期保留的旧状态是历史快照，以本节为当前进度。
+
+真实 Monad DEMO_SHORT 的 700/100/200 → 850/150 和 900/100 分配/领取、Mera/WebAuthn PRF 两类真机同址恢复、所选公网 PostgreSQL/Worker/TLS/私有文件 ACL 验收、第二人新 clone 复现与独立资金审查仍待完成。CI 通过不将这些需求提升为 Verified。
+
+2026-10-02 main 复核：D 两阶段交付已保留在 main；修复扫描配置 LF/UTC 和回滚后原主链回归的未签名任务重排。当前 Web 69 passed / 0 skipped，真实 PostgreSQL/ClamAV 集成、类型检查、生产构建与 HTTP 通过。总验收仍为 5 passed / 12 skipped、原生退出码 2，C/E 联合场景继续 In progress。命令、失败复现与固定实现 commit 见 [D main 检查记录](../tests/reports/2026-10-02-member-d-main-review.md)。
+
+2026-10-02 D 第二阶段：增加 ClamAV 隔离扫描、C 上传等待/重试、迁移 0003、E 数据库任务适配器与原子回滚；本机 PostgreSQL 16.15 + ClamAV 1.5.4 + 私有目录已实际复验。Web 68 项、真实部署依赖集成 2 项、生产构建与 HTTP 冒烟通过，0 跳过；见 [D 第二阶段报告](../tests/reports/2026-10-02-member-d-stage-two.md)。总验收为 5 passed / 12 skipped，修复混合通过/跳过仍返回成功的问题，现退出 2。完整 Worker、公众环境和真机恢复没有因此 Verified；保留以下历史记录与团队 TS04 状态。
+
+2026-10-02 增量：当前 E2E-01—08 均为未实现占位（8 skipped）。修复运行器与 CI 后，任意 skipped 使验收命令退出非零；绿色的基础检查和五项已运行集成用例不代表完整跨层验收。TS02、TS05 及相关 AT 状态不提升。
+
 2026-09-30 增量：新增 DEMO_SHORT **模板与脚本**、1 项资金分配/领取 fuzz（256 组输入）和 Worker 事件区块/UTC 截止区分；四项 D 权限集成用例及一项调度回归已接入运行器。完整 E2E 未实现时现明确退出非零。模板没有链上地址或交易，新增本地测试不代替 TS01/02、AT12/16/23/26 的测试网操作及独立评审。
 
 2026-09-29 C 实施：P01–P12 切换真实 SIWE/API/ABI，当前可见界面统一为英文；金额、期限和权限规则不变。代码及本地验证汇总在 [Web README](../apps/web/README.md)，不再另建交接/群汇报。新增前端适配器测试与真实本地 EVM 读取验证；AT03/05—26/33/35/41—44/46 的页面接线已有，TS05 真机、完整浏览器角色流程和 Monad 测试网证据仍待完成，本次不标记 Verified。
 
 2026-09-29 阶段复查：当前 HEAD 为 `0dcc55f`；阶段复查 记录跨层运行实际为 0 通过、16 跳过且返回成功，以及本机依赖缺失导致的 Web 检查失败。历史模块通过不等于当前跨层通过；AT12/23/26、AT29—31/47/51、TS04/05 等仍待完整证据，本次不提升验收状态。
 
-以下保留原 PRD 15.2 的全部 AT 场景及预期。合约切片已有本地测试，跨层、测试网和独立复核仍未完成；骨架检查不计入 AT。负责人是初始分配，可在 team 确认后调整。
+以下保留原 PRD 15.2 的全部 AT 场景及预期。合约与本地跨层切片已有测试，测试网、真机和独立复核仍未完成；骨架检查不计入 AT。负责人是初始分配，可在 team 确认后调整。
 
 需求状态：Not started / In progress / Blocked / Verified。运行结果独立记 Not run / Passed / Failed。Verified 必须有固定 commit、命令、环境与证据；失败记录不可删除或改成通过。
 
@@ -19,7 +39,7 @@
 | TS01 | 网络、四账户、错误链和拒签 | B/E | In progress | [链 ID 与角色只读快照](../deployments/monad-testnet-2026-09-26.chain-evidence.json)；拒签/错误链/越权 Not run |
 | TS02 | 最小真实资金闭环与权限 | B/E | In progress | [创建与入金快照](../deployments/monad-testnet-2026-09-26.chain-evidence.json)；分配/领取 Not run |
 | TS03 | SIWE 与私有文件越权拒绝 | D/C | In progress | [D local slice](../tests/reports/2026-09-26-member-d.md) |
-| TS04 | 独立成员从新 clone 完整运行 | E | Not started | — |
+| TS04 | 独立成员从新 clone 完整运行 | E | In progress | `node scripts/ts04-clone-verify.mjs` 仅检查文件、环境变量名和命令文档；未实际新 clone、安装、启动链/服务或跑完整命令，独立复现 Not run |
 | TS05 | passkey 同地址恢复、费用、取消不执行 | C/D | In progress | [C local slice](../tests/reports/2026-09-25-member-c.md) (SDK unit only; real device Not run); [D local slice](../tests/reports/2026-09-26-member-d.md) |
 
 ## 完整业务用例
@@ -28,7 +48,7 @@
 | --- | --- | --- | --- | --- | --- | --- |
 | AT01 | R/F 服务方案未授权、已撤销或不覆盖本租约时，T 尝试 fund。 | 拒绝，余额和状态不变。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md) |
 | AT02 | T/L 已接受且服务有效，T 精确存入 D；再次存入。 | 第一次成功；第二次拒绝，不多收押金。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md) |
-| AT03 | approve 成功但 fund 未签或失败。 | 显示未存入；可重试／撤销授权。 | C/D/E | In progress | Not run | [C local slice](../tests/reports/2026-09-25-member-c.md) |
+| AT03 | approve 成功但 fund 未签或失败。 | 显示未存入；可重试／撤销授权。 | C/D/E | In progress | Passed (local browser slice) | [C local slice](../tests/reports/2026-09-25-member-c.md); [local browser slice](../tests/reports/2026-10-03-browser-e2e.md) |
 | AT04 | 无关地址尝试 submitClaims、proposeDecision、withdraw。 | 全部被合约拒绝。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-23-member-b-contracts-local.md) |
 | AT05 | 租约自然到期但未交接。 | 没有自动全额退款。 | B/E | Not started | Not run | — |
 | AT06 | 双方确认交接。 | 从确认时刻启动固定申索窗口。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md) |
@@ -37,21 +57,21 @@
 | AT09 | 房东未申索，窗口结束。 | closeClaims 将 D 全部分配给 T。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md) |
 | AT10 | 房东提交超过 D 的金额或第 11 项。 | 合约拒绝整个提交，不留下半份清单。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md); [C local slice](../tests/reports/2026-09-25-member-c.md) |
 | AT11 | 房东清单已提交，尝试再次提交或提高金额。 | 拒绝；追加资料不能改原金额。 | B/E | In progress | Not run | [C local slice](../tests/reports/2026-09-25-member-c.md) |
-| AT12 | 1,000 押金，申索 100＋200，认可 100、争议 200。 | 截止后 T 可领 700、L 可领 100、U=200。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md); [C local slice](../tests/reports/2026-09-25-member-c.md) |
+| AT12 | 1,000 押金，申索 100＋200，认可 100、争议 200。 | 截止后 T 可领 700、L 可领 100、U=200。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md); [C local slice](../tests/reports/2026-09-25-member-c.md); [local browser slice](../tests/reports/2026-10-03-browser-e2e.md) |
 | AT13 | 租客对 200 不回应。 | 回应截止后该金额进入处理，不自动给 L。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md); [C local slice](../tests/reports/2026-09-25-member-c.md) |
 | AT14 | 房东在 closeClaims 前撤回 200。 | 截止结算时相应金额归 T，且不重复计入 D-C。 | B/E | In progress | Not run | [C local slice](../tests/reports/2026-09-25-member-c.md) |
 | AT15 | 房东在 closeClaims 后、案件创建前撤回未分配 200。 | 200 即时记入 T credit，不影响已分配款。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md) |
-| AT16 | 主结果给争议 200 中的 50 给 L。 | 提出时不转钱；无挑战并到期后 T 增 150，L 增 50。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md); [C local slice](../tests/reports/2026-09-25-member-c.md) |
+| AT16 | 主结果给争议 200 中的 50 给 L。 | 提出时不转钱；无挑战并到期后 T 增 150，L 增 50。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md); [C local slice](../tests/reports/2026-09-25-member-c.md); [local browser slice](../tests/reports/2026-10-03-browser-e2e.md) |
 | AT17 | 在主结果窗口内挑战。 | 进入 F；原 finalizePrimary 无法生效。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md); [C local slice](../tests/reports/2026-09-25-member-c.md) |
 | AT18 | 主处理人超时后才提交结果。 | 旧提交失败；可升级给 F。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md); [C local slice](../tests/reports/2026-09-25-member-c.md) |
 | AT19 | F 补充材料期尚未结束就裁决。 | 拒绝；过早终结不成立。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md); [C local slice](../tests/reports/2026-09-25-member-c.md) |
 | AT20 | CLAIMS 的 F 固定期限到达仍无结果。 | 进入 ExitPending；旧 credit 可领；3 天后可 finalizeTimeout，剩余争议款给 T。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md); [C local slice](../tests/reports/2026-09-25-member-c.md) |
 | AT21 | 已领取 700 和 100 后，双方和解剩余 200。 | 只结算 U=200；不再分配已付 800。 | B/E | In progress | Not run | [C local slice](../tests/reports/2026-09-25-member-c.md) |
 | AT22 | 和解提出后发生其他分配，再确认旧提案。 | StaleProposal；要求重新确认。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md); [C local slice](../tests/reports/2026-09-25-member-c.md) |
-| AT23 | 同一项目、同一结果、同一领取重复调用。 | 不重复分配或支付；不变量成立。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md); [C local slice](../tests/reports/2026-09-25-member-c.md) |
-| AT24 | withdraw 转账失败或模拟恶意代币回调。 | 回滚并保留可领取额；重入不导致超付。 | B/E | Not started | Not run | — |
+| AT23 | 同一项目、同一结果、同一领取重复调用。 | 不重复分配或支付；不变量成立。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md); [C local slice](../tests/reports/2026-09-25-member-c.md); [local browser slice](../tests/reports/2026-10-03-browser-e2e.md) |
+| AT24 | withdraw 转账失败或模拟恶意代币回调。 | 回滚并保留可领取额；重入不导致超付。 | B/E | Not started | Passed (local browser slice) | —; [local browser slice](../tests/reports/2026-10-03-browser-e2e.md) |
 | AT25 | 外部地址直接给合约多转 1 MockUSD。 | 已登记 D 不变，业务不能把额外转入当作新押金。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md) |
-| AT26 | deadline-1 秒、deadline、deadline+1 秒分别操作。 | 提交和推进权限符合统一边界，无双重合法路径。 | B/E | In progress | Not run | [C local slice](../tests/reports/2026-09-25-member-c.md) |
+| AT26 | deadline-1 秒、deadline、deadline+1 秒分别操作。 | 提交和推进权限符合统一边界，无双重合法路径。 | B/E | In progress | Passed (local browser slice) | [C local slice](../tests/reports/2026-09-25-member-c.md); [local browser slice](../tests/reports/2026-10-03-browser-e2e.md) |
 | AT27 | 用另一个租约用户读取照片、导出包和处理页。 | 返回 403 或不暴露资源的等价响应。 | D/E | In progress | Passed (D local slice) | [D local slice](../tests/reports/2026-09-26-member-d.md) |
 | AT28 | 重放 SIWE nonce、替换域、换链或过期。 | 登录失败；不建立新会话。 | D/E | In progress | Passed (D local slice) | [D local slice](../tests/reports/2026-09-26-member-d.md) |
 | AT29 | 链上成功后数据库暂时故障，随后重放事件。 | 状态补齐且只有一条有效金额记录。 | E（B/C/D协作） | Not started | Not run | — |
@@ -71,12 +91,12 @@
 | AT43 | 测试补给中断、余额不足、重复补给与限额超出。 | 不代签用户；展示真实失败，可受限重试；押金不被用作 Gas。 | C/D/E | In progress | Passed (D local slice) | [D local slice](../tests/reports/2026-09-26-member-d.md) |
 | AT44 | 未升级时 F 请求读取争议材料；升级后读取。 | 前者拒绝，后者仅限该案；失效链接和跨案访问仍被拒绝。 | D/E | In progress | Passed (D local slice) | [D local slice](../tests/reports/2026-09-26-member-d.md) |
 | AT45 | Active 无人交接，直到 leaseEndAt 后才启动。 | 申索与回应按固定日期计算；在截止前可提交清单，迟调用不能延后。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md) |
-| AT46 | T 已领 700、L 已领 100、争议 200；R/F 均超时。 | timeoutAt 前禁止释放；到期 200 给 T；最终 T900/L100；重复调用不重复分配。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md); [C local slice](../tests/reports/2026-09-25-member-c.md) |
+| AT46 | T 已领 700、L 已领 100、争议 200；R/F 均超时。 | timeoutAt 前禁止释放；到期 200 给 T；最终 T900/L100；重复调用不重复分配。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md); [C local slice](../tests/reports/2026-09-25-member-c.md); [local browser slice](../tests/reports/2026-10-03-browser-e2e.md) |
 | AT47 | Worker 全程停止，直到 hardEndAt 后才执行。 | 固定受益人金额守恒、U 归零；延迟开案/升级不增加期限，第三方可触发。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md); [C local slice](../tests/reports/2026-09-25-member-c.md) |
 | AT48 | 已认可扣款或未被挑战且已成熟主结果，调用 expireEscrow。 | 先尊重及时成立的有效金额权利，再退剩余 U；已挑战结果不复活。 | B/E | In progress | Not run | [C local slice](../tests/reports/2026-09-25-member-c.md) |
 | AT49 | 双方和解、R/F 旧结果、退出交易交错。 | 每种顺序最多分配一次；退出后旧提案/案件失效；所有 credit 保留。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md); [C local slice](../tests/reports/2026-09-25-member-c.md) |
 | AT50 | 请求提前交接且服务失效；再次请求、拖到约定到期。 | 不会因提前请求超时立即退全部；leaseEndAt 与 hardEndAt 不变，不可无限循环延期。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md) |
-| AT51 | 停止主站、API、数据库、Worker 和官方 Gas 补给；使用独立工具。 | 从原账户/链上记录恢复；第三方提供费用并通过 withdrawFor 向原受益人支付；无后台权限依赖。若同账户恢复不可行则验收失败。 | E（B/C/D协作） | In progress | Passed (local contract slice only) | [local report](../tests/reports/2026-09-21-contracts-local.md); [D local slice](../tests/reports/2026-09-26-member-d.md) |
+| AT51 | 停止主站、API、数据库、Worker 和官方 Gas 补给；使用独立工具。 | 从原账户/链上记录恢复；第三方提供费用并通过 withdrawFor 向原受益人支付；无后台权限依赖。若同账户恢复不可行则验收失败。 | E（B/C/D协作） | In progress | Passed (local contract slice only) | [local report](../tests/reports/2026-09-21-contracts-local.md); [D local slice](../tests/reports/2026-09-26-member-d.md); [local browser slice](../tests/reports/2026-10-03-browser-e2e.md) |
 | AT52 | 核对双方确认的自然语言条款、参数和部署合约。 | UTC 日期、timeoutPolicy、hardEndAt、条款哈希一致；禁止创建无最终期限或服务范围不匹配的租约。 | B/E | In progress | Passed (local contract slice) | [local report](../tests/reports/2026-09-21-contracts-local.md) |
 
 ## 证据记录格式
@@ -92,3 +112,21 @@
 ## 发布门槛
 
 全部 P0、关键权限/金额/边界/恢复通过，第二人复核；没有执行的不写通过。测试网交易、ABI、条款与 hardEndAt 对齐；主 Demo 三角色不能豁免备用与异常验收。
+
+2026-10-02 Worker RPC 小范围回归：`node apps/worker/src/indexer/providers.test.mjs` 在隔离本地副本中 6/6 通过，覆盖错误链、RPC 错误、正常读取和缺失结果拒绝。此结果只验证 provider，不构成 IT-03—06、TS02、AT51 或真实链上 Worker 验收；事件解码、持久化与完整恢复仍 Not run。
+
+## 2026-10-03 Worker runtime evidence
+
+RB-12 now has canonical ABI event discovery, D database synchronization, persisted signed public deadline execution and restart recovery. IT-01–IT-09 passed locally with no skips. See [runtime report](../tests/reports/2026-10-03-worker-runtime.md). This does not mark ATs Verified: Monad full allocation/withdrawal, real PostgreSQL Worker deployment, eight browser E2E scenarios, independent reproduction and nonauthor funds review remain required.
+
+### Worker follow-up review (2026-10-03)
+
+PR #14 is merged into main f843b46. Its implementation CI checks passed; browser E2E still fails as incomplete. Follow-up fixes remove stale health validation/URL logging and restrict Worker networks/intervals; local runtime tests now exercise all eight public action types. See [follow-up report](../tests/reports/2026-10-03-worker-followup.md). No AT is promoted to Verified without independent and deployment evidence.
+
+## 2026-10-03 local browser E2E (Issue #16)
+
+Eight executable Chromium scenarios now cover real page → HTTP API → local EVM funds flows, replacing skipped placeholders without changing the runner's fail-on-skip policy. 700/100/200, final 850/150, timeout 900/100, cancel/reject, same-address external-wallet reauthentication, duplicate withdrawal and local full-service shutdown were executed. See [browser report](../tests/reports/2026-10-03-browser-e2e.md). FR-15–21/24/31–32, SC-06/07/09/12/13 and AT12/16/23/24/26/41/42/51 gain local evidence slices only.
+
+AT41/42/51 and TS05 remain In progress: the EIP-1193 wallet and clean scanner are test substitutes; real Mera/WebAuthn PRF, two-device recovery, public Monad allocation/withdrawal, deployed PostgreSQL and independent funds/reproduction review are not certified. No requirement is promoted to Verified. The previous skipped E2E blocker is addressed by runnable local tests; deployment/device acceptance blockers remain.
+
+2026-10-04 品牌检查：npm run typecheck --prefix apps/web 通过；本地首页／登录页检查 Logo 加载、回首页导航与 1280px／375px 响应式布局，无横向溢出。随后按用户指定位置将彩色图标移至导航、移除账户卡片图标；浏览器确认仅有导航品牌图，TypeScript 再次通过。未运行资金业务测试，不提升任何 AT/TS。

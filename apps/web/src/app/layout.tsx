@@ -5,6 +5,10 @@ import { LiveProvider } from '@/features/live/LiveProvider';
 export const metadata = {
   title: 'RentBond — Programmable Deposit Settlement',
   description: 'Partial-dispute rental deposit settlement on Monad testnet. Test assets have no cash value.',
+  icons: {
+    icon: [{ url: '/brand/favicon.ico', sizes: 'any' }],
+    apple: [{ url: '/brand/app-icon-180.png', sizes: '180x180', type: 'image/png' }],
+  },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

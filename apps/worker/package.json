@@ -9,14 +9,15 @@
     "./main": "./src/main.ts"
   },
   "scripts": {
-    "dev": "node scripts/not-implemented.mjs worker:dev RB-12",
-    "start": "node scripts/not-implemented.mjs worker:start RB-12",
+    "dev": "node --env-file-if-exists=../web/.env.local src/main.ts",
+    "start": "node --env-file-if-exists=../web/.env.local src/main.ts",
     "build": "node --check src/main.ts",
-    "test": "node scripts/not-implemented.mjs test:worker RB-13"
+    "test": "npm run test:worker --prefix ../web"
   },
   "dependencies": {
     "@rentbond/shared": "workspace:*",
-    "jspdf": "^4.2.1"
+    "jspdf": "^4.2.1",
+    "viem": "2.56.9"
   },
   "devDependencies": {
     "@types/node": "22.10.0"

@@ -1,98 +1,27 @@
-/**
- * Worker configuration — validates all required environment variables.
- *
- * Throws at startup (not at runtime) if config is invalid.
- * This prevents the Worker from running in a misconfigured state.
- *
- * E owns.
- */
+import { readConfig } from '../../web/src/server/config.ts';
 
-import type { Address } from '@rentbond/shared';
-import { normalizeAddress } from '@rentbond/shared';
-
-export interface ValidatedWorkerConfig {
-  rpcUrl: string;
-  rpcFallbackUrl?: string;
-  chainId: number;
-  factoryAddress: Address;
-  resolverRegistryAddress: Address;
-  deploymentBlock: bigint;
-  persistencePath: string;
-  batchSize: number;
-  pollIntervalMs: number;
-  workerGasAccount?: Address;
-}
-
-function requiredEnv(key: string): string {
-  const val = process.env[key];
-  if (!val) throw new Error(`Missing required env: ${key}`);
-  return val;
-}
-
-function optionalEnv(key: string): string | undefined {
-  return process.env[key] || undefined;
-}
-
-function parseIntEnv(key: string, fallback: number): number {
-  const val = process.env[key];
-  if (!val) return fallback;
-  const n = Number(val);
-  if (!Number.isFinite(n)) throw new Error(`${key} must be a number, got: ${val}`);
-  return n;
-}
-
-function parseAddress(key: string): Address {
-  try {
-    return normalizeAddress(requiredEnv(key));
-  } catch {
-    throw new Error(`${key} must be a valid EVM address`);
-  }
-}
-
-/** Validate and return the Worker configuration from environment variables. */
-export function loadWorkerConfig(): ValidatedWorkerConfig {
-  const chainId = Number(requiredEnv('CHAIN_ID'));
-  if (!Number.isFinite(chainId) || chainId <= 0) {
-    throw new Error(`CHAIN_ID must be a positive integer, got: ${chainId}`);
-  }
-
-  const factoryAddress = parseAddress('FACTORY_ADDRESS');
-  const resolverRegistryAddress = parseAddress('RESOLVER_REGISTRY_ADDRESS');
-
-  const deploymentBlock = BigInt(requiredEnv('DEPLOYMENT_BLOCK'));
-  if (deploymentBlock < 0n) {
-    throw new Error(`DEPLOYMENT_BLOCK must be non-negative, got: ${deploymentBlock}`);
-  }
-
-  const batchSize = parseIntEnv('WORKER_BATCH_SIZE', 100);
-  if (batchSize <= 0 || batchSize > 10_000) {
-    throw new Error(`WORKER_BATCH_SIZE must be 1–10000, got: ${batchSize}`);
-  }
-
-  const pollIntervalMs = parseIntEnv('WORKER_POLL_INTERVAL_MS', 5_000);
-  if (pollIntervalMs < 1_000 || pollIntervalMs > 300_000) {
-    throw new Error(`WORKER_POLL_INTERVAL_MS must be 1000–300000, got: ${pollIntervalMs}`);
-  }
-
-  const workerGasAccount = optionalEnv('WORKER_GAS_ACCOUNT');
-  if (workerGasAccount) {
-    try {
-      normalizeAddress(workerGasAccount);
-    } catch {
-      throw new Error(`WORKER_GAS_ACCOUNT must be a valid EVM address`);
-    }
-  }
-
-  return {
-    rpcUrl: requiredEnv('RPC_URL'),
-    rpcFallbackUrl: optionalEnv('RPC_FALLBACK_URL'),
-    chainId,
-    factoryAddress,
-    resolverRegistryAddress,
-    deploymentBlock,
-    persistencePath: requiredEnv('PERSISTENCE_PATH'),
-    batchSize,
-    pollIntervalMs,
-    workerGasAccount: workerGasAccount as Address | undefined,
+export function loadWorkerConfig(env = process.env) {
+  const normalized = { ...env,
+    NEXT_PUBLIC_FACTORY_ADDRESS: env.NEXT_PUBLIC_FACTORY_ADDRESS || env.FACTORY_ADDRESS,
+    NEXT_PUBLIC_RESOLVER_REGISTRY_ADDRESS: env.NEXT_PUBLIC_RESOLVER_REGISTRY_ADDRESS || env.RESOLVER_REGISTRY_ADDRESS,
   };
+  if (env.FACTORY_ADDRESS && env.NEXT_PUBLIC_FACTORY_ADDRESS && env.FACTORY_ADDRESS.toLowerCase() !== env.NEXT_PUBLIC_FACTORY_ADDRESS.toLowerCase()) throw new Error('FACTORY_CONFIG_MISMATCH');
+  const config = readConfig(normalized);
+  if (![31337, 10143].includes(config.chainId)) throw new Error('WORKER_TEST_CHAIN_REQUIRED');
+  if (!config.rpcUrl || !config.factoryAddress || !/^0x[0-9a-fA-F]{40}$/.test(config.factoryAddress) || /^0x0{40}$/.test(config.factoryAddress)) throw new Error('RPC_URL and a nonzero factory address are required');
+  const integer = (name: string, fallback: number, max: number, min = 1) => {
+    const n = Number(env[name] ?? fallback);
+    if (!Number.isSafeInteger(n) || n < min || n > max) throw new Error('Invalid ' + name);
+    return n;
+  };
+  if (!/^\d+$/.test(env.DEPLOYMENT_BLOCK ?? '')) throw new Error('DEPLOYMENT_BLOCK is required');
+  if (!['true', 'false', undefined].includes(env.WORKER_EXECUTE)) throw new Error('WORKER_EXECUTE must be true or false');
+  const execute = env.WORKER_EXECUTE === 'true';
+  if (execute && (!env.WORKER_PRIVATE_KEY_FILE || !/^0x[0-9a-fA-F]{40}$/.test(env.WORKER_GAS_ACCOUNT ?? ''))) throw new Error('Execution requires WORKER_PRIVATE_KEY_FILE and WORKER_GAS_ACCOUNT');
+  const maxFeeWei = BigInt(env.WORKER_MAX_FEE_WEI ?? '50000000000000000');
+  if (maxFeeWei <= 0n || maxFeeWei > 1000000000000000000n) throw new Error('Invalid WORKER_MAX_FEE_WEI');
+  return { ...config, factoryAddress: config.factoryAddress.toLowerCase(), execute,
+    deploymentBlock: BigInt(env.DEPLOYMENT_BLOCK!), batchSize: integer('WORKER_BATCH_SIZE', 1000, 1000),
+    pollIntervalMs: integer('WORKER_POLL_INTERVAL_MS', 5000, 300000, 1000),
+    keyFile: env.WORKER_PRIVATE_KEY_FILE, workerGasAccount: env.WORKER_GAS_ACCOUNT?.toLowerCase(), maxFeeWei };
 }

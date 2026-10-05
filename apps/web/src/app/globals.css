@@ -29,8 +29,9 @@ fieldset { min-width: 0; border: 1px solid var(--stroke); border-radius: 12px; }
 .split { display: contents; }
 .app-sidebar { grid-column: 1; grid-row: 1 / 4; position: sticky; top: 0; height: 100dvh; overflow-y: auto; display: flex; flex-direction: column; padding: 28px 18px 20px; border-right: 1px solid var(--stroke); background: rgba(29,30,38,.25); }
 .brand { display: flex; align-items: center; font-size: 26px; font-weight: 600; letter-spacing: -1.2px; padding: 0 8px; }
-.brand-mark { width: 29px; height: 29px; background: #e6d0d3; color: #35343e; border-radius: 10px; display: inline-grid; place-items: center; margin-right: 10px; font-size: 24px; font-weight: 400; }
-.brand-period { color: var(--warm); }
+.brand { flex-shrink: 0; max-width: 100%; }
+.brand-logo { display: block; width: 180px; max-width: 100%; height: auto; }
+.app-sidebar .brand-logo { width: 164px; }
 .brand-caption { font-size: 10px; color: var(--dim); padding-left: 8px; margin: 8px 0 36px; }
 .nav-label { font-size: 9px; letter-spacing: .12em; color: var(--dim); padding-left: 12px; margin-bottom: 12px; }
 .side-nav { display: flex; flex-direction: column; gap: 5px; }

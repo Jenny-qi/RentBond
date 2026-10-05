@@ -1,107 +1,45 @@
-# 独立 Worker
+# Durable Worker (E / D)
 
-负责人 E，D 协作事件表和任务持久化。目标独立 Node.js 常驻进程，不能依赖网页请求生命周期。
+Node 24 runs `src/main.ts` as an independent process using D's database, migrations and confirmed chain adapter. The generated repository ABI is the only event/call source. Factory discovery records public metadata; a signed-in landlord must still attach a deployment through the API before private lease synchronization starts.
 
-## 源码结构
+## Start
 
-```
-apps/worker/src/
-├── main.ts          # 进程入口，配置加载和主循环
-├── index.ts         # 模块导出
-├── indexer/
-│   ├── index.ts     # 事件常量、EventKey、幂等键、IndexerConfig
-│   ├── events.ts    # 类型化事件参数接口（从 ABI 生成）
-│   ├── allocation.ts # 事件→AllocationState 投影（资金守恒）
-│   ├── projection.ts# 事件→LeaseStatus 投影（Phase 映射）
-│   ├── contracts.ts # Escrow/Factory 函数调用桩
-│   └── providers.ts # viem RPC 客户端配置
-├── jobs/            # 截止/到期任务（CLOSE_CLAIMS、MARK_SERVICE_TIMEOUT 等）
-│   └── scheduler.ts  # 事件→JobTrigger 决策，decideJobTrigger/createJob
-├── notifications/    # 邮件/SMS 提醒占位（P1）
-└── exports/         # 异步导出任务消费
-```
-
-## 入口
+Install the workspace lockfile, then run:
 
 ```sh
-node apps/worker/src/main.ts   # RB-12 后可用（Node 24 原生支持 TS）
+npm run backend:abi --prefix apps/web
+npm run worker:dev
+# One cycle, for operators:
+node --env-file-if-exists=apps/web/.env.local apps/worker/src/main.ts --once
+npm run worker:health # configuration only; no RPC/database connectivity probe
+npm run test:worker
 ```
 
-环境变量：`RPC_URL`、`RPC_FALLBACK_URL`、`CHAIN_ID`、`FACTORY_ADDRESS`、
-`RESOLVER_REGISTRY_ADDRESS`、`DATABASE_URL`、`PERSISTENCE_PATH`、
-`WORKER_BATCH_SIZE`、`WORKER_POLL_INTERVAL_MS`。
+Use the API's configuration: SESSION_SECRET, CHAIN_ID, RPC_URL, optional RPC_FALLBACK_URL, NEXT_PUBLIC_FACTORY_ADDRESS (or FACTORY_ADDRESS), and DATABASE_URL. DEPLOYMENT_BLOCK is required and must be the actual factory deployment block. WORKER_BATCH_SIZE defaults to 1000; WORKER_POLL_INTERVAL_MS defaults to 5000. Read-only synchronization is the default.
 
-## 关键不变量
+Separate API/Worker processes require PostgreSQL. Embedded PGlite is supported only for a single process and the disk-backed restart test, never concurrent processes sharing one directory.
 
-| 规则 | 说明 |
-|------|------|
-| 停止 Worker ≠ 冻结合约退出 | 合约是无需许可的，任何人都可推进 |
-| 重启不能重复分配 | 幂等键：chainId + contractAddress + txHash + logIndex |
-| 任务期限来自链上 | 不因重试延长；延迟推进不重置起算点 |
-| 补给账户分离 | Worker 账户无租约角色私钥 |
+For public deadline execution explicitly set WORKER_EXECUTE=true, WORKER_PRIVATE_KEY_FILE to an operator-managed secret file, and WORKER_GAS_ACCOUNT to its expected address. The account must differ from T/L/R/F and the Gas sponsor. Do not commit keys. WORKER_MAX_FEE_WEI bounds gas times maximum fee (default 0.05 test MON; maximum 1). Supported Worker chains are 31337 (local EVM) and 10143 (Monad testnet); other chain IDs are rejected even in local mode. Poll interval must be 1000–300000 ms.
 
-## 事件类型（indexer）
+## Public actions
 
-`TermsAccepted` | `LeaseCancelled` | `Funded` | `CreditAllocated` | `Withdrawn` |
-`ClaimsOpened` | `ClaimsSubmitted` | `ClaimResponded` | `ClaimWaived` | `ClaimsClosed` |
-`CaseOpened` | `DecisionProposed` | `CaseEscalated` | `DecisionFinalized` |
-`ServiceTimedOut` | `TimeoutAllocated` | `EscrowExpired` |
-`SettlementProposed` | `SettlementConfirmed` | `EvidenceCommitted` | `EvidenceAcknowledged` |
-`CheckoutRequested` | `CheckoutResponded` | `CheckoutCaseOpened` | `CheckoutCaseResolved`
+| Task | Fixed ABI function |
+| --- | --- |
+| START_SETTLEMENT | startScheduledSettlement() |
+| CLOSE_CLAIMS | closeClaims() |
+| OPEN_CLAIM_CASE | openClaimCase() |
+| ESCALATE_TIMEOUT | escalateTimeout(caseId) |
+| FINALIZE_PRIMARY | finalizePrimary(caseId) |
+| MARK_SERVICE_TIMEOUT | markServiceTimeout(caseId) |
+| FINALIZE_TIMEOUT | finalizeTimeout(caseId) |
+| EXPIRE_ESCROW | expireEscrow() |
 
-工厂事件：`LeaseCreated` | `NewLeasesPaused`
+Candidates come from the confirmed snapshot. Deadlines use chain UTC seconds; block heights only anchor canonicality. Before signing and broadcasting, the Worker checks the live phase, exact case, deadline, role policy and simulation. It never accepts terms, decides awards, funds leases or withdraws for a role.
 
-## 事件→金额投影
+Signed bytes/hash are committed before broadcast. Restart checks the confirmed receipt before retrying identical bytes. Unsigned obsolete work cancels; uncertain signed work enters reconcile and blocks new signer work. A missing receipt requires operator inspection of canonical state and nonce; never delete the task to bypass this safeguard.
 
-| 事件 | 影响的分配字段 | 说明 |
-|------|---------------|------|
-| `Funded` | `fundedAmount` + `unallocated` | 初始化快照 |
-| `CreditAllocated` | `tenantCredit` / `landlordCredit` | 按受益人路由 |
-| `Withdrawn` | `tenantWithdrawn` / `landlordWithdrawn` | 领取后减少 credit |
-| `ClaimsClosed` | `unallocated` ↓ `tenantCredit` + `landlordCredit` | 未申索→租客，已认可→房东 |
-| `SettlementConfirmed` | `unallocated` ↓ `tenantCredit` + `landlordCredit` | 和解覆盖争议金额 |
-| `EscrowExpired` | `unallocated` → `tenantCredit` | 超时退出：剩余归租客 |
+Factory/escrow checkpoint mismatch invalidates canonical events and projections, cancels unsigned work and fences signed work. RPC read errors roll back the affected lease transaction. SIGINT/SIGTERM stop between cycles; once-mode exits nonzero on sync errors.
 
-守恒不变式：`fundedAmount = unallocated + tenantCredit + landlordCredit + tenantWithdrawn + landlordWithdrawn`
+## Evidence and remaining work
 
-## 事件→JobTrigger
-
-| 触发事件 | 创建的 Job | 到期 UTC 秒数 |
-|---------|-----------|-----------------|
-| `ClaimsOpened` | `CLOSE_CLAIMS` | `claimDeadline` |
-| `CaseEscalated` | `MARK_SERVICE_TIMEOUT` | `fallbackDeadline` |
-| `ServiceTimedOut` | `FINALIZE_TIMEOUT` | `timeoutAt` |
-
-`triggerBlock` 只保存该事件的已确认区块号，不能与 `dueAt` 比较。Worker 执行前还须以已确认区块时间和合约阶段重新检查资格。
-
-## 任务类型（jobs）
-
-| 类型 | 触发条件 | 说明 |
-|------|----------|------|
-| `CLOSE_CLAIMS` | claimDeadline 到期 | 一次性关闭窗口，分配已认可/未申索 |
-| `MARK_SERVICE_TIMEOUT` | fallbackDeadline 到期 | 未有备用结果时调用 `markServiceTimeout(caseId)` |
-| `FINALIZE_TIMEOUT` | timeoutAt 到期 | 超时退出，争议款归租客 |
-
-## 实现状态
-
-| 模块 | 状态 | 说明 |
-|------|------|------|
-| `indexer/events.ts` | ✅ 类型完整 | 25 个 Escrow 事件 + 2 个 Factory 事件的类型化参数接口 |
-| `indexer/allocation.ts` | ✅ 投影逻辑 | 资金守恒投影：Funded→ClaimsClosed→Settlement/Timeout |
-| `indexer/projection.ts` | ✅ Phase 映射 | 合约 Phase→LeaseStatus，含 phaseToStatus 辅助 |
-| `indexer/contracts.ts` | ✅ viem 实现 | 7 个 Worker 操作（closeClaims 等）已用 viem 实现，含 idempotent 预检查 |
-| `indexer/providers.ts` | ✅ fetch+viem | native fetch 读 RPC（eth_getLogs/blockNumber/call），viem wallet client 用于写 |
-| `indexer/loop.ts` | ✅ RB-12 完成 | 主循环：Factory 事件发现 + Escrow 轮询 + 幂等存储 + 状态投影 + reorg 回滚 + SIGTERM/SIGINT |
-| `jobs/scheduler.ts` | ✅ 候选调度 | 3 种有明确事件时间的任务触发；dueAt 时间戳截止 |
-| `jobs/` | ⚠️ 持久化 | Job/JobType/JobStatus 已定义；executeJob 需与 loop 的 job queue 连接 |
-| `notifications/` | ⚠️ 占位 | P1 |
-| `exports/` | ⚠️ 占位 | RB-12 |
-
-## 启动流程
-
-```
-pnpm infra:up         # RB-02：启动数据库和存储
-pnpm chain:local      # RB-03：启动本地链
-pnpm fixtures:seed    # RB-08：植入测试数据
-pnpm worker:dev       # RB-12：启动 Worker
-```
+See [local runtime report](../../tests/reports/2026-10-03-worker-runtime.md). Real local EVM tests cover replay, reorg, RPC fault, process restart, manual progress service timeout dispatch, primary finalization and hard-end expiry. These do not prove deployed Monad execution, all eight actions on Monad, real PostgreSQL runtime recovery, a second person's reproduction, or real device restoration. The eight Chromium E2E scenarios have since passed on disposable local chains (PR #17); see [browser report](../../tests/reports/2026-10-03-browser-e2e.md). They do not certify public Monad or real-device acceptance. Notifications and asynchronous exports remain outside this loop.

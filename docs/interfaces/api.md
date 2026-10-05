@@ -14,6 +14,8 @@
 | POST /api/invites/:token/claim | 租客关联身份 | 本人登录；不代替条款确认、不改已部署角色 |
 | GET /api/leases/:id | 条款与投影 | 成员/限权邀请；带同步时间 |
 | POST /api/documents/upload-intent | 私有上传 | 租约 ACL、类型与配额 |
+| PUT /api/documents/:id/uploads/:uploadId | 原始字节进入隔离区 | 仅作者、原窗口、真实大小/类型/hash |
+| GET /api/documents/:id/uploads/:uploadId | 扫描状态 | 仅作者和当前 scope；不暴露存储 key |
 | POST /api/documents/:id/submit | 固定版本 | 检查真实大小/类型/hash；不覆盖旧版 |
 | GET /api/documents/:id/access | 短时链接 | 每次核对成员或案件阶段，5 分钟 |
 | POST /api/claims/draft | 构建申索正文 | L，合法阶段；不修改链上金额 |
@@ -46,7 +48,11 @@
 {"leaseId":"UUID","purpose":"move-in","mime":"image/png","size":1234,"sha256":"64位小写十六进制"}
 ```
 
-可选 documentId 创建同一作者的新版本；案件用途必须 purpose=case 加 caseId。返回 {documentId,version,uploadId,expiresAt,method:"PUT",uploadUrl}。PUT 完成后 POST /api/documents/:id/submit，{uploadId}。下载 GET /api/documents/:id/access?version=1&caseId=UUID（caseId 按权限场景提供），返回 {url,expiresAt}。url 是会话绑定的 /api/files/:token，不能转发给另一会话使用。
+可选 documentId 创建同一作者的新版本；案件用途必须 purpose=case 加 caseId。返回 {documentId,version,uploadId,expiresAt,method:"PUT",uploadUrl,statusUrl}。PUT 完成只表示进入隔离区；轮询 statusUrl，scanStatus=clean 后才 POST /api/documents/:id/submit，{uploadId}。下载 GET /api/documents/:id/access?version=1&caseId=UUID（caseId 按权限场景提供），返回 {url,expiresAt}。url 是会话绑定的 /api/files/:token，不能转发给另一会话使用。
+
+扫描状态为 pending/scanning/clean/rejected/error；GET 同时返回 uploaded、submitted、errorCode、expiresAt 和 retryable。未上传或未扫描完成不能提交；pending/scanning 返回 409 SCAN_PENDING，拒绝返回 422 FILE_REJECTED，扫描依赖错误返回 503 SCAN_UNAVAILABLE。服务端最多三次自动尝试，耗尽后 retryable=false；客户端不能重置计数或将结果设为 clean。15 分钟未提交的意图过期后返回 410 UPLOAD_EXPIRED。提交时仍复验权限、材料窗口、大小和摘要。
+
+迁移 0003 后旧原件重新扫描，旧 ready ZIP 标记 SCAN_UPGRADE_REQUIRED 并需重建；切换 disabled-local 到 clamav 时旧导出也不能继续下载。GET /api/health 新增 quarantine 和 scanner，生产扫描不可用时返回 503；本地 bypass 显示 disabled-local，不代表扫描通过。
 
 POST /api/inspections 与 POST /api/cases/:id/evidence：
 
@@ -78,7 +84,7 @@ POST /api/test-gas/request 为 {leaseId}，返回 202 {id,state,amount,statusUrl
 
 POST /api/leases/:id/cleanup-request 为 {confirm:true}。返回 requested:true、deleted:false；双方都请求后由维护命令清原件，普通用户没有单方面删除对方材料的接口。
 
-更多运行参数、E 的同步与队列接口见 [D 交接](../member-d-handoff.md)。金额真相始终来自合约；C 仍负责每次签名的明确确认和真实页面接线。
+更多运行参数、E 的同步与队列接口见 [后端运行说明](../../apps/web/src/server/README.md)。金额真相始终来自合约；C 仍负责每次签名的明确确认和真实页面接线。
 
 2026-09-29 C 消费接口：`GET /api/cases/:id` 在既有案件授权检查后增加 `contractAddress`、`role`，供当前 R/F 页面核对链上合约和身份；未新增写权限或扩大材料范围。C 的真实页面与英文确认流程已接入，验证边界见 [Web README](../../apps/web/README.md)。
 
