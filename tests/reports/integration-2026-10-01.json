@@ -1,0 +1,41 @@
+{
+  "suite": "integration",
+  "generatedAt": "2026-10-01T13:47:14.021Z",
+  "total": 5,
+  "passed": 5,
+  "failed": 0,
+  "skipped": 0,
+  "complete": true,
+  "results": [
+    {
+      "id": "IT-01",
+      "description": "SIWE nonce replay is rejected",
+      "status": "passed",
+      "completedAt": "2026-10-01T13:47:08.263Z"
+    },
+    {
+      "id": "IT-02",
+      "description": "Cross-lease ACL: tenant cannot access another lease's documents",
+      "status": "passed",
+      "completedAt": "2026-10-01T13:47:10.083Z"
+    },
+    {
+      "id": "IT-07",
+      "description": "Test gas refills respect quota and do not exceed limits",
+      "status": "passed",
+      "completedAt": "2026-10-01T13:47:11.917Z"
+    },
+    {
+      "id": "IT-08",
+      "description": "SIWE session expires and forces re-auth after 24h",
+      "status": "passed",
+      "completedAt": "2026-10-01T13:47:13.691Z"
+    },
+    {
+      "id": "IT-09",
+      "description": "Worker uses confirmed event block and UTC deadline separately",
+      "status": "passed",
+      "completedAt": "2026-10-01T13:47:14.021Z"
+    }
+  ]
+}
