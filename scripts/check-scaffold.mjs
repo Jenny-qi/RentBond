@@ -18,7 +18,7 @@ function requireFile(path) {
   if (!existsSync(resolve(root, path))) errors.push(`Missing ${path}`);
 }
 for (const file of ['README.md', 'AGENTS.md', 'CONTRIBUTING.md', '.env.example', 'pnpm-workspace.yaml',
-  'docs/PRD.md', 'docs/MVP-SPEC.md', 'docs/team.md', 'docs/backlog.md', 'docs/changes.md',
+  'docs/PRD.md', 'docs/MVP-SPEC.md', 'docs/team.md',
   'docs/requirements-traceability.md', 'docs/acceptance.md', '.github/workflows/scaffold.yml',
   'apps/web/README.md', 'apps/worker/README.md', 'contracts/README.md', 'packages/shared/README.md',
   'infra/README.md', 'tests/README.md']) requireFile(file);
@@ -49,7 +49,7 @@ checkIDs('docs/requirements-traceability.md', 'FR-', 34);
 checkIDs('docs/requirements-traceability.md', 'SC-', 16);
 checkIDs('docs/acceptance.md', 'AT', 52);
 checkIDs('docs/acceptance.md', 'TS', 5);
-checkIDs('docs/backlog.md', 'RB-', 14);
+checkIDs('docs/PRD.md', 'RB-', 14);
 const pkg = JSON.parse(readFileSync('package.json', 'utf8'));
 for (const [name, command] of Object.entries(pkg.scripts)) {
   const script = /^node (?:--env-file-if-exists=[^ ]+ )?([^ ]+)/.exec(command)?.[1];

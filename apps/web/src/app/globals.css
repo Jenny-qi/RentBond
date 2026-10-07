@@ -164,5 +164,8 @@ fieldset { min-width: 0; border: 1px solid var(--stroke); border-radius: 12px; }
 .live-tabs a[aria-current="page"] { background: #efe2b7; color: #18222e; }
 .live-controls { border: 0; padding: 0; margin: 0; min-width: 0; display: grid; gap: 20px; }
 .live-controls:disabled { opacity: .65; }
+.live-session { padding: 0 0 16px; border-bottom: 1px solid var(--stroke); font-size: 14px; letter-spacing: 0; }
+.live-session p { margin: 8px 0; }
+.live-session time { white-space: nowrap; }
 .live-estimate { padding: 16px; border: 1px dashed #ffffff60; margin: 20px 0; border-radius: 12px; }
 @media(max-width:600px) { .live-main { padding: 16px 12px 190px; } .live-balances { grid-template-columns: repeat(2,minmax(0,1fr)); } .live-stage .topbar { flex-wrap: wrap; gap: 16px; } .live-balances strong { font-size: 17px; } }

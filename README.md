@@ -6,19 +6,23 @@ RentBond 在区块链上运行租房押金结算：房东逐项提出扣款，�
 
 **Monad 测试网 · MockUSD 测试资产，无现金价值。**
 
+**赛道：Consumer Products & Payments。** 主要消费者是普通跨境租客，小型房东参与结算；核心价值是看懂扣款、回应争议及领取无争议押金。双方须在入金前同意使用，不能追回此前交给房东的押金，当前目标用户采用仍待验证。
+
+**赞助商候选：Best Mera-Powered UX on Monad / Monad Foundation。** 正式页面已使用 Mera 创建／恢复 passkey 账户、完成 SIWE 登录并签署用户确认的交易；恢复不再依赖浏览器缓存或手填钱包地址。真实设备的提示次数、跨设备同址恢复与完整 Monad 测试网结算仍待验收，不能以本地自动化代替奖项证据。见[契合—问题—建议—证据](docs/contest/track-fit.md)。
+
 ---
 
 ## 演示场景
 
 租客 Alice 存入 **1,000 MockUSD**，退租时房东申索清洁费 100、损坏费 200。Alice 认可清洁费，争议损坏费。
 
-| 申索窗口关闭后 | 金额 | 状态 |
+| 申索窗口关闭并确认分配后 | 金额 | 状态 |
 | --- | ---: | --- |
 | 未申索部分 → 租客 | 700 | 可领取 |
 | 已认可扣款 → 房东 | 100 | 可领取 |
 | 有争议扣款 | 200 | 待处理 |
 
-若处理人裁决 50 给房东、150 给租客，挑战期结束后租客获得 850、房东获得 150。
+若处理人裁决 50 给房东、150 给租客，挑战期结束且结果生效后最终分配为租客 850、房东 150；各自领取交易确认后才算已领取。窗口结束前的预计拆分不代表可领取。
 
 [演示脚本](docs/contest/demo.md) · [链上证据](deployments/README.md)
 
@@ -35,8 +39,8 @@ RentBond 在区块链上运行租房押金结算：房东逐项提出扣款，�
 | 工作区管理 | pnpm | 12.8.1 |
 | 运行时 | Node.js | 24.14.0 |
 | 数据库 | PostgreSQL + PGlite | 16 / 0.5.8 |
-| 账户抽象 | @category-labs/mera | 0.2.0 |
-| 端到端测试 | Playwright | 1.52.0 |
+| Passkey 派生的 EVM 签名账户 | @category-labs/mera | 0.2.0 |
+| 端到端测试 | Playwright | 1.62.1 |
 | PDF 生成 | jsPDF | 4.2.1 |
 | 合约验证 | Zod | 4.6.5 |
 
@@ -66,11 +70,13 @@ pnpm install --allow-build=esbuild --allow-build=core-js
 npm run backend:abi --prefix apps/web
 npm run backend:init --prefix apps/web
 npm run db:migrate --prefix apps/web
-npm run fixtures:seed --prefix apps/web
-pnpm dev --prefix apps/web
+npm run backend:seed --prefix apps/web
+npm run dev --prefix apps/web
 ```
 
 访问 `http://localhost:3000`。
+
+这会启动网页与后端；实际交易还需配置本地链或已核验的测试网 RPC、Factory 和服务方案。环境变量见 [Web 运行说明](apps/web/README.md)，数据库、扫描和 Worker 见 [后端说明](apps/web/src/server/README.md)。可自动启动临时本地链与网页的完整演练见 [tests/README.md](tests/README.md)；历史测试网地址并非已验收的 DEMO_SHORT 环境。
 
 ### 完整测试
 
@@ -109,8 +115,11 @@ RentBond 运行于 **Monad 测试网（chainId: 10143）**，使用 EVM 兼容�
 
 ### 链上证据
 
-- 创建租约 + 入金 1,000 MockUSD：`0xf7e1cfef92efa9ba94fcffc94a7d66e5dde6c53ba19eedadce2ff1e1590286fa`
+- 创建租约：`0x70f948a33e3af390cf53458b192ab6276ae5cac4a60414121bee8c40fcb8cafe`
+- 入金 1,000 MockUSD：`0xf7e1cfef92efa9ba94fcffc94a7d66e5dde6c53ba19eedadce2ff1e1590286fa`
 - [链上快照与核验记录](deployments/monad-testnet-2026-09-26.chain-evidence.json)
+
+以上为 2026-09-26 历史部署和入金记录；快照 `readyForFrontend: false`，不能据此宣称已完成公网 850/150、900/100 分配及领取。Mera 是客户端签名账户实现；本项目没有因此实现 ERC-4337、Paymaster 或法币支付，测试手续费采用受限 MON 补给。
 
 ### 为什么选择 Monad
 
@@ -165,9 +174,9 @@ RentBond/
 | --- | --- | --- |
 | Claude Code (Anthropic) | 代码生成、重构、调试、技术文档 | E |
 | GitHub Copilot | 代码补全 | C/D |
-| OpenAI Codex | README 与提交文档编辑 | A |
+| OpenAI Codex | README 与提交文档编辑；D 后端、权限、扫描、测试与修复；本次账户恢复、会话及赛道证据完善 | A/D |
 
-所有 AI 生成代码均经团队成员审核。AI 不参与产品内的争议裁决。
+AI 不参与产品内的争议裁决。各成员仍需确认自身工具使用范围、既有组件和实际人工复核记录；自动化通过不代表已经完成全量人工审核或独立资金审查。
 
 ---
 

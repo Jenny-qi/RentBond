@@ -12,10 +12,11 @@ type LiveContext = {
   login: (mode: 'create' | 'restore' | 'external', expected: string) => Promise<void>;
   logout: () => void; cancelLogin: () => void; request: typeof api;
   propose: (action: Action) => void; run: (task: () => Promise<void>) => Promise<void>;
-  updated: number;
+  updated: number; sessionExpiresAt: number | null;
 };
 const Context = createContext<LiveContext | null>(null);
 const RECEIPT_KEY = 'rentbond.pending-chain-transaction.v1';
+const SESSION_DURATION = 15 * 60 * 1000;
 export function LiveProvider({ config, children }: { config: LiveConfig; children: ReactNode }) {
   const [wallet, setWallet] = useState<Wallet | null>(null);
   const walletRef = useRef<Wallet | null>(null);
@@ -27,17 +28,27 @@ export function LiveProvider({ config, children }: { config: LiveConfig; childre
   const [pending, setPending] = useState<Action | null>(null);
   const [receipt, setReceipt] = useState<ReceiptRecord | null>(null);
   const [updated, setUpdated] = useState(0);
+  const [sessionExpiresAt, setSessionExpiresAt] = useState<number | null>(null);
+  const expiresAt = useRef(0);
   const abort = useRef<AbortController | null>(null);
   const dialog = useRef<HTMLDialogElement>(null);
   const invalidate = useCallback(() => {
     epoch.current++; clearRequests(); abort.current?.abort(); walletRef.current?.end(); walletRef.current = null;
+    expiresAt.current = 0; setSessionExpiresAt(null);
     setWallet(null); setPending(null); setGeneration(epoch.current); setReceipt(null);
   }, []);
   const logout = useCallback(() => {
     invalidate(); setMessage('Local signing session and private pages cleared.');
     void api('/api/auth/logout', {}).catch(() => setMessage('Signed out locally. Server revocation was not confirmed; reconnect and sign out again.'));
   }, [invalidate]);
+  const requireSession = useCallback(() => {
+    if (!walletRef.current || Date.now() >= expiresAt.current) {
+      logout();
+      throw new Error('Your signing session has expired. Sign in with your existing passkey to continue.');
+    }
+  }, [logout]);
   const request: typeof api = useCallback(async (...args) => {
+    requireSession();
     const version = epoch.current;
     try {
       const value = await api(...args);
@@ -47,7 +58,7 @@ export function LiveProvider({ config, children }: { config: LiveConfig; childre
       if (e instanceof ApiError && e.status === 401 && version === epoch.current) invalidate();
       throw e;
     }
-  }, [invalidate]);
+  }, [invalidate, requireSession]);
   const run = async (task: () => Promise<void>) => {
     if (lock.current) return;
     lock.current = true; setBusy(true);
@@ -80,8 +91,8 @@ export function LiveProvider({ config, children }: { config: LiveConfig; childre
         const signature = await walletClient!.signMessage({ message: text }); guard();
         const result = await api('/api/auth/verify', { message: text, signature }); guard();
         if (result.wallet?.toLowerCase() !== next.address.toLowerCase()) throw new Error('Server session address mismatch');
+        expiresAt.current = Date.now() + SESSION_DURATION; setSessionExpiresAt(expiresAt.current);
         walletRef.current = next; setWallet(next); setMessage('Account verified. Each financial action still requires separate confirmation.');
-        try { localStorage.setItem('rentbond.original-address', next.address); } catch { /* Public address only. */ }
         try {
           const saved = JSON.parse(sessionStorage.getItem(RECEIPT_KEY) ?? 'null') as ReceiptRecord | null;
           if (saved?.address.toLowerCase() === next.address.toLowerCase() && saved.chainId === config.chainId && /^0x[\da-f]{64}$/i.test(saved.hash)) setReceipt(saved);
@@ -93,12 +104,19 @@ export function LiveProvider({ config, children }: { config: LiveConfig; childre
     const provider = wallet?.provider as (EIP1193Provider & { on?: (e: string, f: () => void) => void; removeListener?: (e: string, f: () => void) => void }) | undefined;
     const changed = () => { logout(); setMessage('Wallet account or network changed. Please sign in again.'); };
     provider?.on?.('accountsChanged', changed); provider?.on?.('chainChanged', changed);
-    const timer = wallet ? window.setTimeout(logout, 15 * 60 * 1000) : undefined;
-    return () => { clearTimeout(timer); provider?.removeListener?.('accountsChanged', changed); provider?.removeListener?.('chainChanged', changed); };
+    const expire = () => {
+      if (walletRef.current && Date.now() >= expiresAt.current) {
+        logout(); setMessage('Your signing session has expired. Sign in with your existing passkey to continue.');
+      }
+    };
+    const timer = wallet ? window.setTimeout(expire, Math.max(0, expiresAt.current - Date.now())) : undefined;
+    window.addEventListener('focus', expire); document.addEventListener('visibilitychange', expire);
+    return () => { clearTimeout(timer); window.removeEventListener('focus', expire); document.removeEventListener('visibilitychange', expire); provider?.removeListener?.('accountsChanged', changed); provider?.removeListener?.('chainChanged', changed); };
   }, [wallet, logout]);
   useEffect(() => () => { abort.current?.abort(); walletRef.current?.end(); }, []);
   useEffect(() => { if (pending) dialog.current?.showModal(); else dialog.current?.close(); }, [pending]);
   const propose = (action: Action) => {
+    requireSession();
     if (!walletRef.current || pending || receipt) throw new Error('Sign in and resolve the current pending transaction first.');
     actionData(action); setPending(action);
   };
@@ -131,13 +149,14 @@ export function LiveProvider({ config, children }: { config: LiveConfig; childre
   const confirm = () => run(async () => {
     const action = pending, active = walletRef.current, version = epoch.current;
     if (!action || !active) return;
-    const guard = () => { if (epoch.current !== version || walletRef.current !== active) throw new Error('Account changed. Signing was stopped'); };
+    const guard = () => { requireSession(); if (epoch.current !== version || walletRef.current !== active) throw new Error('Account changed. Signing was stopped'); };
+    guard();
     await checkWallet(config, active); guard();
     const session = await request('/api/auth/session'); guard();
     if (session.wallet.toLowerCase() !== active.address.toLowerCase()) throw new Error('Session address mismatch');
     const { publicClient, walletClient } = clients(config, active);
     const simulated = await publicClient.simulateContract({ address: action.address, abi: actionAbi(action), functionName: action.functionName, args: action.args, account: active.address }); guard();
-    setMessage('Confirm signing on your device. Rejecting stops this operation.');
+    setMessage(active.provider ? 'Confirm signing on your device. Rejecting stops this operation.' : 'Signing the operation you confirmed. Waiting for submission.');
     const hash = await walletClient!.writeContract(simulated.request);
     const record: ReceiptRecord = { hash, address: active.address, chainId: config.chainId, to: action.address, data: actionData(action), title: action.title, leaseId: action.leaseId, factory: action.kind === 'factory' };
     // A submitted transaction remains real even if the account changes during wallet UI.
@@ -146,7 +165,7 @@ export function LiveProvider({ config, children }: { config: LiveConfig; childre
     setPending(null); setReceipt(record); setMessage('Submitted, awaiting on-chain confirmation. Do not send again.');
     await pollReceipt(record, version);
   });
-  return <Context.Provider value={{ config, wallet, generation, busy, message, login, logout, cancelLogin: () => { abort.current?.abort(); }, request, propose, run, updated }}>
+  return <Context.Provider value={{ config, wallet, generation, busy, message, login, logout, cancelLogin: () => { abort.current?.abort(); }, request, propose, run, updated, sessionExpiresAt }}>
     {children}
     <div className="live-status" role="status">{message}{receipt && <div><code>{receipt.hash}</code><button className="btn" disabled={busy || !wallet} onClick={() => void run(() => pollReceipt(receipt, epoch.current))}>Check confirmation / recover record</button><p>A pending status or lookup timeout is not a failure. Keep the transaction hash and restore the same account to check again.</p></div>}</div>
     <dialog ref={dialog} className="live-dialog" onCancel={e => { if (busy) e.preventDefault(); else setPending(null); }}>

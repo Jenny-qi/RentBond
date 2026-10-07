@@ -4,7 +4,7 @@
 
 ## 开发步骤
 
-1. 从 [任务清单](docs/backlog.md) 建 GitHub Issue，写负责人、依赖、FR/SC/AT、输入输出和允许改动目录。
+1. 从 [PRD 第 21.3 节任务清单](docs/PRD.md) 建 GitHub Issue，写负责人、依赖、FR/SC/AT、输入输出和允许改动目录。
 2. 从最新 main 开分支，例如 `feat/RB-05-claim-settlement`、`fix/RB-08-session-replay`、`docs/RB-01-positioning`。
 3. 保持 PR 单一目的；金额/权限/期限变更先写 ADR，由 A 确认范围、B 确认规则，调整验收。
 4. 提交前运行当前可用检查；尚未实现或未运行的测试明确写出。不要把占位脚本失败改为假成功。

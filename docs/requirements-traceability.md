@@ -1,5 +1,11 @@
 # 需求追踪表
 
+## 2026-10-07 账户体验与参赛证据
+
+RB-08 / RB-14、PRD 8.5、TS05、AT27/28/33/41/42：正式 `live/wallet.ts` 恢复取消缓存地址依赖，`LiveProvider` 增加可见会话期限及绝对时间检查；`mera-recovery.test.mjs` 验证同址重新 SIWE、原租约/材料/导出权限、旧链接失效及不同凭证拒绝越权。API/schema/ABI 和金额规则均未改变，C/E 可按原接口继续接入。实际重跑 Web 83、Integration 9、浏览器 E2E 8 项全部通过、零跳过，详见 [本轮报告](../tests/reports/2026-10-07-consumer-mera.md)。
+
+CH02/04/08：README 与 [赛道对照](contest/track-fit.md)补充消费者定位、Mera 真实路径及奖项证据边界，修正交易哈希归属、依赖版本、启动命令和 D 的 Codex 披露。本轮不把文档或替身回归提升为任何 FR/SC/AT 的真机、公网或全量 Verified。
+
 2026-10-04 RB-14 许可材料：用户选择 MIT，已添加根 LICENSE 并更新 README 和提交清单。第三方组件沿用自身许可；本次不改变 FR/SC/AT 验证状态。
 
 2026-10-04 提交映射：README 增加 Monad 地址／入金交易、外部组件、AI 披露、开发历史与官方截止；演示脚本调整为 165 秒。对应 CH02/04/08 与 RB-14 的提交说明，不改变 FR/SC 规则或验证状态。
@@ -8,9 +14,9 @@
 
 README 改为评委入口；删除旧交接、排期和建仓清单，后端运行内容归并至 apps/web/src/server/README.md。仅整理文档及引用，FR/SC 实现和验证状态不变。
 
-## 当前基线：PR #17 合并后的 main（2026-10-03）
+## 历史基线：PR #17 合并后的 main（2026-10-03）
 
-源码基线 `ffe56a8c8cb7654ae0864a7d3c8e2a426b815be0`，已包含 PR #14/#15 的 Worker 与 PR #17 的浏览器测试。PR #17 的 7 项自动检查通过；本地 Integration 为 9 passed / 0 skipped、Chromium E2E 为 8 passed / 0 skipped、Web 为 79 passed。证据见 [Worker 报告](../tests/reports/2026-10-03-worker-runtime.md)、[后续复查](../tests/reports/2026-10-03-worker-followup.md)及[浏览器报告](../tests/reports/2026-10-03-browser-e2e.md)。以下按日期保留的旧状态是历史快照，以本节为当前进度。
+源码基线 `ffe56a8c8cb7654ae0864a7d3c8e2a426b815be0`，已包含 PR #14/#15 的 Worker 与 PR #17 的浏览器测试。PR #17 的 7 项自动检查通过；本地 Integration 为 9 passed / 0 skipped、Chromium E2E 为 8 passed / 0 skipped、Web 为 79 passed。证据见 [Worker 报告](../tests/reports/2026-10-03-worker-runtime.md)、[后续复查](../tests/reports/2026-10-03-worker-followup.md)及[浏览器报告](../tests/reports/2026-10-03-browser-e2e.md)。本节为当日历史快照，最新增量见本页顶部。
 
 真实 Monad DEMO_SHORT 的 700/100/200 → 850/150 和 900/100 分配/领取、Mera/WebAuthn PRF 两类真机同址恢复、所选公网 PostgreSQL/Worker/TLS/私有文件 ACL 验收、第二人新 clone 复现与独立资金审查仍待完成。CI 通过不将这些需求提升为 Verified。
 
@@ -86,7 +92,7 @@ FR/SC 来自 v1.2。合约切片已填写实现文件和本地测试证据；跨
 | SC-15 | PRD 10/11章：CLAIMS 结果必须完整覆盖案件快照中的项目，按固定顺序对应，不允许重复或遗漏 ID | B | contracts/src/ | `DepositEscrow.sol` | AT36 | In progress | pending | [local report](../tests/reports/2026-09-21-contracts-local.md) |
 | SC-16 | PRD 10/11章：同一材料作者的同一 bundleId/version 只能提交一次；回应必须引用已存在的精确承诺值 | B | contracts/src/ | `DepositEscrow.sol` | AT35 | In progress | pending | [local report](../tests/reports/2026-09-21-contracts-local.md) |
 
-AT 的逐条状态与来源完整场景见 [acceptance](acceptance.md)。展示变化 CH01—09 见 [changes](changes.md)，这些文档变化不代表 FR/SC 业务已完成。
+AT 的逐条状态与来源完整场景见 [acceptance](acceptance.md)。展示变化 CH01—09 见 [历史 changes](https://github.com/Jenny-qi/RentBond/blob/cef20d4/docs/changes.md)，这些文档变化不代表 FR/SC 业务已完成。
 
 2026-10-02 Worker RPC provider 单元回归 6/6 通过，仅覆盖缺失/空 RPC 结果和链 ID 输入；IT-06 的故障期间投影不被改写尚未跨层执行，其余 Worker 事件/重组用例仍待实现。本次不提升 FR/SC/AT 状态。
 

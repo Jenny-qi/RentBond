@@ -34,11 +34,13 @@ IT-01–IT-09 are executable: SIWE replay, cross-lease ACL, event idempotency, r
 | E2E-03 | Primary timeout, fallback timeout, exit notice, fixed 900/100 allocation and both withdrawals |
 | E2E-04 | Cancel deposit confirmation; unchanged wallet transaction count, funding and lease phase |
 | E2E-05 | Wallet rejects signing; cancellation feedback; no broadcast, nonce increase or funding |
-| E2E-06 | Revoke session and open a fresh browser context; same original external test wallet regains tenant access; unrelated wallet is denied |
+| E2E-06 | Revoke session and open a fresh browser context; same original external test wallet regains tenant access; unrelated wallet is denied; local signing expiry clears private pages and revokes SIWE; recovery page remains usable without an address at 375/1280px |
 | E2E-07 | Tenant withdraws once; UI removes action; repeat own withdrawal simulation is rejected; zero-credit third-party withdrawFor pays nothing twice |
 | E2E-08 | Stop UI/API/database, leave only local RPC; independent original test-key restoration, third-party gas transfer, public expiry and withdrawFor to the original tenant only |
 
 E2E-06 does **not** verify Mera/WebAuthn PRF or cross-device recovery. E2E-08 is a local shutdown slice, not full real-device AT51 certification. Real devices, Monad public testnet, independent reproduction/funds review and deployed PostgreSQL remain separate acceptance requirements. No AT is promoted to Verified by these automated results alone.
+
+The Web suite also includes `mera-recovery.test.mjs`: injected WebAuthn outputs pass through the production Mera adapter, real SIWE signatures, database and private-file ACL, including no stored address, old link rejection and unrelated-passkey denial. It complements the browser wallet substitute and does not certify a physical authenticator.
 
 ## Reports and failure behavior
 

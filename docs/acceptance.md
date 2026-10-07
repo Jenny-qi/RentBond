@@ -1,5 +1,11 @@
 # 验收清单
 
+## 2026-10-07 消费者赛道与 Mera 恢复完善
+
+本轮修复正式登录页在无缓存时要求原地址的问题；支持仅凭原 passkey 派生地址后重新 SIWE，并展示签名会话结束时间、逐次确认范围和到期撤销。实际重跑 Web 83 passed、Integration 9 passed、浏览器 E2E 8 passed，均 0 failed / 0 skipped；类型检查、生产构建和文档检查通过，命令及限制见 [本轮报告](../tests/reports/2026-10-07-consumer-mera.md)。原地址为可选显式比对，其他 passkey 不继承已有角色，旧材料链接仍绑定原会话。
+
+对应 TS05、AT27/28/33/41/42：本地实现证据增加，真机、公网、独立复核仍 In progress。赛道二定位成立，Mera 奖项须按[证据清单](contest/track-fit.md)继续验收；下列旧记录保留为各日期历史结果。
+
 2026-10-04 许可证：按用户选择添加根 MIT LICENSE，并同步 README 与比赛清单。仅完成项目自身许可文件，不代表第三方授权核查、公共发布或任何 AT/TS 业务验收通过。
 
 2026-10-04 官方条款同步：用户提供条款允许 Monad 测试网，要求公开源码、开源许可证、外部代码与 AI 披露、第三方可运行及不超过 3 分钟的真实操作视频。详见 contest/contest-requirements.md；本次为文档补齐，不新增 AT/TS 通过证据。
@@ -8,9 +14,9 @@
 
 本次只整理提交入口及运行文档，不新增业务测试证据，不将任何 AT/TS 提升为 Verified。测试网完整分配/领取、真机恢复、部署环境验收、独立复现与资金审查仍待完成。
 
-## 当前基线：PR #17 合并后的 main（2026-10-03）
+## 历史基线：PR #17 合并后的 main（2026-10-03）
 
-源码基线 `ffe56a8c8cb7654ae0864a7d3c8e2a426b815be0`，已包含 PR #14/#15 的 Worker 与 PR #17 的浏览器测试。PR #17 的 7 项自动检查通过；本地 Integration 为 9 passed / 0 skipped、Chromium E2E 为 8 passed / 0 skipped、Web 为 79 passed。证据见 [Worker 报告](../tests/reports/2026-10-03-worker-runtime.md)、[后续复查](../tests/reports/2026-10-03-worker-followup.md)及[浏览器报告](../tests/reports/2026-10-03-browser-e2e.md)。以下按日期保留的旧状态是历史快照，以本节为当前进度。
+源码基线 `ffe56a8c8cb7654ae0864a7d3c8e2a426b815be0`，已包含 PR #14/#15 的 Worker 与 PR #17 的浏览器测试。PR #17 的 7 项自动检查通过；本地 Integration 为 9 passed / 0 skipped、Chromium E2E 为 8 passed / 0 skipped、Web 为 79 passed。证据见 [Worker 报告](../tests/reports/2026-10-03-worker-runtime.md)、[后续复查](../tests/reports/2026-10-03-worker-followup.md)及[浏览器报告](../tests/reports/2026-10-03-browser-e2e.md)。本节为当日历史快照，最新增量见本页顶部。
 
 真实 Monad DEMO_SHORT 的 700/100/200 → 850/150 和 900/100 分配/领取、Mera/WebAuthn PRF 两类真机同址恢复、所选公网 PostgreSQL/Worker/TLS/私有文件 ACL 验收、第二人新 clone 复现与独立资金审查仍待完成。CI 通过不将这些需求提升为 Verified。
 

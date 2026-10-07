@@ -34,6 +34,12 @@ async function until(check, description, timeout = 60000) {
 }
 async function listen(server) { server.listen(0, '127.0.0.1'); await once(server, 'listening'); return server.address().port; }
 async function close(server) { if (server?.listening) { server.closeAllConnections(); await new Promise(resolve => server.close(resolve)); } }
+async function stopNext() {
+  // On Windows a signalled process has a null exitCode even after exit.
+  if (!next || next.exitCode !== null || next.signalCode !== null) return;
+  const exited = once(next, 'exit');
+  next.kill('SIGTERM'); await exited;
+}
 async function setup() {
   await rm(outputDir, { recursive: true, force: true });
   await mkdir(outputDir, { recursive: true });
@@ -105,10 +111,14 @@ async function actor(index) {
 }
 async function login(actor, path = '/login') {
   await actor.page.goto(origin + path);
+  const recover = actor.page.getByRole('button', { name: 'Sign in with an existing passkey', exact: true });
+  await recover.waitFor();
+  assert.equal(await recover.isEnabled(), true, 'Recovery must not require a cached address');
   await actor.page.getByText('Use an external wallet', { exact: true }).click();
   await actor.page.getByRole('button', { name: 'Connect wallet & sign in', exact: true }).click();
   await until(async () => (await actor.page.locator('.live-status').innerText()).includes('Account verified.'), 'SIWE login');
   const cookies = await actor.context.cookies(); assert.ok(cookies.some(c => c.httpOnly && c.name.includes('session')));
+  await actor.page.getByRole('complementary', { name: 'Signing session' }).waitFor();
 }
 async function visit(actor, lease, section = '') {
   const path = '/leases/' + lease.id + (section ? '/' + section : '');
@@ -248,7 +258,7 @@ async function openCase(actors, lease) {
 async function run(id, actors) {
   const { l, t, r } = actors;
   const lease = ['E2E-04', 'E2E-05'].includes(id) ? await newLease(l, t) : await funded(actors);
-  evidence[id] = { environment: 'local EVM, Chromium, EIP-1193 test wallet', leaseId: lease.id, escrow: lease.address, transactions: [] };
+  evidence[id] = { environment: 'local EVM, Chromium, EIP-1193 test wallet', leaseId: lease.id, escrow: lease.address, transactions: [], screenshots: [] };
   if (id === 'E2E-01') {
     await split(actors, lease, true);
     await visit(t, lease, 'settlement'); evidence[id].screenshots = [await screenshot(t, id, '700-100-200')];
@@ -303,11 +313,25 @@ async function run(id, actors) {
     await until(async () => (await t.context.request.get(origin + '/api/auth/session')).status() === 401, 'server session revoked');
     await t.context.close(); actors.t = await actor(2); await login(actors.t);
     await visit(actors.t, lease);
+    evidence[id].screenshots.push(await screenshot(actors.t, id, 'session-mobile'));
     assert.ok((await actors.t.page.locator('body').innerText()).includes('Your role: Tenant'));
     assert.equal((await snapshot(lease)).terms.tenant.toLowerCase(), f.accounts[2].address.toLowerCase());
     const stranger = await actor(6); await login(stranger, '/leases/' + lease.id);
     await stranger.page.getByRole('alert').filter({ hasText: 'FORBIDDEN' }).waitFor(); assert.equal(await stranger.page.getByRole('heading', { name: 'Confirmed on-chain balances', exact: true }).count(), 0);
     await stranger.context.close();
+    const returning = actors.t;
+    const attempts = returning.attempts;
+    await returning.page.clock.setFixedTime(new Date(Date.now() + 16 * 60 * 1000));
+    await returning.page.evaluate(() => window.dispatchEvent(new Event('focus')));
+    await returning.page.getByRole('button', { name: 'Sign in with an existing passkey', exact: true }).waitFor();
+    await until(async () => (await returning.context.request.get(origin + '/api/auth/session')).status() === 401, 'expired signing session revoked');
+    assert.equal(returning.attempts, attempts);
+    assert.equal(await returning.page.getByRole('heading', { name: 'Confirmed on-chain balances', exact: true }).count(), 0);
+    for (const width of [375, 1280]) {
+      await returning.page.setViewportSize({ width, height: 900 });
+      assert.equal(await returning.page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, 'Recovery page has no horizontal overflow');
+      evidence[id].screenshots.push(await screenshot(returning, id, 'recovery-' + width));
+    }
   } else if (id === 'E2E-07') {
     await mineAt((await snapshot(lease)).terms.hardEndAt); await visit(t, lease, 'settlement'); await button(t, 'Execute final exit');
     await withdraw(t, lease, '1,000'); const before = (await snapshot(lease)).accounting;
@@ -319,7 +343,7 @@ async function run(id, actors) {
     // Shut down UI, API, DB; no Worker or sponsor service was started. RPC is independent.
     const original = { escrow: lease.address, token: f.token, tenant: f.accounts[2].address, hardEndAt: (await snapshot(lease)).terms.hardEndAt };
     const restored = privateKeyToAccount(f.keys[2]); assert.equal(restored.address, original.tenant);
-    await close(proxy); next.kill('SIGTERM'); await once(next, 'exit'); await f.app.db.close(); stopped = true;
+    await close(proxy); await stopNext(); await f.app.db.close(); stopped = true;
     await assert.rejects(fetch(origin + '/api/auth/session', { signal: AbortSignal.timeout(1000) }));
     await mineAt(original.hardEndAt);
     await f.publicClient.request({ method: 'hardhat_setBalance', params: [original.tenant, '0x0'] });
@@ -367,7 +391,7 @@ try {
   for (const id of ids.filter(id => !results.some(r => r.id === id))) results.push({ id, passed: false, output: 'Harness startup: ' + error.stack });
 } finally {
   await browser?.close(); await close(proxy);
-  if (next && next.exitCode === null) { next.kill('SIGTERM'); await once(next, 'exit'); }
+  await stopNext();
   for (const fn of cleanups.reverse()) { try { await fn(); } catch {} }
   await mkdir(outputDir, { recursive: true });
   await writeFile(outputDir + '/results.json', JSON.stringify({ environment: 'local EVM only; browser wallet substitute; scanner test double',

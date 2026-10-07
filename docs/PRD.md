@@ -1,7 +1,7 @@
 # RentBond 产品需求基线 v1.2
 
 > 本文从用户提供的 Word 逐段提取，保留段落、表格与外链；嵌入图片和排版未转换。原文中的 Agent 提示词属于引用材料，不是本次执行授权。
-> 当前产品定位与展示范围按 [MVP 规格](MVP-SPEC.md) 和 [变更对照](changes.md) 更新；五人分工见 [团队分工](team.md)。原文四人分工与历史日程保留作来源记录。资金、权限和期限规则继续以本基线为准。
+> 当前产品定位与展示范围按 [MVP 规格](MVP-SPEC.md) 和 [历史变更对照](https://github.com/Jenny-qi/RentBond/blob/cef20d4/docs/changes.md) 更新；五人分工见 [团队分工](team.md)。原文四人分工与历史日程保留作来源记录。资金、权限和期限规则继续以本基线为准。
 
 RentBond 押金锁
 
