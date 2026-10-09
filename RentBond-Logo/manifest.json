@@ -1,0 +1,322 @@
+[
+  {
+    "file": "app-icon-180.png",
+    "size": [
+      180,
+      180
+    ],
+    "bytes": 3596
+  },
+  {
+    "file": "app-icon-192.png",
+    "size": [
+      192,
+      192
+    ],
+    "bytes": 3820
+  },
+  {
+    "file": "app-icon-512.png",
+    "size": [
+      512,
+      512
+    ],
+    "bytes": 15303
+  },
+  {
+    "file": "contest-square-1024.jpg",
+    "size": [
+      1024,
+      1024
+    ],
+    "bytes": 36076
+  },
+  {
+    "file": "contest-square-1024.png",
+    "size": [
+      1024,
+      1024
+    ],
+    "bytes": 47339
+  },
+  {
+    "file": "contest-square-1024.webp",
+    "size": [
+      1024,
+      1024
+    ],
+    "bytes": 10048
+  },
+  {
+    "file": "contest-square-2048.png",
+    "size": [
+      2048,
+      2048
+    ],
+    "bytes": 139223
+  },
+  {
+    "file": "contest-square-512.png",
+    "size": [
+      512,
+      512
+    ],
+    "bytes": 17379
+  },
+  {
+    "file": "favicon.ico",
+    "size": [
+      256,
+      256
+    ],
+    "bytes": 17351
+  },
+  {
+    "file": "icon-color-128.png",
+    "size": [
+      128,
+      128
+    ],
+    "bytes": 2098
+  },
+  {
+    "file": "icon-color-16.png",
+    "size": [
+      16,
+      16
+    ],
+    "bytes": 374
+  },
+  {
+    "file": "icon-color-256.png",
+    "size": [
+      256,
+      256
+    ],
+    "bytes": 5283
+  },
+  {
+    "file": "icon-color-32.png",
+    "size": [
+      32,
+      32
+    ],
+    "bytes": 584
+  },
+  {
+    "file": "icon-color-512.png",
+    "size": [
+      512,
+      512
+    ],
+    "bytes": 13308
+  },
+  {
+    "file": "icon-color-64.png",
+    "size": [
+      64,
+      64
+    ],
+    "bytes": 1067
+  },
+  {
+    "file": "icon-mono-128.png",
+    "size": [
+      128,
+      128
+    ],
+    "bytes": 2020
+  },
+  {
+    "file": "icon-mono-16.png",
+    "size": [
+      16,
+      16
+    ],
+    "bytes": 335
+  },
+  {
+    "file": "icon-mono-256.png",
+    "size": [
+      256,
+      256
+    ],
+    "bytes": 4889
+  },
+  {
+    "file": "icon-mono-32.png",
+    "size": [
+      32,
+      32
+    ],
+    "bytes": 535
+  },
+  {
+    "file": "icon-mono-512.png",
+    "size": [
+      512,
+      512
+    ],
+    "bytes": 12441
+  },
+  {
+    "file": "icon-mono-64.png",
+    "size": [
+      64,
+      64
+    ],
+    "bytes": 992
+  },
+  {
+    "file": "icon-on-dark.png",
+    "size": [
+      512,
+      512
+    ],
+    "bytes": 13291
+  },
+  {
+    "file": "icon-white-128.png",
+    "size": [
+      128,
+      128
+    ],
+    "bytes": 1637
+  },
+  {
+    "file": "icon-white-16.png",
+    "size": [
+      16,
+      16
+    ],
+    "bytes": 275
+  },
+  {
+    "file": "icon-white-256.png",
+    "size": [
+      256,
+      256
+    ],
+    "bytes": 3787
+  },
+  {
+    "file": "icon-white-32.png",
+    "size": [
+      32,
+      32
+    ],
+    "bytes": 434
+  },
+  {
+    "file": "icon-white-512.png",
+    "size": [
+      512,
+      512
+    ],
+    "bytes": 8596
+  },
+  {
+    "file": "icon-white-64.png",
+    "size": [
+      64,
+      64
+    ],
+    "bytes": 767
+  },
+  {
+    "file": "logo-horizontal-color-1200.png",
+    "size": [
+      1200,
+      320
+    ],
+    "bytes": 21682
+  },
+  {
+    "file": "logo-horizontal-mono-1200.png",
+    "size": [
+      1200,
+      320
+    ],
+    "bytes": 20811
+  },
+  {
+    "file": "logo-horizontal-on-dark.png",
+    "size": [
+      1200,
+      320
+    ],
+    "bytes": 21750
+  },
+  {
+    "file": "logo-horizontal-white-1200.png",
+    "size": [
+      1200,
+      320
+    ],
+    "bytes": 16798
+  },
+  {
+    "file": "logo-stacked-color-1024.png",
+    "size": [
+      1024,
+      1024
+    ],
+    "bytes": 30952
+  },
+  {
+    "file": "logo-stacked-color-512.png",
+    "size": [
+      512,
+      512
+    ],
+    "bytes": 13075
+  },
+  {
+    "file": "logo-stacked-on-dark.png",
+    "size": [
+      1024,
+      1024
+    ],
+    "bytes": 31082
+  },
+  {
+    "file": "page-preview.png",
+    "size": [
+      1280,
+      720
+    ],
+    "bytes": 66522
+  },
+  {
+    "file": "project-cover-1200.jpg",
+    "size": [
+      1200,
+      630
+    ],
+    "bytes": 28913
+  },
+  {
+    "file": "project-cover-1200.png",
+    "size": [
+      1200,
+      630
+    ],
+    "bytes": 34205
+  },
+  {
+    "file": "project-cover-1200.webp",
+    "size": [
+      1200,
+      630
+    ],
+    "bytes": 8186
+  },
+  {
+    "file": "small-size-check.png",
+    "size": [
+      240,
+      80
+    ],
+    "bytes": 2302
+  }
+]

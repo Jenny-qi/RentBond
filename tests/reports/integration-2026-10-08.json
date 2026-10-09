@@ -1,0 +1,74 @@
+{
+  "suite": "integration",
+  "generatedAt": "2026-10-08T13:58:46.634Z",
+  "total": 9,
+  "passed": 5,
+  "failed": 4,
+  "skipped": 0,
+  "complete": false,
+  "results": [
+    {
+      "id": "IT-01",
+      "description": "SIWE nonce replay is rejected",
+      "status": "passed",
+      "durationMs": 11172,
+      "completedAt": "2026-10-08T13:58:33.541Z"
+    },
+    {
+      "id": "IT-02",
+      "description": "Cross-lease ACL: tenant cannot access another lease's documents",
+      "status": "passed",
+      "durationMs": 2435,
+      "completedAt": "2026-10-08T13:58:35.976Z"
+    },
+    {
+      "id": "IT-03",
+      "description": "Event idempotency: same chain event processed once only",
+      "status": "failed",
+      "output": "node:internal/modules/package_json_reader:301\n  throw new ERR_MODULE_NOT_FOUND(packageName, fileURLToPath(base), null);\n        ^\n\nError [ERR_MODULE_NOT_FOUND]: Cannot find package 'viem' imported from D:\\github项目\\RentBond\\apps\\worker\\src\\rpc.mjs\n    at Object.getPackageJSONURL (node:internal/modules/package_json_reader:301:9)\n    at packageResolve (node:internal/modules/esm/resolve:768:81)\n    at moduleResolve (node:internal/modules/esm/resolve:859:18)\n    at defaultResolve (node:internal/modules/esm/resolve:991:11)\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:719:20)\n    at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:736:38)\n    at ModuleLoader.resolveSync (node:internal/modules/esm/loader:765:52)\n    at #resolve (node:internal/modules/esm/loader:701:17)\n    at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:621:35)\n    at ModuleJob.syncLink (node:internal/modules/esm/module_job:160:33) {\n  code: 'ERR_MODULE_NOT_FOUND'\n}\n\nNode.js v24.14.0\n✖ src\\server\\tests\\worker-runtime.test.mjs (1904.2081ms)\nℹ tests 1\nℹ suites 0\nℹ pass 0\nℹ fail 1\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 1909.6663\n\n✖ failing tests:\n\ntest at src\\server\\tests\\worker-runtime.test.mjs:1:1\n✖ src\\server\\tests\\worker-runtime.test.mjs (1904.2081ms)\n  'test failed'\n",
+      "completedAt": "2026-10-08T13:58:37.944Z"
+    },
+    {
+      "id": "IT-04",
+      "description": "Event rollback: re-org invalidates projection and replays correctly",
+      "status": "failed",
+      "output": "node:internal/modules/package_json_reader:301\n  throw new ERR_MODULE_NOT_FOUND(packageName, fileURLToPath(base), null);\n        ^\n\nError [ERR_MODULE_NOT_FOUND]: Cannot find package 'viem' imported from D:\\github项目\\RentBond\\apps\\worker\\src\\rpc.mjs\n    at Object.getPackageJSONURL (node:internal/modules/package_json_reader:301:9)\n    at packageResolve (node:internal/modules/esm/resolve:768:81)\n    at moduleResolve (node:internal/modules/esm/resolve:859:18)\n    at defaultResolve (node:internal/modules/esm/resolve:991:11)\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:719:20)\n    at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:736:38)\n    at ModuleLoader.resolveSync (node:internal/modules/esm/loader:765:52)\n    at #resolve (node:internal/modules/esm/loader:701:17)\n    at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:621:35)\n    at ModuleJob.syncLink (node:internal/modules/esm/module_job:160:33) {\n  code: 'ERR_MODULE_NOT_FOUND'\n}\n\nNode.js v24.14.0\n✖ src\\server\\tests\\worker-runtime.test.mjs (1134.991ms)\nℹ tests 1\nℹ suites 0\nℹ pass 0\nℹ fail 1\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 1140.525\n\n✖ failing tests:\n\ntest at src\\server\\tests\\worker-runtime.test.mjs:1:1\n✖ src\\server\\tests\\worker-runtime.test.mjs (1134.991ms)\n  'test failed'\n",
+      "completedAt": "2026-10-08T13:58:39.141Z"
+    },
+    {
+      "id": "IT-05",
+      "description": "Worker stop/start does not double-allocate funds",
+      "status": "failed",
+      "output": "node:internal/modules/package_json_reader:301\n  throw new ERR_MODULE_NOT_FOUND(packageName, fileURLToPath(base), null);\n        ^\n\nError [ERR_MODULE_NOT_FOUND]: Cannot find package 'viem' imported from D:\\github项目\\RentBond\\apps\\worker\\src\\rpc.mjs\n    at Object.getPackageJSONURL (node:internal/modules/package_json_reader:301:9)\n    at packageResolve (node:internal/modules/esm/resolve:768:81)\n    at moduleResolve (node:internal/modules/esm/resolve:859:18)\n    at defaultResolve (node:internal/modules/esm/resolve:991:11)\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:719:20)\n    at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:736:38)\n    at ModuleLoader.resolveSync (node:internal/modules/esm/loader:765:52)\n    at #resolve (node:internal/modules/esm/loader:701:17)\n    at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:621:35)\n    at ModuleJob.syncLink (node:internal/modules/esm/module_job:160:33) {\n  code: 'ERR_MODULE_NOT_FOUND'\n}\n\nNode.js v24.14.0\n✖ src\\server\\tests\\worker-runtime.test.mjs (1115.1304ms)\nℹ tests 1\nℹ suites 0\nℹ pass 0\nℹ fail 1\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 1120.6285\n\n✖ failing tests:\n\ntest at src\\server\\tests\\worker-runtime.test.mjs:1:1\n✖ src\\server\\tests\\worker-runtime.test.mjs (1115.1304ms)\n  'test failed'\n",
+      "completedAt": "2026-10-08T13:58:40.321Z"
+    },
+    {
+      "id": "IT-06",
+      "description": "RPC fault: read failure does not corrupt balance to zero",
+      "status": "failed",
+      "output": "node:internal/modules/package_json_reader:301\n  throw new ERR_MODULE_NOT_FOUND(packageName, fileURLToPath(base), null);\n        ^\n\nError [ERR_MODULE_NOT_FOUND]: Cannot find package 'viem' imported from D:\\github项目\\RentBond\\apps\\worker\\src\\rpc.mjs\n    at Object.getPackageJSONURL (node:internal/modules/package_json_reader:301:9)\n    at packageResolve (node:internal/modules/esm/resolve:768:81)\n    at moduleResolve (node:internal/modules/esm/resolve:859:18)\n    at defaultResolve (node:internal/modules/esm/resolve:991:11)\n    at #cachedDefaultResolve (node:internal/modules/esm/loader:719:20)\n    at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:736:38)\n    at ModuleLoader.resolveSync (node:internal/modules/esm/loader:765:52)\n    at #resolve (node:internal/modules/esm/loader:701:17)\n    at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:621:35)\n    at ModuleJob.syncLink (node:internal/modules/esm/module_job:160:33) {\n  code: 'ERR_MODULE_NOT_FOUND'\n}\n\nNode.js v24.14.0\n✖ src\\server\\tests\\worker-runtime.test.mjs (1141.1268ms)\nℹ tests 1\nℹ suites 0\nℹ pass 0\nℹ fail 1\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 1146.8883\n\n✖ failing tests:\n\ntest at src\\server\\tests\\worker-runtime.test.mjs:1:1\n✖ src\\server\\tests\\worker-runtime.test.mjs (1141.1268ms)\n  'test failed'\n",
+      "completedAt": "2026-10-08T13:58:41.526Z"
+    },
+    {
+      "id": "IT-07",
+      "description": "Test gas refills respect quota and do not exceed limits",
+      "status": "passed",
+      "durationMs": 2431,
+      "completedAt": "2026-10-08T13:58:43.957Z"
+    },
+    {
+      "id": "IT-08",
+      "description": "SIWE session expires and forces re-auth after 24h",
+      "status": "passed",
+      "durationMs": 2347,
+      "completedAt": "2026-10-08T13:58:46.304Z"
+    },
+    {
+      "id": "IT-09",
+      "description": "Worker uses confirmed event block and UTC deadline separately",
+      "status": "passed",
+      "durationMs": 330,
+      "completedAt": "2026-10-08T13:58:46.634Z"
+    }
+  ]
+}

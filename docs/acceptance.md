@@ -1,5 +1,13 @@
 # 验收清单
 
+## 2026-10-08 最终演示就绪复查
+
+当前工作区类型检查通过；Integration 实跑为 5 passed / 4 failed / 0 skipped，IT-03—06 因 Worker 无法导入已声明的 viem 依赖失败。Web 获准沙箱外重跑为 75 passed / 1 failed / 0 skipped，唯一失败同为 Worker 依赖缺失；首次沙箱内六项失败保留在报告。文档检查发现四处品牌报告链接失效。历史全通过不能代替当前环境复验。详见[就绪检查](../tests/reports/2026-10-08-demo-readiness.md)。DEMO_SHORT 公网闭环、真机恢复、选定环境、独立复现和资金复核继续待验收；不提升 AT/TS 状态。
+
+## 2026-10-08 Logo 配色同步
+
+已将用户提供的最新灰白／灰金深底 Logo 同步到 P01–P12 共用组件及全局图标。`npm run typecheck --prefix apps/web` 通过；5 个素材与原包 SHA-256 完全一致，HTTP 返回 200；12 个未登录页面均返回 200 并包含更新后的 Logo、favicon 和 Apple 图标版本。浏览器确认 1280px 首页、375px 首页/登录页图片加载正常、无横向溢出，Logo 回首页有效。证据与命令见[本轮记录](../tests/reports/2026-10-08-brand-refresh.md)。仅为品牌展示检查，未运行登录后的资金业务用例，不提升任何 AT/TS 状态。
+
 ## 2026-10-07 消费者赛道与 Mera 恢复完善
 
 本轮修复正式登录页在无缓存时要求原地址的问题；支持仅凭原 passkey 派生地址后重新 SIWE，并展示签名会话结束时间、逐次确认范围和到期撤销。实际重跑 Web 83 passed、Integration 9 passed、浏览器 E2E 8 passed，均 0 failed / 0 skipped；类型检查、生产构建和文档检查通过，命令及限制见 [本轮报告](../tests/reports/2026-10-07-consumer-mera.md)。原地址为可选显式比对，其他 passkey 不继承已有角色，旧材料链接仍绑定原会话。
