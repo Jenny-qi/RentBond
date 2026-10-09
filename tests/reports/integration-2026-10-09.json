@@ -1,0 +1,74 @@
+{
+  "suite": "integration",
+  "generatedAt": "2026-10-09T13:08:21.684Z",
+  "total": 9,
+  "passed": 9,
+  "failed": 0,
+  "skipped": 0,
+  "complete": true,
+  "results": [
+    {
+      "id": "IT-01",
+      "description": "SIWE nonce replay is rejected",
+      "status": "passed",
+      "durationMs": 1667,
+      "completedAt": "2026-10-09T13:08:04.185Z"
+    },
+    {
+      "id": "IT-02",
+      "description": "Cross-lease ACL: tenant cannot access another lease's documents",
+      "status": "passed",
+      "durationMs": 1873,
+      "completedAt": "2026-10-09T13:08:06.058Z"
+    },
+    {
+      "id": "IT-03",
+      "description": "Event idempotency: same chain event processed once only",
+      "status": "passed",
+      "durationMs": 2470,
+      "completedAt": "2026-10-09T13:08:08.528Z"
+    },
+    {
+      "id": "IT-04",
+      "description": "Event rollback: re-org invalidates projection and replays correctly",
+      "status": "passed",
+      "durationMs": 2481,
+      "completedAt": "2026-10-09T13:08:11.009Z"
+    },
+    {
+      "id": "IT-05",
+      "description": "Worker stop/start does not double-allocate funds",
+      "status": "passed",
+      "durationMs": 4310,
+      "completedAt": "2026-10-09T13:08:15.319Z"
+    },
+    {
+      "id": "IT-06",
+      "description": "RPC fault: read failure does not corrupt balance to zero",
+      "status": "passed",
+      "durationMs": 2468,
+      "completedAt": "2026-10-09T13:08:17.787Z"
+    },
+    {
+      "id": "IT-07",
+      "description": "Test gas refills respect quota and do not exceed limits",
+      "status": "passed",
+      "durationMs": 1792,
+      "completedAt": "2026-10-09T13:08:19.580Z"
+    },
+    {
+      "id": "IT-08",
+      "description": "SIWE session expires and forces re-auth after 24h",
+      "status": "passed",
+      "durationMs": 1782,
+      "completedAt": "2026-10-09T13:08:21.362Z"
+    },
+    {
+      "id": "IT-09",
+      "description": "Worker uses confirmed event block and UTC deadline separately",
+      "status": "passed",
+      "durationMs": 322,
+      "completedAt": "2026-10-09T13:08:21.684Z"
+    }
+  ]
+}
