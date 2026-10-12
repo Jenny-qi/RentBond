@@ -8,7 +8,7 @@ P01–P12 共用的 `BrandLogo` 已同步用户提供的 `RentBond-Logo/` 最新
 
 正式恢复入口无需原地址、credential ID 或 localStorage：选择同一 passkey 后按固定 RP ID/派生盐重建账户，再 SIWE 读取该地址可访问的租约。手填地址只作为可选显式核对；错误密钥不能获得旧角色。页面显示 15 分钟会话的结束时间，签名前、私有请求及页面重新聚焦时检查到期，并保留每笔资金操作确认。
 
-D 本轮同步修改账户/API 消费边界及回归；C/E 接口不变，无 ABI/schema 或依赖版本变化。验证见[本轮报告](../../tests/reports/2026-10-07-consumer-mera.md)，当前剩余验收见[赛道与奖项](../../docs/contest/track-fit.md)。下方 9 月 29 日“原地址缺失时恢复按钮禁用”为历史实现，已由本轮替换；两类真实设备、公网资金闭环和最终部署仍待取证。
+D 本轮同步修改账户/API 消费边界及回归；C/E 接口不变，无 ABI/schema 或依赖版本变化。账户恢复、会话与验证状态见[验收清单](../../docs/acceptance.md)；两类真实设备、公网资金闭环和最终部署仍待取证。
 
 C 负责页面、账户和本人确认交易；D 负责 `src/server/`、`app/api/`。本页合并原 C 交接说明，不再另外维护阶段群汇报。
 
@@ -61,11 +61,11 @@ npm run dev --prefix apps/web
 
 仍需 B/E 的 DEMO_SHORT 已核验环境，C/D/E 的网页全链端到端演练、两类真实设备 HTTPS 同址恢复、真实钱包取消/替换/刷新流程与公网 700/100/200→850/150 证据。AT51 全站停运恢复由 E 联合验收；本页面登录仍依赖 API，不声称已完成停运独立入口。公众上传扫描/隔离为 D 的发布前提。上述完成前不标记 TS05 或 RB-08—11 为整体 Verified。
 
-历史模拟页面验证保留在 [2026-09-25 原始测试记录](../../tests/reports/2026-09-25-member-c.md)，D 的运行方式见 [后端说明](src/server/README.md)。旧报告描述其当时版本，不代表当前页面仍为模拟。
+历史模拟页面验证已归档；D 的运行方式见[后端说明](src/server/README.md)。
 
 ## 2026-10-03 local browser automation
 
-The shared E2E runner now drives the actual English pages, separate wallet confirmations, HTTP API and local EVM transactions through all eight local scenarios. Run from the repository root after generating ABIs and installing Chromium as described in [tests README](../../tests/README.md). See [browser report](../../tests/reports/2026-10-03-browser-e2e.md). This adds browser evidence to the prior 79-test Node suite; it does not certify real passkeys/devices or public Monad. No production page or API behavior was changed for testing.
+The shared E2E runner now drives the actual English pages, separate wallet confirmations, HTTP API and local EVM transactions through all eight local scenarios. Run from the repository root after generating ABIs and installing Chromium as described in [tests README](../../tests/README.md). Verification status and evidence links见 [验收清单](../../docs/acceptance.md)。
 
 ## 品牌素材（2026-10-04）
 

@@ -49,4 +49,6 @@ Factory/escrow checkpoint mismatch invalidates canonical events and projections,
 
 ## Evidence and remaining work
 
-See [local runtime report](../../tests/reports/2026-10-03-worker-runtime.md). Real local EVM tests cover replay, reorg, RPC fault, process restart, manual progress service timeout dispatch, primary finalization and hard-end expiry. These do not prove deployed Monad execution, all eight actions on Monad, real PostgreSQL runtime recovery, a second person's reproduction, or real device restoration. The eight Chromium E2E scenarios have since passed on disposable local chains (PR #17); see [browser report](../../tests/reports/2026-10-03-browser-e2e.md). They do not certify public Monad or real-device acceptance. Notifications and asynchronous exports remain outside this loop.
+Integration tests IT-01–IT-09 cover event idempotency, reorg rollback, durable restart, RPC fault, gas quota, session expiry and UTC-deadline/block-height separation. Eight Chromium E2E scenarios exercise the full page → API → local EVM flow. See [验收清单](../../docs/acceptance.md) for current verification status and evidence links.
+
+Real Monad execution, all eight on-chain actions, real PostgreSQL recovery, second-person reproduction and physical-device restoration remain pending acceptance.
