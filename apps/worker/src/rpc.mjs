@@ -3,6 +3,7 @@ import { createPublicClient, createWalletClient, defineChain, http, fallback,
   recoverTransactionAddress } from 'viem';
 import { factoryAbi, escrowAbi } from '../../web/src/server/chain.ts';
 import { workerActions, actionMatches } from '../../web/src/server/worker-actions.ts';
+import { readLogRanges } from './log-ranges.mjs';
 
 const json = (value) => JSON.parse(JSON.stringify(value, (_, v) => typeof v === 'bigint' ? v.toString() : v));
 const topics = new Set(factoryAbi.filter((a) => a.type === 'event').map((event) =>
@@ -48,8 +49,9 @@ export function createWorkerRpc(config, account) {
     },
     async factoryEvents(fromBlock, toBlock) {
       const { client } = await connect();
-      const logs = await client.getLogs({ address: config.factoryAddress,
-        fromBlock: BigInt(fromBlock), toBlock: BigInt(toBlock) });
+      const logs = await readLogRanges(client, { address: config.factoryAddress,
+        fromBlock: BigInt(fromBlock), toBlock: BigInt(toBlock) },
+        config.chainId === 10143 ? 100 : 1000);
       return logs.filter((log) => topics.has(log.topics[0])).map((log) => {
         if (log.removed || log.blockNumber === null || log.logIndex === null || !log.transactionHash || !log.blockHash) throw new Error('INVALID_LOG');
         // Fail the batch on malformed known events; never advance past undecodable logs.

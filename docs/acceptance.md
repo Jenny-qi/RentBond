@@ -1,12 +1,18 @@
 # 验收清单
 
+2026-10-11 创建前置核对：后端已核验服务方案为 0、自动 Gas 补给未配置；历史链上方案仍有效，但缺原方案文档／salt，不能补造校验承诺。Tenant 测试 MON 约 0.498，MockUSD 为 0。文件恢复独立核验 6 个文件／5,312 字节哈希一致，正式 API 五项健康仍通过；同机恢复不等于异地／数据库灾备。见[前置与恢复证据](../tests/reports/2026-10-11-lease-readiness.md)，不提升整体 Verified。
+
+2026-10-11 公网 API 切片：正式网址的临时账户 SIWE、私有上传、实际扫描／导出队列、ZIP 原文件哈希、跨账户拒绝及退出登录实跑通过；Azure PostgreSQL/RLS/隔离存储／ClamAV 服务检查通过。只增加 TS03、AT27/28/33/46 的部分公网证据，不提升整体 Verified；钱包、真机、资金与灾备仍待验收。最终脚本加固与恢复结果区分记录，见[公网检查报告](../tests/reports/2026-10-11-public-api-acceptance.md)。
+
+2026-10-10 上线恢复准备：移除四处缺失品牌报告链接并保留历史声明的缺证说明；新增 503 服务端阶段诊断、Vercel 离线检查和生产 HTTP 回归。Web 85、Integration 9、部署/配置 20、生产 HTTP 1 项通过，类型与生产构建通过；本轮未重跑浏览器 E2E/容器，线上 503 仍未修复，不提升 AT/TS。详见[本轮记录](../tests/reports/2026-10-10-live-product-recovery.md)。
+
 ## 2026-10-08 最终演示就绪复查
 
 当前工作区类型检查通过；Integration 实跑为 5 passed / 4 failed / 0 skipped，IT-03—06 因 Worker 无法导入已声明的 viem 依赖失败。Web 获准沙箱外重跑为 75 passed / 1 failed / 0 skipped，唯一失败同为 Worker 依赖缺失；首次沙箱内六项失败保留在报告。文档检查发现四处品牌报告链接失效。历史全通过不能代替当前环境复验。详见[就绪检查](../tests/reports/2026-10-08-demo-readiness.md)。DEMO_SHORT 公网闭环、真机恢复、选定环境、独立复现和资金复核继续待验收；不提升 AT/TS 状态。
 
 ## 2026-10-08 Logo 配色同步
 
-已将用户提供的最新灰白／灰金深底 Logo 同步到 P01–P12 共用组件及全局图标。`npm run typecheck --prefix apps/web` 通过；5 个素材与原包 SHA-256 完全一致，HTTP 返回 200；12 个未登录页面均返回 200 并包含更新后的 Logo、favicon 和 Apple 图标版本。浏览器确认 1280px 首页、375px 首页/登录页图片加载正常、无横向溢出，Logo 回首页有效。证据与命令见[本轮记录](../tests/reports/2026-10-08-brand-refresh.md)。仅为品牌展示检查，未运行登录后的资金业务用例，不提升任何 AT/TS 状态。
+已将用户提供的最新灰白／灰金深底 Logo 同步到 P01–P12 共用组件及全局图标。`npm run typecheck --prefix apps/web` 通过；5 个素材与原包 SHA-256 完全一致，HTTP 返回 200；12 个未登录页面均返回 200 并包含更新后的 Logo、favicon 和 Apple 图标版本。浏览器确认 1280px 首页、375px 首页/登录页图片加载正常、无横向溢出，Logo 回首页有效。证据与命令见原始品牌报告（未随源码提交，历史检查声明尚需补证；断链已移除）。仅为品牌展示检查，未运行登录后的资金业务用例，不提升任何 AT/TS 状态。
 
 ## 2026-10-07 消费者赛道与 Mera 恢复完善
 
@@ -144,3 +150,14 @@ Eight executable Chromium scenarios now cover real page → HTTP API → local E
 AT41/42/51 and TS05 remain In progress: the EIP-1193 wallet and clean scanner are test substitutes; real Mera/WebAuthn PRF, two-device recovery, public Monad allocation/withdrawal, deployed PostgreSQL and independent funds/reproduction review are not certified. No requirement is promoted to Verified. The previous skipped E2E blocker is addressed by runnable local tests; deployment/device acceptance blockers remain.
 
 2026-10-04 品牌检查：npm run typecheck --prefix apps/web 通过；本地首页／登录页检查 Logo 加载、回首页导航与 1280px／375px 响应式布局，无横向溢出。随后按用户指定位置将彩色图标移至导航、移除账户卡片图标；浏览器确认仅有导航品牌图，TypeScript 再次通过。未运行资金业务测试，不提升任何 AT/TS。
+2026-10-11 Azure infrastructure evidence: VM running and both Docker images built; external PostgreSQL/local private storage deployment configuration and frontend API rewrite prepared. Database/HTTPS/Worker/frontend-chain runtime acceptance remains pending. No AT/TS is promoted. See [server preparation](../tests/reports/2026-10-11-azure-server-prep.md).
+
+2026-10-11 deployed backend follow-up: canonical Vercel API health now returns 200 with database/storage/quarantine/scanner/RPC true; unauthenticated session correctly returns 401. Azure migration, TLS and EICAR scanner checks passed. Chain synchronization range fixed, but history catch-up and user-owned wallet/device funds flows remain incomplete. No AT/TS or FR/SC status is promoted. See [live deployment evidence](../tests/reports/2026-10-11-azure-live-backend.md).
+
+2026-10-12 live follow-up: canonical API health remains all true; factory checkpoint 70,256,114 is 18 blocks behind observed head 70,256,132; Tenant independently reads 1,000 MockUSD. Historical indexing is essentially caught up at this observation. Zero stored service profiles, MetaMask review and complete public wallet/funds acceptance remain unresolved. No FR/SC/AT/TS is promoted. See [live status](../tests/reports/2026-10-12-live-status.md).
+
+2026-10-12 service follow-up: a new DEMO_SHORT profile was registered and accepted by both user-owned resolver wallets, independently checked against its original manifest/salt, and imported through the existing CLI. Backend eligibility passed; authenticated canonical API returned one service containing this profile. Missing service configuration is resolved. MetaMask review and public device/funds acceptance remain unresolved; no requirement is promoted. See [service import evidence](../tests/reports/2026-10-12-service-profile-import.md).
+
+2026-10-12 lease preparation: two disposable API signers completed new-service draft/invite/join/prepare checks and official testnet createLease simulation without broadcasting. Service cap, pre-join ACL, incomplete/stale preparation and landlord-only authorization checks passed; both sessions logged out. Actual user browser/funds acceptance remains pending. See [preparation evidence](../tests/reports/2026-10-12-live-lease-preparation.md); no requirement is promoted.
+
+2026-10-12 targeted security follow-up: dependency patches prepared; production audit reports zero known advisories, typecheck/build and 13 auth/client tests pass. Production is not upgraded and MetaMask classification remains unexplained. No requirement status is promoted. See [targeted review](../tests/reports/2026-10-12-targeted-security-review.md).

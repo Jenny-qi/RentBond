@@ -19,6 +19,13 @@ Use the API's configuration: SESSION_SECRET, CHAIN_ID, RPC_URL, optional RPC_FAL
 
 Separate API/Worker processes require PostgreSQL. Embedded PGlite is supported only for a single process and the disk-backed restart test, never concurrent processes sharing one directory.
 
+Monad factory discovery splits each batch into inclusive ranges of at most 100
+blocks, with at most four RPC reads in flight. A failed range rejects the entire
+batch after pending reads finish; the transactional checkpoint never skips the
+failed history. `WORKER_BATCH_SIZE=1000` remains valid against a 100-block RPC
+limit. Checkpoint/hash validation and reorg handling are unchanged. Public RPC
+rate limits and historical lag still need operational monitoring.
+
 For public deadline execution explicitly set WORKER_EXECUTE=true, WORKER_PRIVATE_KEY_FILE to an operator-managed secret file, and WORKER_GAS_ACCOUNT to its expected address. The account must differ from T/L/R/F and the Gas sponsor. Do not commit keys. WORKER_MAX_FEE_WEI bounds gas times maximum fee (default 0.05 test MON; maximum 1). Supported Worker chains are 31337 (local EVM) and 10143 (Monad testnet); other chain IDs are rejected even in local mode. Poll interval must be 1000–300000 ms.
 
 ## Public actions

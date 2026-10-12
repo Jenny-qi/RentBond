@@ -1,0 +1,783 @@
+{
+  "suite": "e2e",
+  "generatedAt": "2026-10-06T07:05:58.251Z",
+  "total": 8,
+  "passed": 8,
+  "failed": 0,
+  "skipped": 0,
+  "complete": true,
+  "results": [
+    {
+      "id": "E2E-01",
+      "description": "Browser invite → accept/approve/fund → early checkout → 700/100/200 → withdrawals",
+      "status": "passed",
+      "durationMs": 21845,
+      "evidence": {
+        "environment": "local EVM, Chromium, EIP-1193 test wallet",
+        "leaseId": "d079e971-357f-4441-ba35-b894e027184c",
+        "escrow": "0xd003f11695bbbc9db6073d97f6e83dea644e2425",
+        "transactions": [
+          "0x4873c6c5901b098829df837fc359acf68d5d52dbd0d879d5f14ee1c9f50a9b2c",
+          "0x2278f6c4471270d6b4dfcc8d5f49e90c17761c032b41b44f660480f5ae4e1b79",
+          "0x1eb0879ac3ad47e7f40c25dca933d4ca27c74a9fcf500baed00657d6e63407cc",
+          "0xd71314c6b4414b1def129475ec7b58bdf31685e4a669d2909ea1e37f12b1ac1a",
+          "0x63cdcdc23644e8e0973f0d4263122740410a9ebe80e7d877beefa27a83a6e1ad",
+          "0xf8f01b16364c16d7e491ce7e12e3957fc13643e252d4fd46889cfe0da0341811",
+          "0x4ac89d4f4e7c409632d2020d698bd182a189d8444d360ba1d13eccd602a5a8fe",
+          "0x886c10323dabcabc0a3ba2aaaad497435e32ec7f87d21c766e6bb6206d48260c",
+          "0x07e65749a152ee2c4738f79a1a791dcbdb1b127bd79dcce8484361d28a2b2ab8",
+          "0x6558164658310a578284fdfe087c9db1769da94cf7240d6f3765878a513e33e0",
+          "0xe7050be65b7711eff62498cef909d367e28d08d3fbd63241bab1bd8654c28775",
+          "0x061422bdc3517bd5d360f9814953a250de07aa17f75451537137e0e7254b17ff"
+        ],
+        "screenshots": [
+          "test-results/e2e-local/E2E-01-700-100-200.png"
+        ],
+        "accounting": {
+          "fundedAmount": "1000000000",
+          "unallocated": "200000000",
+          "tenantCredit": "0",
+          "landlordCredit": "0",
+          "tenantWithdrawn": "700000000",
+          "landlordWithdrawn": "100000000",
+          "revision": "8"
+        },
+        "receipts": [
+          {
+            "hash": "0x4873c6c5901b098829df837fc359acf68d5d52dbd0d879d5f14ee1c9f50a9b2c",
+            "status": "success",
+            "blockNumber": "8",
+            "blockHash": "0x2e21bd84718fec887f5779bdf320e2b1b9b22c4aa1b703e4b093bb1e7a630a54",
+            "from": "0xbe97fbf458e71cf0b94e3248938de219e1edc6ce",
+            "to": "0xe9e25711c22b70f1c7d8bbbf6b74794998de7329"
+          },
+          {
+            "hash": "0x2278f6c4471270d6b4dfcc8d5f49e90c17761c032b41b44f660480f5ae4e1b79",
+            "status": "success",
+            "blockNumber": "14",
+            "blockHash": "0xf44f349992344b62e34573cc68fe7fe22b93cf1f75c9bfef0168523bb8cfecd9",
+            "from": "0xbe97fbf458e71cf0b94e3248938de219e1edc6ce",
+            "to": "0xd003f11695bbbc9db6073d97f6e83dea644e2425"
+          },
+          {
+            "hash": "0x1eb0879ac3ad47e7f40c25dca933d4ca27c74a9fcf500baed00657d6e63407cc",
+            "status": "success",
+            "blockNumber": "15",
+            "blockHash": "0x7ca2dd2e083e82e5e55878fad4d57dc057060322c456efcea0ffee1df0db98e0",
+            "from": "0xbe97fbf458e71cf0b94e3248938de219e1edc6ce",
+            "to": "0xd003f11695bbbc9db6073d97f6e83dea644e2425"
+          },
+          {
+            "hash": "0xd71314c6b4414b1def129475ec7b58bdf31685e4a669d2909ea1e37f12b1ac1a",
+            "status": "success",
+            "blockNumber": "19",
+            "blockHash": "0x5d1feda2ee3deb19c47114fd4d76e7a464fe1ce435e9a449d451a95a4a185dff",
+            "from": "0xbe97fbf458e71cf0b94e3248938de219e1edc6ce",
+            "to": "0xd003f11695bbbc9db6073d97f6e83dea644e2425"
+          },
+          {
+            "hash": "0x63cdcdc23644e8e0973f0d4263122740410a9ebe80e7d877beefa27a83a6e1ad",
+            "status": "success",
+            "blockNumber": "21",
+            "blockHash": "0xf6a36aa5528b8317bebb57842c97625f104b823366c7a996c2572432f8213996",
+            "from": "0xbe97fbf458e71cf0b94e3248938de219e1edc6ce",
+            "to": "0xd003f11695bbbc9db6073d97f6e83dea644e2425"
+          },
+          {
+            "hash": "0xf8f01b16364c16d7e491ce7e12e3957fc13643e252d4fd46889cfe0da0341811",
+            "status": "success",
+            "blockNumber": "10",
+            "blockHash": "0xae015567a1cf4bd22fc6f168725567a753023c2879809da5521aee6c966049b2",
+            "from": "0xb0f5cb888be9b638b5df342b6279d5fcc224e9e0",
+            "to": "0xd003f11695bbbc9db6073d97f6e83dea644e2425"
+          },
+          {
+            "hash": "0x4ac89d4f4e7c409632d2020d698bd182a189d8444d360ba1d13eccd602a5a8fe",
+            "status": "success",
+            "blockNumber": "11",
+            "blockHash": "0x4366a668a54e99700442c4379066932d5d42d9c91469ced563c20a512f5e3529",
+            "from": "0xb0f5cb888be9b638b5df342b6279d5fcc224e9e0",
+            "to": "0xe190659864484fac4943cb5c60b7037c0b6a0402"
+          },
+          {
+            "hash": "0x886c10323dabcabc0a3ba2aaaad497435e32ec7f87d21c766e6bb6206d48260c",
+            "status": "success",
+            "blockNumber": "12",
+            "blockHash": "0x1baf7d087597b5ba9f3277dbadedf228c323be7b883d9be83db1d0caa4469002",
+            "from": "0xb0f5cb888be9b638b5df342b6279d5fcc224e9e0",
+            "to": "0xd003f11695bbbc9db6073d97f6e83dea644e2425"
+          },
+          {
+            "hash": "0x07e65749a152ee2c4738f79a1a791dcbdb1b127bd79dcce8484361d28a2b2ab8",
+            "status": "success",
+            "blockNumber": "13",
+            "blockHash": "0x1e981b841fab56359be4b8fc647a2a66c99838c6716d6d636b2bd61b280addc0",
+            "from": "0xb0f5cb888be9b638b5df342b6279d5fcc224e9e0",
+            "to": "0xd003f11695bbbc9db6073d97f6e83dea644e2425"
+          },
+          {
+            "hash": "0x6558164658310a578284fdfe087c9db1769da94cf7240d6f3765878a513e33e0",
+            "status": "success",
+            "blockNumber": "16",
+            "blockHash": "0x134baf9d8826ccf7b409068ffc82cfcfd266579669da6f5a4dec07725e076bc0",
+            "from": "0xb0f5cb888be9b638b5df342b6279d5fcc224e9e0",
+            "to": "0xd003f11695bbbc9db6073d97f6e83dea644e2425"
+          },
+          {
+            "hash": "0xe7050be65b7711eff62498cef909d367e28d08d3fbd63241bab1bd8654c28775",
+            "status": "success",
+            "blockNumber": "17",
+            "blockHash": "0xc1ae616fda79068643fb52d8618c264b80b97b82d25f502bac81762a75025362",
+            "from": "0xb0f5cb888be9b638b5df342b6279d5fcc224e9e0",
+            "to": "0xd003f11695bbbc9db6073d97f6e83dea644e2425"
+          },
+          {
+            "hash": "0x061422bdc3517bd5d360f9814953a250de07aa17f75451537137e0e7254b17ff",
+            "status": "success",
+            "blockNumber": "20",
+            "blockHash": "0x245d12d873329375b9f623dee99efd9cb9c586782fb2c5e8f5b0c634383bc49d",
+            "from": "0xb0f5cb888be9b638b5df342b6279d5fcc224e9e0",
+            "to": "0xd003f11695bbbc9db6073d97f6e83dea644e2425"
+          }
+        ],
+        "sourceCommit": "d8d2b93030e1557c3d38f4b2673aad2df0ecbf68",
+        "workingTreeDirty": true
+      },
+      "completedAt": "2026-10-06T07:05:58.251Z"
+    },
+    {
+      "id": "E2E-02",
+      "description": "Browser primary decision: disputed 200 → landlord 50 / tenant 150; withdraw 850/150",
+      "status": "passed",
+      "durationMs": 18269,
+      "evidence": {
+        "environment": "local EVM, Chromium, EIP-1193 test wallet",
+        "leaseId": "5ea7c87b-33f9-4c03-bd26-75e8b9fbe95a",
+        "escrow": "0xb6dec46092974fbda248c6b3cf900c0a9cd30789",
+        "transactions": [
+          "0x392595cd108cfd60e896e8ebecd00133db7d18712888127a9157b1ec79a14421",
+          "0x5fcbc151c0bf90b01e00ca5f3fe72c2ecd925ffbcf2dd1f3f14fcea79a94d13f",
+          "0x882b39cf501ff0943ab54cff2b7d5ed948e6fac23b55b87da6fbade495ae44f5",
+          "0x0c28f139b2931bcf860107d6deb6e3a1f9b59fcbe7453d1bab626912c00804b1",
+          "0xec27efb2f10b8959d8bbd151d639e1ae76c372bc8c4c965a0cfbd5e172acdf80",
+          "0xfd5d2c9811a7f3f41ccc31e279b2d2527eb3302a9323b662b7ccddd603ba0587",
+          "0x0f2d496db8eb9d719da6d2369a3b596d09470224fce35ea85fee647a6a7db348",
+          "0xb8bbbd9ce36e8d4995fd35c6e5ff1b3144b82d74e38611936e7d2ebcace52046",
+          "0x8b675c1abbe35d74412f19fb693b42b456f7f0188f0af1b5140667d5c490d9a4",
+          "0xc31ad6a55e494d12f563cd6cb2c1f941c1abd9c787b86f8542236be95c2894be",
+          "0x2d644c44c76cf8b9521162a11581e688ba60313ccbe8f817eef71d6da953b139",
+          "0xee2b46bdcf9f767785f9b4c67c2e9462cc371454fba4eaa7ec793830533328ef",
+          "0x6e8d982593f5395acc53b46611946a67311950c5c21df61143df3b760a317206",
+          "0x84471468b8074650eebb23342a745fd6088b810a6be9ee059b58222d24081210"
+        ],
+        "screenshots": [
+          "test-results/e2e-local/E2E-02-850-150-withdrawn.png"
+        ],
+        "accounting": {
+          "fundedAmount": "1000000000",
+          "unallocated": "0",
+          "tenantCredit": "0",
+          "landlordCredit": "0",
+          "tenantWithdrawn": "850000000",
+          "landlordWithdrawn": "150000000",
+          "revision": "11"
+        },
+        "receipts": [
+          {
+            "hash": "0x392595cd108cfd60e896e8ebecd00133db7d18712888127a9157b1ec79a14421",
+            "status": "success",
+            "blockNumber": "22",
+            "blockHash": "0x693341438a8f1465a7c6e68560e0da46ab7e9be72fbf91c8eb11daac71f3d8a6",
+            "from": "0xbe97fbf458e71cf0b94e3248938de219e1edc6ce",
+            "to": "0xe9e25711c22b70f1c7d8bbbf6b74794998de7329"
+          },
+          {
+            "hash": "0x5fcbc151c0bf90b01e00ca5f3fe72c2ecd925ffbcf2dd1f3f14fcea79a94d13f",
+            "status": "success",
+            "blockNumber": "28",
+            "blockHash": "0x3bdbece1d491bccb50e4eda5fa7fbc5d30896ad4db13d842107406bf5ca75d26",
+            "from": "0xbe97fbf458e71cf0b94e3248938de219e1edc6ce",
+            "to": "0xb6dec46092974fbda248c6b3cf900c0a9cd30789"
+          },
+          {
+            "hash": "0x882b39cf501ff0943ab54cff2b7d5ed948e6fac23b55b87da6fbade495ae44f5",
+            "status": "success",
+            "blockNumber": "29",
+            "blockHash": "0xb397aaad043a79d964f51861e351d92ced6d7f94723d3e97bd39e9660d3f60f6",
+            "from": "0xbe97fbf458e71cf0b94e3248938de219e1edc6ce",
+            "to": "0xb6dec46092974fbda248c6b3cf900c0a9cd30789"
+          },
+          {
+            "hash": "0x0c28f139b2931bcf860107d6deb6e3a1f9b59fcbe7453d1bab626912c00804b1",
+            "status": "success",
+            "blockNumber": "33",
+            "blockHash": "0xbbf71a8e00e540097cd7713b913a217054c28056659c2d47b7ff65b83d8c3512",
+            "from": "0xbe97fbf458e71cf0b94e3248938de219e1edc6ce",
+            "to": "0xb6dec46092974fbda248c6b3cf900c0a9cd30789"
+          },
+          {
+            "hash": "0xec27efb2f10b8959d8bbd151d639e1ae76c372bc8c4c965a0cfbd5e172acdf80",
+            "status": "success",
+            "blockNumber": "35",
+            "blockHash": "0x503c7bfef383427747088680a216fec0b8b69dd6f0daa95143b398f879445675",
+            "from": "0xbe97fbf458e71cf0b94e3248938de219e1edc6ce",
+            "to": "0xb6dec46092974fbda248c6b3cf900c0a9cd30789"
+          },
+          {
+            "hash": "0xfd5d2c9811a7f3f41ccc31e279b2d2527eb3302a9323b662b7ccddd603ba0587",
+            "status": "success",
+            "blockNumber": "39",
+            "blockHash": "0x67b6f861dc3edb114177e43e544f04ca80ff7507bf34926430e5534fcd45e6be",
+            "from": "0xbe97fbf458e71cf0b94e3248938de219e1edc6ce",
+            "to": "0xb6dec46092974fbda248c6b3cf900c0a9cd30789"
+          },
+          {
+            "hash": "0x0f2d496db8eb9d719da6d2369a3b596d09470224fce35ea85fee647a6a7db348",
+            "status": "success",
+            "blockNumber": "41",
+            "blockHash": "0x33eb666a458c0b1fab8c22025942225919d9191634a7df6f6975d7a74c9ac77b",
+            "from": "0xbe97fbf458e71cf0b94e3248938de219e1edc6ce",
+            "to": "0xb6dec46092974fbda248c6b3cf900c0a9cd30789"
+          },
+          {
+            "hash": "0xb8bbbd9ce36e8d4995fd35c6e5ff1b3144b82d74e38611936e7d2ebcace52046",
+            "status": "success",
+            "blockNumber": "24",
+            "blockHash": "0x1bb198d6ef7c77277782af83b11f7c25fe609112e3f7c3c74cf1062616fe3e6b",
+            "from": "0xb0f5cb888be9b638b5df342b6279d5fcc224e9e0",
+            "to": "0xb6dec46092974fbda248c6b3cf900c0a9cd30789"
+          },
+          {
+            "hash": "0x8b675c1abbe35d74412f19fb693b42b456f7f0188f0af1b5140667d5c490d9a4",
+            "status": "success",
+            "blockNumber": "25",
+            "blockHash": "0x412feb730ef63b8fd975e8f54135c46287011f2334598935854885454470cb71",
+            "from": "0xb0f5cb888be9b638b5df342b6279d5fcc224e9e0",
+            "to": "0xe190659864484fac4943cb5c60b7037c0b6a0402"
+          },
+          {
+            "hash": "0xc31ad6a55e494d12f563cd6cb2c1f941c1abd9c787b86f8542236be95c2894be",
+            "status": "success",
+            "blockNumber": "26",
+            "blockHash": "0x802c40fda6973b9180a7cfad5196f9ea9c63b11dff51386936afb4a5c16c0689",
+            "from": "0xb0f5cb888be9b638b5df342b6279d5fcc224e9e0",
+            "to": "0xb6dec46092974fbda248c6b3cf900c0a9cd30789"
+          },
+          {
+            "hash": "0x2d644c44c76cf8b9521162a11581e688ba60313ccbe8f817eef71d6da953b139",
+            "status": "success",
+            "blockNumber": "30",
+            "blockHash": "0xe011440d4a5d4636def5b4f7a6ef6300871da4f8dfba631055be3b74b0120996",
+            "from": "0xb0f5cb888be9b638b5df342b6279d5fcc224e9e0",
+            "to": "0xb6dec46092974fbda248c6b3cf900c0a9cd30789"
+          },
+          {
+            "hash": "0xee2b46bdcf9f767785f9b4c67c2e9462cc371454fba4eaa7ec793830533328ef",
+            "status": "success",
+            "blockNumber": "31",
+            "blockHash": "0x831164cda3275160a038d7b0e6605a7eb17c4814f306cdfecf9e8868ea3b07e6",
+            "from": "0xb0f5cb888be9b638b5df342b6279d5fcc224e9e0",
+            "to": "0xb6dec46092974fbda248c6b3cf900c0a9cd30789"
+          },
+          {
+            "hash": "0x6e8d982593f5395acc53b46611946a67311950c5c21df61143df3b760a317206",
+            "status": "success",
+            "blockNumber": "40",
+            "blockHash": "0x1d88f7189b5b4bd9322ab06f08f9dbd4f621d00353249d3dd8b620ec19c43ade",
+            "from": "0xb0f5cb888be9b638b5df342b6279d5fcc224e9e0",
+            "to": "0xb6dec46092974fbda248c6b3cf900c0a9cd30789"
+          },
+          {
+            "hash": "0x84471468b8074650eebb23342a745fd6088b810a6be9ee059b58222d24081210",
+            "status": "success",
+            "blockNumber": "37",
+            "blockHash": "0x0206e8781f3e3de04c8fd896b60e25b9dfab2e6e3ad1b1f846c1fbfea364c7bc",
+            "from": "0xbc5469bc5fce4d9ee333f0f58da3dee576414a32",
+            "to": "0xb6dec46092974fbda248c6b3cf900c0a9cd30789"
+          }
+        ],
+        "sourceCommit": "d8d2b93030e1557c3d38f4b2673aad2df0ecbf68",
+        "workingTreeDirty": true
+      },
+      "completedAt": "2026-10-06T07:05:58.251Z"
+    },
+    {
+      "id": "E2E-03",
+      "description": "Browser primary/fallback timeouts → fixed 900/100 allocation and withdrawals",
+      "status": "passed",
+      "durationMs": 15461,
+      "evidence": {
+        "environment": "local EVM, Chromium, EIP-1193 test wallet",
+        "leaseId": "2899bf8b-4de5-44aa-b1bd-e5ea0d03d79d",
+        "escrow": "0xc88c9b77b3be2b7da07ad434050f9112b78f01a0",
+        "transactions": [
+          "0x82b3f303296a9b9c25da90cc7a77b0b0a14e9ed199646113f2699a0942c9ea16",
+          "0x58573e3103a9f37cba226735b105a33ef409e31bfbf3fadcd5b8d35bbaec9e42",
+          "0xbaa5de0c653064cc4ef98c7b501f5ab702332db6c094c94fe27014dc3962f4c7",
+          "0x659b346137ac00133430b81b6fcdeb9b1c48db46b5969c50dc174c995fc99252",
+          "0xedcdac7c91f2c7a7041df244e705bfaa18efaa9304f755c45c377be74dd3cc88",
+          "0x53e4f0db3b0e395392f5b7c535b8b144ebc0e4554c52b49ad3ea8943a6974e9f",
+          "0xfb953f4197753f226047b9e1bf699cc237fb49d02c0b97f9cdca272c2f457eb7",
+          "0xf0a89b4bd6712b8219ac2e4d590ef576e609a02cbd2b84a197f6c1634a104bf5",
+          "0x3f367ebe99cdd0d1a2220eb58841b37e696a2c5dd6477c0ce90d157f684f576a",
+          "0xbc2c373791507110c517b50589c9ed64a5aedd79dbd497ff5a9d7937f9e46e5d",
+          "0xf33fe0712285a74b8b25d22b84e01aa006b554a3fbb4caf1805797dae4705907",
+          "0x9ff0c616f96feeaa2c41a3329030c3554b54be10c20de087aad978e182a262bc",
+          "0x796e81d11ec0e3ac664aa2577e8d5d4890f3b606df7ab1ec1689be37a4fcd000",
+          "0xb3d1b48113277eb8284c5af6b2b423a1233af71ead2a1f70360f1ddd3a4c4ef4",
+          "0x15f0f80f60d7e7deedfc65ef1c75d10cf5bef6f8c849e84548a7cab5e29e8307"
+        ],
+        "accounting": {
+          "fundedAmount": "1000000000",
+          "unallocated": "0",
+          "tenantCredit": "0",
+          "landlordCredit": "0",
+          "tenantWithdrawn": "900000000",
+          "landlordWithdrawn": "100000000",
+          "revision": "11"
+        },
+        "receipts": [
+          {
+            "hash": "0x82b3f303296a9b9c25da90cc7a77b0b0a14e9ed199646113f2699a0942c9ea16",
+            "status": "success",
+            "blockNumber": "42",
+            "blockHash": "0xcb9f09d24e044982f84871ff6c8193f25ce88c6ee4a7f4a7b3a71a4c3d8b0f8b",
+            "from": "0xbe97fbf458e71cf0b94e3248938de219e1edc6ce",
+            "to": "0xe9e25711c22b70f1c7d8bbbf6b74794998de7329"
+          },
+          {
+            "hash": "0x58573e3103a9f37cba226735b105a33ef409e31bfbf3fadcd5b8d35bbaec9e42",
+            "status": "success",
+            "blockNumber": "48",
+            "blockHash": "0xa79d631e37c4bc5649a780b6e64c2ae033952ef8ec28aa92b5417087e94b09bc",
+            "from": "0xbe97fbf458e71cf0b94e3248938de219e1edc6ce",
+            "to": "0xc88c9b77b3be2b7da07ad434050f9112b78f01a0"
+          },
+          {
+            "hash": "0xbaa5de0c653064cc4ef98c7b501f5ab702332db6c094c94fe27014dc3962f4c7",
+            "status": "success",
+            "blockNumber": "49",
+            "blockHash": "0xf3385dc1bbdd93d4924e17e21bc4dc2ddd6d815bbd128786baaa0bc393041baf",
+            "from": "0xbe97fbf458e71cf0b94e3248938de219e1edc6ce",
+            "to": "0xc88c9b77b3be2b7da07ad434050f9112b78f01a0"
+          },
+          {
+            "hash": "0x659b346137ac00133430b81b6fcdeb9b1c48db46b5969c50dc174c995fc99252",
+            "status": "success",
+            "blockNumber": "53",
+            "blockHash": "0x29d2273a4d96e4cf79f397aa1d9c45ed003337d899a27967f0aaa7bdbb00f9a3",
+            "from": "0xbe97fbf458e71cf0b94e3248938de219e1edc6ce",
+            "to": "0xc88c9b77b3be2b7da07ad434050f9112b78f01a0"
+          },
+          {
+            "hash": "0xedcdac7c91f2c7a7041df244e705bfaa18efaa9304f755c45c377be74dd3cc88",
+            "status": "success",
+            "blockNumber": "55",
+            "blockHash": "0x19cc918f9b23df7b13f0618593ea43da9b3572b0487f854b5967a86e7f56462b",
+            "from": "0xbe97fbf458e71cf0b94e3248938de219e1edc6ce",
+            "to": "0xc88c9b77b3be2b7da07ad434050f9112b78f01a0"
+          },
+          {
+            "hash": "0x53e4f0db3b0e395392f5b7c535b8b144ebc0e4554c52b49ad3ea8943a6974e9f",
+            "status": "success",
+            "blockNumber": "63",
+            "blockHash": "0xc4e6ef6a152232590cbc87bbb588598c8ce06d07f4f6fd009e9c20a77028fbed",
+            "from": "0xbe97fbf458e71cf0b94e3248938de219e1edc6ce",
+            "to": "0xc88c9b77b3be2b7da07ad434050f9112b78f01a0"
+          },
+          {
+            "hash": "0xfb953f4197753f226047b9e1bf699cc237fb49d02c0b97f9cdca272c2f457eb7",
+            "status": "success",
+            "blockNumber": "44",
+            "blockHash": "0xc6f1cb5e34e9ae4a66efe4d5799cdfe59844cab6d8c171a71cc801d73f809b15",
+            "from": "0xb0f5cb888be9b638b5df342b6279d5fcc224e9e0",
+            "to": "0xc88c9b77b3be2b7da07ad434050f9112b78f01a0"
+          },
+          {
+            "hash": "0xf0a89b4bd6712b8219ac2e4d590ef576e609a02cbd2b84a197f6c1634a104bf5",
+            "status": "success",
+            "blockNumber": "45",
+            "blockHash": "0x437c78878043b549b3bd79d8d5d544d6eb8c99c0213383622e849e21732a81a1",
+            "from": "0xb0f5cb888be9b638b5df342b6279d5fcc224e9e0",
+            "to": "0xe190659864484fac4943cb5c60b7037c0b6a0402"
+          },
+          {
+            "hash": "0x3f367ebe99cdd0d1a2220eb58841b37e696a2c5dd6477c0ce90d157f684f576a",
+            "status": "success",
+            "blockNumber": "46",
+            "blockHash": "0x70c783d13e7dc02228561c76192ff2a407e10b6988671abdbe977afa9bd3214f",
+            "from": "0xb0f5cb888be9b638b5df342b6279d5fcc224e9e0",
+            "to": "0xc88c9b77b3be2b7da07ad434050f9112b78f01a0"
+          },
+          {
+            "hash": "0xbc2c373791507110c517b50589c9ed64a5aedd79dbd497ff5a9d7937f9e46e5d",
+            "status": "success",
+            "blockNumber": "50",
+            "blockHash": "0xae86c9f7d177716010a73918fc126a39b9d5ef39a93d5feeacb7b092fd062918",
+            "from": "0xb0f5cb888be9b638b5df342b6279d5fcc224e9e0",
+            "to": "0xc88c9b77b3be2b7da07ad434050f9112b78f01a0"
+          },
+          {
+            "hash": "0xf33fe0712285a74b8b25d22b84e01aa006b554a3fbb4caf1805797dae4705907",
+            "status": "success",
+            "blockNumber": "51",
+            "blockHash": "0x13c8574e924eb94d35d4ee92c9ef315c688c9bc1005885ba49a189ba6b4642e6",
+            "from": "0xb0f5cb888be9b638b5df342b6279d5fcc224e9e0",
+            "to": "0xc88c9b77b3be2b7da07ad434050f9112b78f01a0"
+          },
+          {
+            "hash": "0x9ff0c616f96feeaa2c41a3329030c3554b54be10c20de087aad978e182a262bc",
+            "status": "success",
+            "blockNumber": "57",
+            "blockHash": "0x78bf4db75b11168513d0c9a95e75f7f99195db0db12bbeac84053782164e2bb6",
+            "from": "0xb0f5cb888be9b638b5df342b6279d5fcc224e9e0",
+            "to": "0xc88c9b77b3be2b7da07ad434050f9112b78f01a0"
+          },
+          {
+            "hash": "0x796e81d11ec0e3ac664aa2577e8d5d4890f3b606df7ab1ec1689be37a4fcd000",
+            "status": "success",
+            "blockNumber": "59",
+            "blockHash": "0x8ffe72f2c1d18592b6d3f7409125f30c07d779f7e5bda3a079216aa84520dba6",
+            "from": "0xb0f5cb888be9b638b5df342b6279d5fcc224e9e0",
+            "to": "0xc88c9b77b3be2b7da07ad434050f9112b78f01a0"
+          },
+          {
+            "hash": "0xb3d1b48113277eb8284c5af6b2b423a1233af71ead2a1f70360f1ddd3a4c4ef4",
+            "status": "success",
+            "blockNumber": "61",
+            "blockHash": "0xc5c857918ba5cd058fc848eaf31eed2702a08a03b8207169aacf75c302afc35c",
+            "from": "0xb0f5cb888be9b638b5df342b6279d5fcc224e9e0",
+            "to": "0xc88c9b77b3be2b7da07ad434050f9112b78f01a0"
+          },
+          {
+            "hash": "0x15f0f80f60d7e7deedfc65ef1c75d10cf5bef6f8c849e84548a7cab5e29e8307",
+            "status": "success",
+            "blockNumber": "62",
+            "blockHash": "0x158fba59b76b440f85c06fdf5f724278b78881c70a22531d367a669e95e951cb",
+            "from": "0xb0f5cb888be9b638b5df342b6279d5fcc224e9e0",
+            "to": "0xc88c9b77b3be2b7da07ad434050f9112b78f01a0"
+          }
+        ],
+        "sourceCommit": "d8d2b93030e1557c3d38f4b2673aad2df0ecbf68",
+        "workingTreeDirty": true
+      },
+      "completedAt": "2026-10-06T07:05:58.251Z"
+    },
+    {
+      "id": "E2E-04",
+      "description": "Cancel deposit confirmation: no signature, nonce, funding or phase change",
+      "status": "passed",
+      "durationMs": 6717,
+      "evidence": {
+        "environment": "local EVM, Chromium, EIP-1193 test wallet",
+        "leaseId": "49bfa4c6-3b17-419e-ad19-34a841d028be",
+        "escrow": "0x3766c07cd7d0012d8f84884de7fba65ba7d4be11",
+        "transactions": [
+          "0x062e1990871f6a0ed1c3413fdfe58327caddbdde6811d7dc743aa069884de170",
+          "0x276285742f268b19661b182dd65d92493de90df27d4b1d82b930eec9b308e05d",
+          "0x30094ccb7acb1b5cabeb76c9922ec8558993a2e5c056ad4943f0fbccae0a5f71"
+        ],
+        "accounting": {
+          "fundedAmount": "0",
+          "unallocated": "0",
+          "tenantCredit": "0",
+          "landlordCredit": "0",
+          "tenantWithdrawn": "0",
+          "landlordWithdrawn": "0",
+          "revision": "0"
+        },
+        "receipts": [
+          {
+            "hash": "0x062e1990871f6a0ed1c3413fdfe58327caddbdde6811d7dc743aa069884de170",
+            "status": "success",
+            "blockNumber": "64",
+            "blockHash": "0xfcaa24b16b3a3467fd8a1713c4f8bce3b8891e97015e4c70cffac97ed9e8a618",
+            "from": "0xbe97fbf458e71cf0b94e3248938de219e1edc6ce",
+            "to": "0xe9e25711c22b70f1c7d8bbbf6b74794998de7329"
+          },
+          {
+            "hash": "0x276285742f268b19661b182dd65d92493de90df27d4b1d82b930eec9b308e05d",
+            "status": "success",
+            "blockNumber": "66",
+            "blockHash": "0x06657f80ce5245ac93b66aa588f457ad8119a4397dd9debabc893606a21f0a92",
+            "from": "0xb0f5cb888be9b638b5df342b6279d5fcc224e9e0",
+            "to": "0x3766c07cd7d0012d8f84884de7fba65ba7d4be11"
+          },
+          {
+            "hash": "0x30094ccb7acb1b5cabeb76c9922ec8558993a2e5c056ad4943f0fbccae0a5f71",
+            "status": "success",
+            "blockNumber": "67",
+            "blockHash": "0x7b28f427686000397c885b726bb8b0efbc6618c199bda463d722ea7cbaa83224",
+            "from": "0xb0f5cb888be9b638b5df342b6279d5fcc224e9e0",
+            "to": "0xe190659864484fac4943cb5c60b7037c0b6a0402"
+          }
+        ],
+        "sourceCommit": "d8d2b93030e1557c3d38f4b2673aad2df0ecbf68",
+        "workingTreeDirty": true
+      },
+      "completedAt": "2026-10-06T07:05:58.251Z"
+    },
+    {
+      "id": "E2E-05",
+      "description": "Reject wallet signature: no submitted transaction or funding",
+      "status": "passed",
+      "durationMs": 6666,
+      "evidence": {
+        "environment": "local EVM, Chromium, EIP-1193 test wallet",
+        "leaseId": "c086f5ec-2ec7-449d-b4fc-ab0eec085c77",
+        "escrow": "0x37d61b7281ceef695517d6b2d9472c318d6e3e76",
+        "transactions": [
+          "0x899086909e3f08733a01eb94931bbe01d1ea1744f6a4d323095ed05d7b49c17d",
+          "0x4c6d94c8820c470b27dc4736bc38319a4790fe87641676010333dfdfab0c1c4a",
+          "0x8bbf33f3a7ae077a599eb655bd411ca3dd5ffe2961abcaf23a19e2aadcecdc15"
+        ],
+        "accounting": {
+          "fundedAmount": "0",
+          "unallocated": "0",
+          "tenantCredit": "0",
+          "landlordCredit": "0",
+          "tenantWithdrawn": "0",
+          "landlordWithdrawn": "0",
+          "revision": "0"
+        },
+        "receipts": [
+          {
+            "hash": "0x899086909e3f08733a01eb94931bbe01d1ea1744f6a4d323095ed05d7b49c17d",
+            "status": "success",
+            "blockNumber": "68",
+            "blockHash": "0xbb631666bb299c8850bd38e70b991b210ba3ecc0bea109aa27fab698e0b209c7",
+            "from": "0xbe97fbf458e71cf0b94e3248938de219e1edc6ce",
+            "to": "0xe9e25711c22b70f1c7d8bbbf6b74794998de7329"
+          },
+          {
+            "hash": "0x4c6d94c8820c470b27dc4736bc38319a4790fe87641676010333dfdfab0c1c4a",
+            "status": "success",
+            "blockNumber": "70",
+            "blockHash": "0xa5703c091f54b67bbb5572c41c51119c9f494ce21f0fba5342b51faeab309c40",
+            "from": "0xb0f5cb888be9b638b5df342b6279d5fcc224e9e0",
+            "to": "0x37d61b7281ceef695517d6b2d9472c318d6e3e76"
+          },
+          {
+            "hash": "0x8bbf33f3a7ae077a599eb655bd411ca3dd5ffe2961abcaf23a19e2aadcecdc15",
+            "status": "success",
+            "blockNumber": "71",
+            "blockHash": "0x2f275ff0d5670927747ffbba3a90be63683f1ed7d0180312241a38403b3ede00",
+            "from": "0xb0f5cb888be9b638b5df342b6279d5fcc224e9e0",
+            "to": "0xe190659864484fac4943cb5c60b7037c0b6a0402"
+          }
+        ],
+        "sourceCommit": "d8d2b93030e1557c3d38f4b2673aad2df0ecbf68",
+        "workingTreeDirty": true
+      },
+      "completedAt": "2026-10-06T07:05:58.251Z"
+    },
+    {
+      "id": "E2E-06",
+      "description": "External test wallet same-address reauthentication after session loss; stranger denied",
+      "status": "passed",
+      "durationMs": 10686,
+      "evidence": {
+        "environment": "local EVM, Chromium, EIP-1193 test wallet",
+        "leaseId": "f6c204a3-dd62-4d07-b150-a74d759ab577",
+        "escrow": "0x152346679fcbf03342d2472bfe465851de32dc2c",
+        "transactions": [
+          "0x570649b1dd1ea8f22087349bd3f9eccde5f3173c682b5232006ea609d15d6015"
+        ],
+        "accounting": {
+          "fundedAmount": "1000000000",
+          "unallocated": "1000000000",
+          "tenantCredit": "0",
+          "landlordCredit": "0",
+          "tenantWithdrawn": "0",
+          "landlordWithdrawn": "0",
+          "revision": "0"
+        },
+        "receipts": [
+          {
+            "hash": "0x570649b1dd1ea8f22087349bd3f9eccde5f3173c682b5232006ea609d15d6015",
+            "status": "success",
+            "blockNumber": "72",
+            "blockHash": "0x73ba6c1f7fcd0278944f25d3d0a709ade871bd1cec026f9870429280b47b7333",
+            "from": "0xbe97fbf458e71cf0b94e3248938de219e1edc6ce",
+            "to": "0xe9e25711c22b70f1c7d8bbbf6b74794998de7329"
+          }
+        ],
+        "sourceCommit": "d8d2b93030e1557c3d38f4b2673aad2df0ecbf68",
+        "workingTreeDirty": true
+      },
+      "completedAt": "2026-10-06T07:05:58.251Z"
+    },
+    {
+      "id": "E2E-07",
+      "description": "Duplicate withdrawal rejected; zero-credit withdrawFor pays nothing twice",
+      "status": "passed",
+      "durationMs": 7959,
+      "evidence": {
+        "environment": "local EVM, Chromium, EIP-1193 test wallet",
+        "leaseId": "530c5a28-83f8-472e-a1b1-faef55399119",
+        "escrow": "0x68fce918a3f9d79bd8c39f5a23f5cc8255a9e0db",
+        "transactions": [
+          "0x37544a328d06a4a1d57775d1e7386e379dd96fa328a79f852850224175a1599b",
+          "0x3f6f0437e90dd707655975c8e24f9524c07581a4ac311a78e0a2409a458b1a68",
+          "0xed5d19cb4742711e0ec5740a4efdeee2945f02cc1e0cc1917c78c6911f9df630",
+          "0xd0c3ad8131312a479ffaaad2ad5b9e5a1dc0d0c035e4641712fa7df184cf7f8b",
+          "0xb65f182b6ce08a002ffaf3ab9063648451fa17ce8497538450e0146c6b3a694e",
+          "0xcfeb01b565a4439d1e0e8c5dc99f6615b4ad052a90eb1a3d024e0db7dff90c54",
+          "0x61d79e46dc323047f218ff6afdd0ef4009674cdbe271da61a2683051904541b4"
+        ],
+        "accounting": {
+          "fundedAmount": "1000000000",
+          "unallocated": "0",
+          "tenantCredit": "0",
+          "landlordCredit": "0",
+          "tenantWithdrawn": "1000000000",
+          "landlordWithdrawn": "0",
+          "revision": "2"
+        },
+        "receipts": [
+          {
+            "hash": "0x37544a328d06a4a1d57775d1e7386e379dd96fa328a79f852850224175a1599b",
+            "status": "success",
+            "blockNumber": "85",
+            "blockHash": "0x266c1485687c7a168b4a9b613bf15c10e79a21c1a7f8ffe1eedc3287aa3b983a",
+            "from": "0x11d9c022dac5078a805a455c6ed2bd2c7a4326c7",
+            "to": "0x68fce918a3f9d79bd8c39f5a23f5cc8255a9e0db"
+          },
+          {
+            "hash": "0x3f6f0437e90dd707655975c8e24f9524c07581a4ac311a78e0a2409a458b1a68",
+            "status": "success",
+            "blockNumber": "77",
+            "blockHash": "0xea3acaefdb97a3b32538c11b21d1b81226c77a04be3504ad87ee5c1b4d4c4c12",
+            "from": "0xbe97fbf458e71cf0b94e3248938de219e1edc6ce",
+            "to": "0xe9e25711c22b70f1c7d8bbbf6b74794998de7329"
+          },
+          {
+            "hash": "0xed5d19cb4742711e0ec5740a4efdeee2945f02cc1e0cc1917c78c6911f9df630",
+            "status": "success",
+            "blockNumber": "79",
+            "blockHash": "0x0203875337f1cae0d8469e646a1a66470d3b2c36758603f71a5d88d8b64d2c31",
+            "from": "0xb0f5cb888be9b638b5df342b6279d5fcc224e9e0",
+            "to": "0x68fce918a3f9d79bd8c39f5a23f5cc8255a9e0db"
+          },
+          {
+            "hash": "0xd0c3ad8131312a479ffaaad2ad5b9e5a1dc0d0c035e4641712fa7df184cf7f8b",
+            "status": "success",
+            "blockNumber": "80",
+            "blockHash": "0x14cc2fc3f668d0de2f7663eca04ed3758604a3851c5a180e5d24272f68b2027f",
+            "from": "0xb0f5cb888be9b638b5df342b6279d5fcc224e9e0",
+            "to": "0xe190659864484fac4943cb5c60b7037c0b6a0402"
+          },
+          {
+            "hash": "0xb65f182b6ce08a002ffaf3ab9063648451fa17ce8497538450e0146c6b3a694e",
+            "status": "success",
+            "blockNumber": "81",
+            "blockHash": "0x80026dfbc80b56d737023a699f448926343af5e24acb43d1f5e1a69a3398c2e6",
+            "from": "0xb0f5cb888be9b638b5df342b6279d5fcc224e9e0",
+            "to": "0x68fce918a3f9d79bd8c39f5a23f5cc8255a9e0db"
+          },
+          {
+            "hash": "0xcfeb01b565a4439d1e0e8c5dc99f6615b4ad052a90eb1a3d024e0db7dff90c54",
+            "status": "success",
+            "blockNumber": "83",
+            "blockHash": "0x29b063d4aa6f76cda260c096a8733f78c68cd78293b6dd2e6428517940ade88c",
+            "from": "0xb0f5cb888be9b638b5df342b6279d5fcc224e9e0",
+            "to": "0x68fce918a3f9d79bd8c39f5a23f5cc8255a9e0db"
+          },
+          {
+            "hash": "0x61d79e46dc323047f218ff6afdd0ef4009674cdbe271da61a2683051904541b4",
+            "status": "success",
+            "blockNumber": "84",
+            "blockHash": "0x8811d0ebeb2f56e584eff7693f5d21fff0662cebdae690ea846808cab86dacb3",
+            "from": "0xb0f5cb888be9b638b5df342b6279d5fcc224e9e0",
+            "to": "0x68fce918a3f9d79bd8c39f5a23f5cc8255a9e0db"
+          }
+        ],
+        "sourceCommit": "d8d2b93030e1557c3d38f4b2673aad2df0ecbf68",
+        "workingTreeDirty": true
+      },
+      "completedAt": "2026-10-06T07:05:58.251Z"
+    },
+    {
+      "id": "E2E-08",
+      "description": "Stop UI/API/DB and use independent original test account + third-party gas/withdrawFor",
+      "status": "passed",
+      "durationMs": 6844,
+      "evidence": {
+        "environment": "local EVM, Chromium, EIP-1193 test wallet",
+        "leaseId": "1dab521e-4fb3-46a5-8d92-d20fe8f7d2d7",
+        "escrow": "0xd84edd2a2a2deee5be60ab762e0d9597ce7ad512",
+        "transactions": [
+          "0x94d1ddc1bc3e4b231626ade34522d09bb2f64597d1379f73029cf61b863c13ab",
+          "0x9af1ba1e9d8d4f442dc3d263978011c08811d63c61b208d10b514f08373f9007",
+          "0x52a3d96eb2027c5a87d163db85a2677a6bc5c2c6f7c87f863f3f1ecc6e1d45da",
+          "0xa6a6e134fde8899be85e325635296685d8ea41669d21d179c6b87c66c4268ba1",
+          "0x06b1514b44ad7e49ee0a8c2a1b811babc100f181a82f104c80ed78f2f7299c12",
+          "0xf233fcd3238cbcdf5f3dfe20aa99ec5fd755f47ee6e080dde1746655160ec50d",
+          "0x27b90da28a8e811041802ec48aefce023ec0c2d648158b2de2b34c744d534aae"
+        ],
+        "limitations": "Original test key restored in independent client; not real passkey/device recovery.",
+        "receipts": [
+          {
+            "hash": "0x94d1ddc1bc3e4b231626ade34522d09bb2f64597d1379f73029cf61b863c13ab",
+            "status": "success",
+            "blockNumber": "92",
+            "blockHash": "0x18e3647b921fabc7ebb444a8c2c914fd867db7b08249a19c6c9a8de1e2e69a48",
+            "from": "0x11d9c022dac5078a805a455c6ed2bd2c7a4326c7",
+            "to": "0xb0f5cb888be9b638b5df342b6279d5fcc224e9e0"
+          },
+          {
+            "hash": "0x9af1ba1e9d8d4f442dc3d263978011c08811d63c61b208d10b514f08373f9007",
+            "status": "success",
+            "blockNumber": "93",
+            "blockHash": "0x994f5479f860a3057b25cea5c10a62baddc6e8340b9598f2f980b7282e42ac40",
+            "from": "0x11d9c022dac5078a805a455c6ed2bd2c7a4326c7",
+            "to": "0xd84edd2a2a2deee5be60ab762e0d9597ce7ad512"
+          },
+          {
+            "hash": "0x52a3d96eb2027c5a87d163db85a2677a6bc5c2c6f7c87f863f3f1ecc6e1d45da",
+            "status": "success",
+            "blockNumber": "94",
+            "blockHash": "0x5c691b441c4d84423285e9fbbcc08b07c1299490737ec3adcbb355bd5fa3523c",
+            "from": "0x11d9c022dac5078a805a455c6ed2bd2c7a4326c7",
+            "to": "0xd84edd2a2a2deee5be60ab762e0d9597ce7ad512"
+          },
+          {
+            "hash": "0xa6a6e134fde8899be85e325635296685d8ea41669d21d179c6b87c66c4268ba1",
+            "status": "success",
+            "blockNumber": "86",
+            "blockHash": "0xbd2ea893d76c4ac7bcd3d37d1ec11cea8fc29fab2cb76dbaddcb95cb669cdce4",
+            "from": "0xbe97fbf458e71cf0b94e3248938de219e1edc6ce",
+            "to": "0xe9e25711c22b70f1c7d8bbbf6b74794998de7329"
+          },
+          {
+            "hash": "0x06b1514b44ad7e49ee0a8c2a1b811babc100f181a82f104c80ed78f2f7299c12",
+            "status": "success",
+            "blockNumber": "88",
+            "blockHash": "0x020b4a072ce1f25b14f3b2b6c0e1d80b9c596ca1bd589865f2ec97062a6bb170",
+            "from": "0xb0f5cb888be9b638b5df342b6279d5fcc224e9e0",
+            "to": "0xd84edd2a2a2deee5be60ab762e0d9597ce7ad512"
+          },
+          {
+            "hash": "0xf233fcd3238cbcdf5f3dfe20aa99ec5fd755f47ee6e080dde1746655160ec50d",
+            "status": "success",
+            "blockNumber": "89",
+            "blockHash": "0x887e7f47d833ad5499e9f55fcac3c95051abd2c897095758890c17527127aa86",
+            "from": "0xb0f5cb888be9b638b5df342b6279d5fcc224e9e0",
+            "to": "0xe190659864484fac4943cb5c60b7037c0b6a0402"
+          },
+          {
+            "hash": "0x27b90da28a8e811041802ec48aefce023ec0c2d648158b2de2b34c744d534aae",
+            "status": "success",
+            "blockNumber": "90",
+            "blockHash": "0xd978d64d81ecc541fbc1de1b84ed977ea3d8eec87ef821f2c64cef100bfbf7ec",
+            "from": "0xb0f5cb888be9b638b5df342b6279d5fcc224e9e0",
+            "to": "0xd84edd2a2a2deee5be60ab762e0d9597ce7ad512"
+          }
+        ],
+        "sourceCommit": "d8d2b93030e1557c3d38f4b2673aad2df0ecbf68",
+        "workingTreeDirty": true
+      },
+      "completedAt": "2026-10-06T07:05:58.251Z"
+    }
+  ]
+}

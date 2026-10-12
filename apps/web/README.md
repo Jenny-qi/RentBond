@@ -2,7 +2,7 @@
 
 ## 2026-10-08 Logo 配色同步
 
-P01–P12 共用的 `BrandLogo` 已同步用户提供的 `RentBond-Logo/` 最新深底版：暖灰白 `#DED9D3`、灰金 `#D8CDAF`、透明底与收窄曲线。favicon、Apple touch icon 和保留的参考 SVG 同步替换；页面资源 URL 增加版本以刷新缓存。类型检查、12 个未登录路由的 Logo/metadata HTTP 检查、5 个素材哈希检查及桌面/手机浏览器检查通过，详见[本轮记录](../../tests/reports/2026-10-08-brand-refresh.md)。下方 2026-10-04 品牌说明为历史记录。
+P01–P12 共用的 `BrandLogo` 已同步用户提供的 `RentBond-Logo/` 最新深底版：暖灰白 `#DED9D3`、灰金 `#D8CDAF`、透明底与收窄曲线。favicon、Apple touch icon 和保留的参考 SVG 同步替换；页面资源 URL 增加版本以刷新缓存。类型检查、12 个未登录路由的 Logo/metadata HTTP 检查、5 个素材哈希检查及桌面/手机浏览器检查通过，详见原始品牌报告（未随源码提交，历史检查声明尚需补证；断链已移除）。下方 2026-10-04 品牌说明为历史记录。
 
 ## 2026-10-07 账户恢复与会话
 

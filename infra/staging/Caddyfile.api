@@ -1,0 +1,9 @@
+{$RENTBOND_API_HOST} {
+  @api path /api /api/*
+  handle @api {
+    reverse_proxy web:3000
+  }
+  handle {
+    respond "RentBond API" 200
+  }
+}

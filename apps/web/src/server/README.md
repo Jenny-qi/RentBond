@@ -127,3 +127,27 @@ The scan queue claims with a 120-second token lease and at most three attempts. 
 From apps/web, run npm run backend:verify-deployment using the deployment configuration. It fails if PostgreSQL, private storage separation, RLS or real ClamAV/EICAR checks fail, and refuses local scan bypass. For the stronger disposable integration test, set RENTBOND_TEST_DATABASE_URL and CLAMAV_HOST and run npm run test:deployment. The test administrator must be allowed to create/drop its randomly named schema and temporary role. It tests real PostgreSQL, actual scanning, API ACL and task concurrency; the chain snapshot in that test is injected and is not public-chain evidence. Run the separate HTTP smoke against the configured Next server and worker as well.
 
 The selected local environment passed these checks. Hosted Supabase remains an optional, separately unverified environment: apply both bucket policies and exercise actual anon/authenticated credentials before choosing it. Public hosting, RPC finality, deployed Worker execution and real-device recovery remain joint release acceptance.
+
+## Explicit Public Testnet API Smoke
+
+The HTTP smoke remains loopback-only by default. For an authorized public
+testnet environment, explicitly name the same HTTPS origin in both variables:
+
+```sh
+# From apps/web; creates fictional draft, file and export records.
+RENTBOND_TEST_BASE_URL=https://rentbond.vercel.app \
+RENTBOND_TEST_PUBLIC_ORIGIN=https://rentbond.vercel.app \
+node src/server/tests/http.integration.mjs --public-testnet
+```
+
+This uses two newly generated temporary API signers, checks the SIWE origin and
+Monad testnet chain ID, verifies Secure/HttpOnly/SameSite cookies, and exercises
+private upload, the actual scan/export queues, unchanged ZIP contents,
+cross-account rejection and logout. It never signs a chain transaction or
+creates/funds an escrow. Keys and cookies are not printed or saved. Requests
+stay on the selected origin and redirects are rejected. The fictional draft,
+submitted file and export remain in that deployment under the temporary
+accounts; this is not a disposable database reset or a cleanup operation.
+
+Passing is API/service evidence only. It does not certify MetaMask or Mera
+browser interaction, real-device recovery, live deposit settlement or backups.

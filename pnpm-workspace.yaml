@@ -1,3 +1,12 @@
 packages:
   - apps/*
   - packages/*
+
+allowBuilds:
+  core-js: true
+  esbuild: true
+
+# pnpm resolves workspace overrides at the root, not apps/web/package.json.
+overrides:
+  postcss: 8.5.28
+  source-map-js: 1.2.2
