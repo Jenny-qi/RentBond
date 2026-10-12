@@ -1,0 +1,35 @@
+name: Staging configuration
+on:
+  pull_request:
+    paths: ['infra/staging/**', '.github/workflows/staging.yml', 'apps/web/src/server/config.ts', 'apps/worker/src/config.ts', 'contracts/**', 'deployments/abi/**', 'packages/shared/src/commitments/**', 'apps/web/src/server/contracts.generated.json', 'apps/web/src/server/leases.ts']
+  push:
+    branches: [main]
+    paths: ['infra/staging/**', '.github/workflows/staging.yml', 'apps/web/src/server/config.ts', 'apps/worker/src/config.ts', 'contracts/**', 'deployments/abi/**', 'packages/shared/src/commitments/**', 'apps/web/src/server/contracts.generated.json', 'apps/web/src/server/leases.ts']
+permissions:
+  contents: read
+jobs:
+  config:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.14.0'
+      - run: node --test infra/staging/staging.test.mjs infra/staging/preflight.test.mjs infra/staging/check-hosted.test.mjs
+      - run: node infra/staging/check-compose.mjs
+  profile-preparation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: '12.8.1'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24.14.0'
+      - run: pnpm install --frozen-lockfile --allow-build=esbuild --allow-build=core-js
+      - run: npm run backend:abi --prefix apps/web
+      - run: node --test ../../infra/staging/demo-short.test.mjs ../../infra/staging/chain-preflight.test.mjs
+        working-directory: apps/web
+      - run: npm run build --prefix apps/web
+      - run: node --test infra/staging/startup-http.test.mjs

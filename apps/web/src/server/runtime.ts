@@ -7,20 +7,33 @@ import { runExportJob, runGasJob, cleanup } from "./jobs.ts";
 import { syncLease } from "./projections.ts";
 import { createScanner } from "./scanner.ts";
 import { runScanJob } from "./upload-scans.ts";
+import { BackendStartupError } from "./startup-diagnostics.ts";
 
 const state = globalThis as typeof globalThis & {
   rentbondBackend?: Promise<App>;
 };
 export async function getApp(): Promise<App> {
   state.rentbondBackend ??= (async () => {
-    const config = readConfig(),
+    let config;
+    try {
+      config = readConfig();
+    } catch (error) {
+      throw new BackendStartupError("configuration", error);
+    }
+    let db;
+    try {
       db = await openDatabase(config);
+    } catch (error) {
+      throw new BackendStartupError("database", error);
+    }
+    let stage: "migrations" | "services" = "migrations";
     try {
       const migrations = await db.query(
         "SELECT name FROM schema_migrations WHERE name='0003_upload_scans_worker_tasks.sql'",
       );
       if (!migrations.length)
         throw new Error("Run db:migrate before starting the API.");
+      stage = "services";
       const app: App = {
         config,
         db,
@@ -68,8 +81,9 @@ export async function getApp(): Promise<App> {
       }
       return app;
     } catch (error) {
-      await db.close();
-      throw error;
+      // A cleanup failure must not hide the original startup stage.
+      await db.close().catch(() => {});
+      throw new BackendStartupError(stage, error);
     }
   })().catch((error) => {
     state.rentbondBackend = undefined;

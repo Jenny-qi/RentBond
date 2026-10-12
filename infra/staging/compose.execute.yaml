@@ -1,0 +1,13 @@
+# Optional, explicit operator action AFTER separate account/chain verification.
+# Never enable as part of a generic staging startup or mount lease-role keys.
+services:
+  chain-worker:
+    environment:
+      WORKER_EXECUTE: "true"
+      WORKER_GAS_ACCOUNT: ${WORKER_GAS_ACCOUNT:?Set dedicated operator address}
+      WORKER_PRIVATE_KEY_FILE: /run/secrets/worker_key
+    secrets:
+      - worker_key
+secrets:
+  worker_key:
+    file: ${RENTBOND_WORKER_KEY_PATH:?Set operator-managed key file outside the checkout}

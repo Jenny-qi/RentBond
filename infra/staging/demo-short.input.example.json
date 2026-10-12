@@ -1,0 +1,11 @@
+{
+  "chainId": 10143,
+  "registryAddress": null,
+  "primaryResolver": null,
+  "fallbackResolver": null,
+  "token": null,
+  "maxDeposit": "1000000000",
+  "maxLeaseEnd": null,
+  "acceptUntil": null,
+  "serviceText": null
+}

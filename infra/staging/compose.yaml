@@ -1,0 +1,127 @@
+name: rentbond-staging
+
+x-public: &public
+  NEXT_PUBLIC_APP_ENV: testnet
+  NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:?Set the actual HTTPS origin}
+  NEXT_PUBLIC_CHAIN_ID: "10143"
+  NEXT_PUBLIC_RPC_URL: ${NEXT_PUBLIC_RPC_URL:?Set a public credential-free HTTPS RPC}
+  NEXT_PUBLIC_FACTORY_ADDRESS: ${NEXT_PUBLIC_FACTORY_ADDRESS:?Set verified Factory}
+  NEXT_PUBLIC_RESOLVER_REGISTRY_ADDRESS: ${NEXT_PUBLIC_RESOLVER_REGISTRY_ADDRESS:?Set verified Registry}
+  CHAIN_CONFIRMATIONS: ${CHAIN_CONFIRMATIONS:?Set reviewed confirmation policy}
+
+x-app: &app
+  image: rentbond-staging-app:local
+  build:
+    context: ../..
+    dockerfile: infra/staging/Dockerfile
+    args: *public
+  init: true
+  restart: unless-stopped
+  environment: &runtime
+    <<: *public
+    CHAIN_ID: "10143"
+    RPC_URL: ${RPC_URL:?Set server RPC}
+    RPC_FALLBACK_URL: ${RPC_FALLBACK_URL:-}
+    DATABASE_URL: postgresql://rentbond:${RENTBOND_APP_DB_PASSWORD:?Set hex application DB password}@database:5432/rentbond
+    SESSION_SECRET: ${SESSION_SECRET:?Set random session secret}
+    RENTBOND_DATA_DIR: /data
+    FILE_SCAN_MODE: clamav
+    CLAMAV_HOST: scanner
+    CLAMAV_PORT: "3310"
+    TRUST_PROXY: "false"
+    RENTBOND_SITE_HOST: ${RENTBOND_SITE_HOST:?Set hostname matching APP_URL}
+    DEPLOYMENT_BLOCK: ${DEPLOYMENT_BLOCK:?Set verified Factory deployment block}
+    WORKER_EXECUTE: "false"
+    TEST_GAS_SPONSOR_PRIVATE_KEY: ${TEST_GAS_SPONSOR_PRIVATE_KEY:-}
+    TEST_GAS_ORGANIZERS: ${TEST_GAS_ORGANIZERS:-}
+  volumes:
+    - private-data:/data
+  depends_on:
+    migrate:
+      condition: service_completed_successfully
+    scanner:
+      condition: service_healthy
+
+services:
+  database:
+    image: postgres:17-alpine@sha256:b0f9560a2de083e2cc7382e75f808c7381a32852a7ec49117deedb300e552b24
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: rentbond
+      POSTGRES_USER: rentbond_admin
+      POSTGRES_PASSWORD: ${RENTBOND_DB_PASSWORD:?Set hex admin DB password}
+      RENTBOND_APP_DB_PASSWORD: ${RENTBOND_APP_DB_PASSWORD:?Set hex application DB password}
+    volumes:
+      - database-data:/var/lib/postgresql/data
+      - ./database-init.sh:/docker-entrypoint-initdb.d/10-rentbond.sh:ro
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U rentbond_admin -d rentbond"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  scanner:
+    build:
+      context: ../..
+      dockerfile: infra/staging/Scanner.Dockerfile
+    init: true
+    restart: unless-stopped
+    volumes:
+      - scanner-definitions:/var/lib/clamav
+    healthcheck:
+      test: [CMD-SHELL, "clamdscan --config-file=/etc/clamav/clamd.conf --stream /etc/os-release >/dev/null 2>&1"]
+      interval: 30s
+      timeout: 15s
+      start_period: 180s
+      retries: 20
+
+  migrate:
+    <<: *app
+    restart: "no"
+    command: [migrate]
+    depends_on:
+      database:
+        condition: service_healthy
+
+  web:
+    <<: *app
+    command: [web]
+    ports:
+      - "127.0.0.1:3000:3000"
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:3000/api/health',{signal:AbortSignal.timeout(10000)}).then(async r=>{const d=await r.json();if(!r.ok||!d||['database','storage','quarantine','scanner','rpc'].some(k=>d[k]!==true))process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 15s
+      retries: 10
+
+  api-worker:
+    <<: *app
+    command: [api-worker]
+
+  chain-worker:
+    <<: *app
+    command: [chain-worker]
+
+  https:
+    image: caddy:2-alpine
+    profiles: [public]
+    restart: unless-stopped
+    environment:
+      RENTBOND_SITE_HOST: ${RENTBOND_SITE_HOST:?Set the hostname matching APP_URL}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - tls-data:/data
+      - tls-config:/config
+    depends_on:
+      web:
+        condition: service_healthy
+
+volumes:
+  database-data:
+  private-data:
+  scanner-definitions:
+  tls-data:
+  tls-config:

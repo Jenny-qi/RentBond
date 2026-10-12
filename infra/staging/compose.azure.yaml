@@ -1,0 +1,87 @@
+name: rentbond-azure
+
+x-app: &app
+  image: rentbond-staging-app:local
+  init: true
+  restart: unless-stopped
+  env_file: .env.azure
+  volumes:
+    - private-data:/data
+    - ./certs/supabase-ca.crt:/etc/rentbond/supabase-ca.crt:ro
+  depends_on:
+    scanner:
+      condition: service_healthy
+
+services:
+  scanner:
+    image: rentbond-scanner:local
+    init: true
+    restart: unless-stopped
+    volumes:
+      - scanner-definitions:/var/lib/clamav
+    healthcheck:
+      test: [CMD-SHELL, "clamdscan --config-file=/etc/clamav/clamd.conf --stream /etc/os-release >/dev/null 2>&1"]
+      interval: 30s
+      timeout: 15s
+      start_period: 180s
+      retries: 20
+
+  migrate:
+    <<: *app
+    restart: "no"
+    command: [migrate]
+    depends_on: {}
+
+  web:
+    <<: *app
+    command: [web]
+    ports:
+      - "127.0.0.1:3000:3000"
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:3000/api/health',{signal:AbortSignal.timeout(10000)}).then(async r=>{const d=await r.json();if(!r.ok||!d||['database','storage','quarantine','scanner','rpc'].some(k=>d[k]!==true))process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 15s
+      retries: 10
+    depends_on:
+      scanner:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+
+  api-worker:
+    <<: *app
+    command: [api-worker]
+    depends_on:
+      web:
+        condition: service_healthy
+
+  chain-worker:
+    <<: *app
+    image: ${RENTBOND_WORKER_IMAGE:-rentbond-staging-app:local}
+    command: [chain-worker]
+    depends_on:
+      web:
+        condition: service_healthy
+
+  https:
+    image: caddy:2-alpine
+    profiles: [public]
+    restart: unless-stopped
+    environment:
+      RENTBOND_API_HOST: ${RENTBOND_API_HOST:?Set the API hostname}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile.api:/etc/caddy/Caddyfile:ro
+      - tls-data:/data
+      - tls-config:/config
+    depends_on:
+      web:
+        condition: service_healthy
+
+volumes:
+  private-data:
+  scanner-definitions:
+  tls-data:
+  tls-config:

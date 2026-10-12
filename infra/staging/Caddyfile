@@ -1,0 +1,3 @@
+{$RENTBOND_SITE_HOST} {
+    reverse_proxy web:3000
+}
