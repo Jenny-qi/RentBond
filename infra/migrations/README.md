@@ -4,7 +4,7 @@
 
 0001_member_d.sql 创建认证、租约、材料、声明、事件、任务、配额和审计表，启用默认拒绝浏览器角色的 RLS，并对提交版本/审计/已部署条款加不可覆盖约束。0002_new_account_invitations.sql 允许尚未创建钱包的租客通过邀请绑定身份。迁移器记录文件 SHA-256，检测已应用迁移被改写，整个批次在事务内提交。
 
-运行 npm run db:migrate（仓库根目录）。新库、重复执行、已有本地库升级和 PostgreSQL 双连接事务测试见 [D 报告](../../tests/reports/2026-09-26-member-d.md)。
+运行 `npm run db:migrate`（仓库根目录）。新库、重复执行、已有本地库升级和 PostgreSQL 双连接事务测试见[验收清单](../../docs/acceptance.md)。
 
 备份：本地模式先停止所有访问该目录的进程，再备份完整 .rentbond/postgres 和 .rentbond/objects；SESSION_SECRET 单独放入受控配置备份。PostgreSQL 用 pg_dump 自定义格式备份数据库，并同时备份私有 bucket/object 目录。恢复到新目录/新数据库，应用相同迁移版本，核对摘要和权限后切换配置。不要覆盖唯一备份或边写边复制嵌入式数据库。
 

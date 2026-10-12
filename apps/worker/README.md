@@ -1,29 +1,25 @@
-# Durable Worker (E / D)
+# Durable Worker
 
-Node 24 runs `src/main.ts` as an independent process using D's database, migrations and confirmed chain adapter. The generated repository ABI is the only event/call source. Factory discovery records public metadata; a signed-in landlord must still attach a deployment through the API before private lease synchronization starts.
+Node 24 runs `src/main.ts` as an independent process using D's database, migrations and confirmed chain adapter. The generated repository ABI is the only event/call source.
 
 ## Start
-
-Install the workspace lockfile, then run:
 
 ```sh
 npm run backend:abi --prefix apps/web
 npm run worker:dev
-# One cycle, for operators:
+# One cycle:
 node --env-file-if-exists=apps/web/.env.local apps/worker/src/main.ts --once
-npm run worker:health # configuration only; no RPC/database connectivity probe
+npm run worker:health
 npm run test:worker
 ```
 
-Use the API's configuration: SESSION_SECRET, CHAIN_ID, RPC_URL, optional RPC_FALLBACK_URL, NEXT_PUBLIC_FACTORY_ADDRESS (or FACTORY_ADDRESS), and DATABASE_URL. DEPLOYMENT_BLOCK is required and must be the actual factory deployment block. WORKER_BATCH_SIZE defaults to 1000; WORKER_POLL_INTERVAL_MS defaults to 5000. Read-only synchronization is the default.
+Configuration uses the same `.env.local` as the API: SESSION_SECRET, CHAIN_ID, RPC_URL, NEXT_PUBLIC_FACTORY_ADDRESS (or FACTORY_ADDRESS), DATABASE_URL. DEPLOYMENT_BLOCK is required. WORKER_BATCH_SIZE defaults to 1000; WORKER_POLL_INTERVAL_MS defaults to 5000. Supported chains: 31337 (local EVM) and 10143 (Monad testnet).
 
-Separate API/Worker processes require PostgreSQL. Embedded PGlite is supported only for a single process and the disk-backed restart test, never concurrent processes sharing one directory.
-
-For public deadline execution explicitly set WORKER_EXECUTE=true, WORKER_PRIVATE_KEY_FILE to an operator-managed secret file, and WORKER_GAS_ACCOUNT to its expected address. The account must differ from T/L/R/F and the Gas sponsor. Do not commit keys. WORKER_MAX_FEE_WEI bounds gas times maximum fee (default 0.05 test MON; maximum 1). Supported Worker chains are 31337 (local EVM) and 10143 (Monad testnet); other chain IDs are rejected even in local mode. Poll interval must be 1000–300000 ms.
+For on-chain execution set WORKER_EXECUTE=true, WORKER_PRIVATE_KEY_FILE and WORKER_GAS_ACCOUNT. Do not commit keys.
 
 ## Public actions
 
-| Task | Fixed ABI function |
+| Task | ABI function |
 | --- | --- |
 | START_SETTLEMENT | startScheduledSettlement() |
 | CLOSE_CLAIMS | closeClaims() |
@@ -34,12 +30,10 @@ For public deadline execution explicitly set WORKER_EXECUTE=true, WORKER_PRIVATE
 | FINALIZE_TIMEOUT | finalizeTimeout(caseId) |
 | EXPIRE_ESCROW | expireEscrow() |
 
-Candidates come from the confirmed snapshot. Deadlines use chain UTC seconds; block heights only anchor canonicality. Before signing and broadcasting, the Worker checks the live phase, exact case, deadline, role policy and simulation. It never accepts terms, decides awards, funds leases or withdraws for a role.
+Deadlines use chain UTC seconds; block heights only anchor canonicality. The Worker never accepts terms, decides awards, funds leases or withdraws for a role.
 
-Signed bytes/hash are committed before broadcast. Restart checks the confirmed receipt before retrying identical bytes. Unsigned obsolete work cancels; uncertain signed work enters reconcile and blocks new signer work. A missing receipt requires operator inspection of canonical state and nonce; never delete the task to bypass this safeguard.
+## Verification
 
-Factory/escrow checkpoint mismatch invalidates canonical events and projections, cancels unsigned work and fences signed work. RPC read errors roll back the affected lease transaction. SIGINT/SIGTERM stop between cycles; once-mode exits nonzero on sync errors.
+Integration tests IT-01–IT-09 cover event idempotency, reorg rollback, durable restart, RPC fault, gas quota, session expiry and UTC-deadline/block-height separation. See [docs/acceptance.md](../../docs/acceptance.md) for current status.
 
-## Evidence and remaining work
-
-See [local runtime report](../../tests/reports/2026-10-03-worker-runtime.md). Real local EVM tests cover replay, reorg, RPC fault, process restart, manual progress service timeout dispatch, primary finalization and hard-end expiry. These do not prove deployed Monad execution, all eight actions on Monad, real PostgreSQL runtime recovery, a second person's reproduction, or real device restoration. The eight Chromium E2E scenarios have since passed on disposable local chains (PR #17); see [browser report](../../tests/reports/2026-10-03-browser-e2e.md). They do not certify public Monad or real-device acceptance. Notifications and asynchronous exports remain outside this loop.
+Real Monad execution, all eight actions on testnet, real PostgreSQL recovery, second-person reproduction and physical-device restoration remain pending acceptance.

@@ -1,6 +1,6 @@
 # 合约工程
 
-负责人 B。当前分支已实现可运行的 Solidity/Foundry 合约；一次手工部署和入金已有[只读测试网证据](../tests/reports/2026-09-26-monad-chain-evidence.md)。尚无完整测试网结算/领取或独立安全审查。
+负责人 B。Solidity/Foundry 合约已实现，Monad 测试网有历史部署和入金记录。完整测试网结算/领取和独立安全审查待完成。
 
 ## 当前实现
 

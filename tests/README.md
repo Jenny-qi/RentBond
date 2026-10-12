@@ -23,7 +23,7 @@ Optional `RENTBOND_CHROMIUM_PATH` selects an installed official Chromium/headles
 
 ## Integration coverage
 
-IT-01–IT-09 are executable: SIWE replay, cross-lease ACL, event idempotency, reorg rollback, durable Worker restart, RPC failure, gas quota, session expiry, and UTC-deadline/block-height separation. See [Worker runtime report](reports/2026-10-03-worker-runtime.md).
+IT-01–IT-09 are executable: SIWE replay, cross-lease ACL, event idempotency, reorg rollback, durable Worker restart, RPC failure, gas quota, session expiry, and UTC-deadline/block-height separation. Report at `tests/reports/integration-{date}.json`.
 
 ## Browser coverage
 

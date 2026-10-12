@@ -22,12 +22,12 @@
 | 无助记词的入门流程 | SDK 在创建时没有 PRF 输出会增加一次认证；不保证每台设备只有一次提示 | **已加测试**覆盖回退认证；在真机记录系统提示次数、取消、PRF 支持情况，不用脚本替代设备证据 | [适配器测试](../../apps/web/src/features/live/client.test.mjs)、Mera 0.2.0 `dist/passkey.js` |
 | 测试手续费可受限补给 | 补给可能离线、余额不足或到达配额；不等于法币入金 | 清楚标注测试 MON 仅用于手续费、确认后才到账；部署验收实际测试配额及拒绝路径 | [导出/费用页面](../../apps/web/src/features/live/ui.tsx)、[后端说明](../../apps/web/src/server/README.md) |
 | 有 Monad 历史部署及 1,000 MockUSD 入金 | 历史快照 `readyForFrontend: false`；未完整证明公网 850/150、900/100 领取 | **已改**：分别列出创建与入金哈希；B/C/E 完成 DEMO_SHORT 配置、角色本人确认、余额及回执索引 | [历史链上证据](../../deployments/monad-testnet-2026-09-26.chain-evidence.json)、[部署说明](../../deployments/README.md) |
-| 源码公开、MIT、运行文档与视频脚本已有 | 仍无公开成片和完整独立复现记录；AI 披露不完整 | **已改**：补 D 的 Codex 使用范围、正确依赖版本和运行命令、历史文档链接；人工审阅保持待确认 | [提交要求](contest-requirements.md)、[165 秒脚本](demo.md)、[本轮验证](../../tests/reports/2026-10-07-consumer-mera.md) |
+| 源码公开、MIT、运行文档与视频脚本已有 | 仍无公开成片和完整独立复现记录；AI 披露不完整 | **已改**：补 D 的 Codex 使用范围、正确依赖版本和运行命令、历史文档链接；人工审阅保持待确认 | [提交要求](contest-requirements.md)、[165 秒脚本](demo.md)、[验收清单](../../docs/acceptance.md) |
 
 ## 证据层级
 
 - **源码**：`layout.tsx` 挂载 LiveProvider；`openPasskey` 调用 Mera；账户签署 SIWE 后建立 HttpOnly 会话；同一账户执行用户确认的 `writeContract`。这证明集成路径存在。
-- **本地回归**：本轮命令、结果与限制统一在[验证报告](../../tests/reports/2026-10-07-consumer-mera.md)。注入 WebAuthn 输出的测试使用真实 Mera 派生和 SIWE 签名，但不能验证物理设备 PRF；EIP-1193 浏览器替身与本地 Hardhat 也不等于 Monad 公网。
+- **本地回归**：当前验证状态和限制见[验收清单](../../docs/acceptance.md)。注入 WebAuthn 输出的测试使用真实 Mera 派生和 SIWE 签名，但不能验证物理设备 PRF；EIP-1193 浏览器替身与本地 Hardhat 也不等于 Monad 公网。
 - **历史公网**：9 月 26 日的地址、创建和入金记录已保存。它们不是本轮 Mera 端到端测试，不证明当前部署、分配与领取已验收。
 - **待取证**：真实设备、跨设备恢复、公网完整领取、最终部署 ACL、公开成片和独立审核。没有实际执行结果就保持 Not run / In progress。
 

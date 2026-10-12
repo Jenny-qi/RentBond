@@ -2,7 +2,7 @@
 
 Delivered 2026-10-02 against main b664c0a. Import createTaskStore and syncLease from apps/worker/src/persistence/backend.mjs using Node 24.14.x. The adapter shares D's PostgreSQL connection/configuration and migration 0003. Embedded PGlite supports a single process only. No HTTP endpoint accepts a task, event, arbitrary snapshot or transaction bytes.
 
-E's main loop now uses this adapter. JSON queues are not used by the production entry point. Local EVM and disk-backed restart evidence is in tests/reports/2026-10-03-worker-runtime.md; public-chain acceptance remains open.
+E's main loop now uses this adapter. JSON queues are not used by the production entry point. Local EVM and disk-backed restart evidence is in integration test results; public-chain acceptance remains open. See [acceptance.md](../../docs/acceptance.md).
 
 ## Data Contract
 
