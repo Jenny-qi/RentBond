@@ -1,5 +1,9 @@
 # 验收清单
 
+## 2026-10-13 Mera 公网入金实测
+
+官网已部署签名修复；原 Passkey 测试账户完成接受条款、精确授权和 1,000 MockUSD 入金。三笔交易输入、发送地址、成功回执及合约余额已核对，见[真实测试网记录](../tests/reports/2026-10-13-mera-testnet-funding.md)。代码基线 `f656e74` 的七项 GitHub 检查全部通过。本次仅证明该账户的入金路径，TS05 全程领取、跨设备恢复、完整提交视频仍未因此完成。下方上午的 pending 记录保留为历史。
+
 ## 2026-10-13 Mera transaction signing
 
 Fixed loss of the local Mera signer when a simulated contract request overrides

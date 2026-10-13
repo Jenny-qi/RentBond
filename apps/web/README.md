@@ -1,5 +1,13 @@
 # Web 页面与账户
 
+## 2026-10-13 Mera 签名修复与真实入金
+
+修复 `simulateContract` 使用纯地址而覆盖 Mera 本地签名账户的问题：`simulateAction` 保留 `wallet.account ?? wallet.address`，再由 `writeContract` 处理用户确认的交易。真实 Mera SDK 回归验证签名发送人、chainId、目标、calldata 和原生币金额，外部钱包仍通过自己的 provider 签名。修复在 `90e2593`，官网已包含该实现。
+
+用户使用既有 Passkey 账户在 Monad Testnet 完成接受条款、授权及 1,000 MockUSD 入金，三笔成功回执和合约余额已独立读取核对。见[真实测试网记录](../../tests/reports/2026-10-13-mera-testnet-funding.md)。`f656e74` 的完整 CI 通过；其本地浏览器测试不代替真机或公网验收。
+
+本次没有验证 Mera 全程结算、提现或跨设备同址恢复。现有录屏只覆盖接受条款和授权，登录与入金成功画面、最终视频公开链接仍待补齐。以下各日期记录保留为历史进展。
+
 ## 2026-10-08 Logo 配色同步
 
 P01–P12 共用的 `BrandLogo` 已同步用户提供的 `RentBond-Logo/` 最新深底版：暖灰白 `#DED9D3`、灰金 `#D8CDAF`、透明底与收窄曲线。favicon、Apple touch icon 和保留的参考 SVG 同步替换；页面资源 URL 增加版本以刷新缓存。类型检查、12 个未登录路由的 Logo/metadata HTTP 检查、5 个素材哈希检查及桌面/手机浏览器检查通过，详见原始品牌报告（未随源码提交，历史检查声明尚需补证；断链已移除）。下方 2026-10-04 品牌说明为历史记录。

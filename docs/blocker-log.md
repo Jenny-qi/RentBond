@@ -1,5 +1,9 @@
 # 当前阻塞与验收状态
 
+## 2026-10-13 Mera 签名阻塞已解除
+
+官网已包含 `90e2593` 的修复；租客本人已完成接受条款、Approve 和 1,000 MockUSD 入金，三笔成功回执独立核验。证据见[公网入金记录](../tests/reports/2026-10-13-mera-testnet-funding.md)。本页下方尚待部署、交易验收等表述为较早记录。当前仍需补齐最终视频及公开 HTTPS 链接；跨设备恢复和完整 Mera 结算/领取未由本次验证覆盖。
+
 ## 2026-10-13 Scaffold documentation repair
 
 The Scaffold checks run for commit `90e2593` failed because the earlier document

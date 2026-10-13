@@ -36,6 +36,26 @@ RentBond 在区块链上运行租房押金结算：房东逐项提出扣款，�
 
 ## 演示场景
 
+### 2026-10-13 Mera 真实测试网验证
+
+[在线产品](https://rentbond.vercel.app/)已修复 Mera 交易签名时的 `RPC Request failed`：交易模拟保留本地签名账户，用户确认后由 Mera 签名，再广播到 Monad Testnet。修复提交 `90e2593` 已在官网代码中核实。
+
+本次使用原 Mera / Passkey 测试账户，成功完成接受条款、精确授权及存入 **1,000 MockUSD**。三笔回执均为成功，发送地址一致；本次核查确认合约 `fundedAmount` 为 1,000 MockUSD。
+
+| 操作 | Monad Testnet 交易证据 |
+| --- | --- |
+| 接受条款 | [acceptTerms](https://testnet.monadexplorer.com/tx/0x397f9b109baaa3527bce1b9c97b06f860ba6fa5e8f82a2aabb29bf10abaee855) |
+| 授权 1,000 MockUSD | [approve](https://testnet.monadexplorer.com/tx/0x481402ab781bc08e68ca5a17981f679b0f46be3b6b2c408adab33e426ca31a51) |
+| 存入 1,000 MockUSD | [fund](https://testnet.monadexplorer.com/tx/0x0a495f9f622d84c7e1c1f24698419f040f51d6ff6463463576e085a32a18b3a8) |
+
+[V2 租约详情](https://rentbond.vercel.app/leases/3308e820-c577-4041-9797-c7f837b732d0)需要对应参与者登录，不是可由任意评委接管的共享账户。交易记录可公开查看；不要再次向该租约入金。
+
+代码基线 `f656e74` 的 [CI](https://github.com/Jenny-qi/RentBond/actions/runs/38344423260) 与 [Scaffold checks](https://github.com/Jenny-qi/RentBond/actions/runs/38344423487) 全部通过：Web/后端 92 项、合约 41 项、集成 9 项、浏览器端到端 8 项。自动化结果与真实测试网证据分开统计。
+
+**验证边界：**本次证明 Mera 接受条款、授权和入金；不代表该账户已完成争议裁决、提现或跨设备同址恢复。完整两分钟视频和公开 HTTPS 视频链接仍待交付。详见[本次验证记录](tests/reports/2026-10-13-mera-testnet-funding.md)。
+
+### 完整结算目标场景
+
 租客 Alice 存入 **1,000 MockUSD**，退租时房东申索清洁费 100、损坏费 200。Alice 认可清洁费，争议损坏费。
 
 | 申索窗口关闭并确认分配后 | 金额 | 状态 |

@@ -1,5 +1,9 @@
 # 需求追踪表
 
+## 2026-10-13 Mera 真实测试网证据增量
+
+RB-08 / Mera 签名及入金路径已有真实 Passkey 用户操作与三笔成功链上交易证据；关联 FR-03/08 与 AT02/03/41 的接受、授权、入金切片，不能据此声称这些条目的重复入金拒绝、失败/取消路径及费用体验均已实测。TS05 领取与跨设备恢复仍待完成。详见[公网记录及验证边界](../tests/reports/2026-10-13-mera-testnet-funding.md)。下方原有本地回归与历史索引保留，不提升为整套 Verified。
+
 ## 2026-10-13 Mera signing regression
 
 RB-08 / Mera transaction signing: local signer preservation fixed; regression
