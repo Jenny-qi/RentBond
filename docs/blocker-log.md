@@ -1,5 +1,14 @@
 # 当前阻塞与验收状态
 
+## 2026-10-13 Scaffold documentation repair
+
+The Scaffold checks run for commit `90e2593` failed because the earlier document
+cleanup removed all 34 FR, 16 SC, 52 AT and 5 TS index rows. These historical
+indexes are now included alongside the current summaries, with archived evidence
+linked to immutable commit `d325de0`. The checker and its completeness gate are
+unchanged. Local doctor and scaffold checks pass; this documentation repair does
+not establish public-chain or real-device acceptance.
+
 ## 2026-10-13 Mera signing blocker
 
 The live frontend replaces Mera's local signing account with an address-only
