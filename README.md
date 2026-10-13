@@ -2,113 +2,142 @@
 
 > **Dispute 200, not your entire 1,000 deposit.**
 
----
+RentBond 是面向跨境租客与小型房东的租房押金结算应用。房东逐项提出扣款，租客逐项接受或争议；申索窗口结束后，无争议款项可以先分配、领取，让局部争议不再拖住整笔押金。
+
+[在线体验](https://rentbond.vercel.app/) · [公开结算演示](https://rentbond.vercel.app/demo) · [Mera 链上操作证据](#mera-账户与真实链上操作) · [本地运行](#本地运行)
+
+**赛道：Consumer Products & Payments**
+
+**拟申报赞助商奖项：Best Mera-Powered UX on Monad — Monad Foundation**
+
+**网络：Monad Testnet（chainId 10143）。MockUSD 和 test MON 均为测试资产，无现金价值。**
 
 ## 为什么做 RentBond
 
-作为一名中外合作大学的学生，我们知道未来的某一天，自己也可能拖着行李箱，独自去到一个陌生的国家。在那里，没有熟悉的街道，没有随时可以依靠的家人。我们要学着适应新的语言、新的规则，甚至学着在一个完全陌生的地方，为自己争取本应属于自己的权益。
+作为中外合作大学的学生，我们也可能在未来独自去到一个陌生的国家。租房往往是抵达后要面对的第一道难题，而一笔押金可能是几个月的生活费，是家人的支持，也是异国生活里的一份安全感。
 
-而租房，可能就是我们抵达那里之后，要独自面对的第一道难题。
+**如果只有一部分扣款存在争议，为什么要让整笔押金都陷入等待？**
 
-我们常常觉得，那些敢于离开家乡、走向世界的人，并不是因为他们从不害怕。而是即使害怕，也依然选择向前走。
+RentBond 希望用清楚的条款、逐项回应和可核查的资金记录，让租客与房东都知道：钱在哪里、下一步谁来操作、什么时候可以领取。勇敢走向世界的人，值得被这个世界温柔以待。
 
-可是在努力争气的同时，我们也希望，远行的人不必在每一件小事上都孤立无援。一笔租房押金，也许只是房东与租客之间的一笔交易。但对一个初到异国的留学生来说，那可能是几个月的生活费，是父母的支持，也是他在陌生城市里为数不多的安全感。
+## 已完成的产品能力
 
-**如果一笔押金只有一部分存在争议，为什么要让整笔钱都陷入等待？**
-
-于是，我们有了 RentBond。
-
-我们希望通过清晰的扣款规则、透明的结算流程，以及对双方公平的争议处理机制，让每个人都能更有底气地面对这些问题。一个产品无法消除所有的不确定，也不能保证每一场争议都有完美的结果。但至少，我们希望它能让那些独自在外的人，在面对不公平或者不确定时，拥有多一种选择。
-
-**勇敢走向世界的人，值得被这个世界温柔以待。**
-
----
-
-RentBond 在区块链上运行租房押金结算：房东逐项提出扣款，租客逐项认可或争议。申索窗口关闭后，无争议资金立即可领，争议部分按双方预先接受的程序处理。
-
-**Monad 测试网 · MockUSD 测试资产，无现金价值。**
-
-**赛道：Consumer Products & Payments。** 主要消费者是普通跨境租客，小型房东参与结算；核心价值是看懂扣款、回应争议及领取无争议押金。双方须在入金前同意使用，不能追回此前交给房东的押金，当前目标用户采用仍待验证。
-
-**赞助商候选：Best Mera-Powered UX on Monad / Monad Foundation。** 正式页面已使用 Mera 创建／恢复 passkey 账户、完成 SIWE 登录并签署用户确认的交易；恢复不再依赖浏览器缓存或手填钱包地址。真实设备的提示次数、跨设备同址恢复与完整 Monad 测试网结算仍待验收，不能以本地自动化代替奖项证据。见[契合—问题—建议—证据](docs/contest/track-fit.md)。
-
----
-
-## 演示场景
-
-### 2026-10-13 Mera 真实测试网验证
-
-[在线产品](https://rentbond.vercel.app/)已修复 Mera 交易签名时的 `RPC Request failed`：交易模拟保留本地签名账户，用户确认后由 Mera 签名，再广播到 Monad Testnet。修复提交 `90e2593` 已在官网代码中核实。
-
-本次使用原 Mera / Passkey 测试账户，成功完成接受条款、精确授权及存入 **1,000 MockUSD**。三笔回执均为成功，发送地址一致；本次核查确认合约 `fundedAmount` 为 1,000 MockUSD。
-
-| 操作 | Monad Testnet 交易证据 |
+| 能力 | 用户可以做什么 |
 | --- | --- |
-| 接受条款 | [acceptTerms](https://testnet.monadexplorer.com/tx/0x397f9b109baaa3527bce1b9c97b06f860ba6fa5e8f82a2aabb29bf10abaee855) |
-| 授权 1,000 MockUSD | [approve](https://testnet.monadexplorer.com/tx/0x481402ab781bc08e68ca5a17981f679b0f46be3b6b2c408adab33e426ca31a51) |
+| Mera / Passkey 账户 | 创建账户或使用已有通行密钥登录，用同一账户确认并签署链上操作 |
+| 租约与邀请 | 房东建立草稿、邀请指定租客，双方查看条款，由房东部署合约、租客确认 |
+| 押金存入 | 分别确认条款、精确授权 MockUSD、存入约定金额，查看链上确认结果 |
+| 逐项扣款与争议 | 房东提交扣款清单，租客逐项接受或争议，查看无争议金额与待处理金额 |
+| 结算与领取 | 按合约期限分配款项，由固定受益人领取；支持主备处理期限和最终超时退出 |
+| 私有材料与导出 | 按租约和案件权限上传、扫描、查看版本与导出资料 |
+| 事件同步与历史 | 将链上事件同步到工作区，显示交易记录和已确认余额 |
+
+账户、租约、材料与资金流程已接入真实 API 和合约。以下分别列出已经完成的公网操作和自动化验证范围。
+
+## 已完成的 Monad 测试网演示
+
+| 演示 | 已确认结果 | 证据 |
+| --- | --- | --- |
+| Mera 租客入金 | 同一 Mera 账户完成接受条款、授权和存入 1,000 MockUSD | [三笔交易及验证记录](tests/reports/2026-10-13-mera-testnet-funding.md) |
+| 团队钱包全额退款 | 租客领取 1,000 MockUSD，未分配及待领取余额归零 | [公开演示与交易记录](https://rentbond.vercel.app/demo) |
+| 团队钱包部分争议、超时退出 | 接受 100、争议 200；无争议款项先领取，超时退出后累计租客领取 900、房东领取 100，余额归零 | [公开结算快照](https://rentbond.vercel.app/demo/settlement-snapshot.json) |
+
+后两项是团队钱包完成的结算演示，与 Mera 入金演示分开取证。900/100 的结果来自主备服务超时退出，不是人工裁决结果。公开演示页提供历史证据，不提供共享钱包或接管既有租约的权限。
+
+## Mera 账户与真实链上操作
+
+Mera 构成 RentBond 的用户账户和客户端签名层。用户在支持 WebAuthn PRF 的设备上，通过系统 Passkey 验证创建或重新进入账户，无需为这条账户路径安装钱包扩展或抄写助记词。账户签署 SIWE 登录消息后，网站按该地址授予租约与材料访问权限。
+
+每笔资金操作仍需用户在页面明确确认；登录不等于同意扣款或付款。签名会话保存在客户端内存中，有效期为 15 分钟，退出或到期后需要重新验证。使用已有通行密钥会按固定域名与派生规则恢复账户；跨设备同址恢复仍待真机验证，也不承诺丢失全部凭证后的恢复。
+
+在 Monad Testnet 上，租客账户 `0x2E7547C21254b0F4457fef91Ceec847c43cD29dF` 已完成以下操作，三笔交易回执均为成功：
+
+| 操作 | 链上交易 |
+| --- | --- |
+| 接受完整条款 | [acceptTerms](https://testnet.monadexplorer.com/tx/0x397f9b109baaa3527bce1b9c97b06f860ba6fa5e8f82a2aabb29bf10abaee855) |
+| 精确授权 1,000 MockUSD | [approve](https://testnet.monadexplorer.com/tx/0x481402ab781bc08e68ca5a17981f679b0f46be3b6b2c408adab33e426ca31a51) |
 | 存入 1,000 MockUSD | [fund](https://testnet.monadexplorer.com/tx/0x0a495f9f622d84c7e1c1f24698419f040f51d6ff6463463576e085a32a18b3a8) |
 
-[V2 租约详情](https://rentbond.vercel.app/leases/3308e820-c577-4041-9797-c7f837b732d0)需要对应参与者登录，不是可由任意评委接管的共享账户。交易记录可公开查看；不要再次向该租约入金。
+对应 [V2 租约](https://rentbond.vercel.app/leases/3308e820-c577-4041-9797-c7f837b732d0)仅限参与者登录查看；第三方可直接查看公开交易证据。授权和入金是两笔独立交易，只有成功入金后才显示 Funded。
 
-代码基线 `f656e74` 的 [CI](https://github.com/Jenny-qi/RentBond/actions/runs/38344423260) 与 [Scaffold checks](https://github.com/Jenny-qi/RentBond/actions/runs/38344423487) 全部通过：Web/后端 92 项、合约 41 项、集成 9 项、浏览器端到端 8 项。自动化结果与真实测试网证据分开统计。
+实现入口：[Passkey 账户](apps/web/src/features/live/wallet.ts) · [登录与交易确认](apps/web/src/features/live/LiveProvider.tsx) · [合约交互](apps/web/src/features/live/client.ts)。
 
-**验证边界：**本次证明 Mera 接受条款、授权和入金；不代表该账户已完成争议裁决、提现或跨设备同址恢复。完整两分钟视频和公开 HTTPS 视频链接仍待交付。详见[本次验证记录](tests/reports/2026-10-13-mera-testnet-funding.md)。
+## 押金如何结算
 
-### 完整结算目标场景
+以 1,000 MockUSD 押金为例：房东申报清洁费 100、损坏费 200，租客接受 100、争议 200。在申索窗口结束并完成链上分配后：
 
-租客 Alice 存入 **1,000 MockUSD**，退租时房东申索清洁费 100、损坏费 200。Alice 认可清洁费，争议损坏费。
+| 金额 | 去向 |
+| ---: | --- |
+| 700 MockUSD | 租客可领取 |
+| 100 MockUSD | 房东可领取 |
+| 200 MockUSD | 等待争议处理 |
 
-| 申索窗口关闭并确认分配后 | 金额 | 状态 |
-| --- | ---: | --- |
-| 未申索部分 → 租客 | 700 | 可领取 |
-| 已认可扣款 → 房东 | 100 | 可领取 |
-| 有争议扣款 | 200 | 待处理 |
+如果争议款中最终裁决 150 给租客、50 给房东，累计分配为 **850/150**，各自领取后才算到账。该裁决路径已通过本地自动化测试，公网人工裁决仍待实测。
 
-若处理人裁决 50 给房东、150 给租客，挑战期结束且结果生效后最终分配为租客 850、房东 150；各自领取交易确认后才算已领取。窗口结束前的预计拆分不代表可领取。
+如果主备服务均未在期限内处理，则按双方事先确认的超时规则退出。团队已在测试网上完成 **900/100** 的超时退出与领取。
 
-[演示脚本](docs/contest/demo.md) · [链上证据](deployments/README.md)
+**预计金额、可领取金额和已领取金额分别展示。** 合约执行约定的权限、期限和金额规则，不判断材料真伪，也不保证裁决公正。
 
----
+## 评委如何体验
 
-## 技术栈
+1. 无需登录，可先打开[公开演示页](https://rentbond.vercel.app/demo)，查看已经完成的结算结果及交易记录。
+2. 需要实际操作时，在[登录页](https://rentbond.vercel.app/login)创建自己的 Passkey 账户，或使用已有通行密钥登录。
+3. 将公开账户地址提供给项目团队，通过赛事提交页的团队联系方式协调有效租约邀请和 MockUSD 发放。MockUSD 是项目测试代币，不能从 Monad 官方 Faucet 领取。
+4. test MON 用于手续费，可通过 [Monad Faucet](https://faucet.monad.xyz/)申请。团队协助房东等其他角色，评委本人确认租客端交易。
 
-| 层次 | 技术 | 版本 |
-| --- | --- | --- |
-| 合约 | Solidity + Foundry | solc 0.8.24 / Forge 1.7.1 |
-| Web3 客户端 | viem | 2.56.9 |
-| 前端框架 | Next.js + React | 15.5.26 / 19.1.4 |
-| 类型检查 | TypeScript | 5.9.2 |
-| 工作区管理 | pnpm | 12.8.1 |
-| 运行时 | Node.js | 24.14.0 |
-| 数据库 | PostgreSQL + PGlite | 16 / 0.5.8 |
-| Passkey 派生的 EVM 签名账户 | @category-labs/mera | 0.2.0 |
-| 端到端测试 | Playwright | 1.62.1 |
-| PDF 生成 | jsPDF | 4.2.1 |
-| 合约验证 | Zod | 4.6.5 |
+既有演示租约的参与地址已经固定；新的体验者需要新的有效邀请或租约。当前公开演示不能保证自动补给 Gas，已完成的 Mera 操作使用了账户中预先准备的 test MON。
 
-完整依赖见 [pnpm-lock.yaml](pnpm-lock.yaml)。
+## 技术架构
 
----
+| 层 | 实现 |
+| --- | --- |
+| 前端与 API | Next.js 15、React 19、TypeScript |
+| 账户与签名 | Mera 0.2.0、WebAuthn Passkey/PRF、SIWE、viem 2.56.9 |
+| 押金合约 | Solidity 0.8.24、Foundry、OpenZeppelin |
+| 数据与私有材料 | PostgreSQL；本地 PGlite；按租约授权的私有存储、ClamAV 扫描与隔离 |
+| 后台任务 | 独立 Node.js Worker、事件同步、任务持久化与回滚处理 |
+| 部署 | Vercel 前端、Azure 后端与 Worker、Monad Testnet 合约 |
+| 验证 | Node.js 测试、Foundry 合约测试、Playwright 浏览器测试 |
+
+Monad 提供 EVM 兼容的合约执行环境，租约接受、押金存入、扣款回应和领取均可通过公开回执核查。私有租约正文和材料保留在访问受控的链下存储中。
+
+### 当前演示合约
+
+| 合约 | Monad Testnet 地址 |
+| --- | --- |
+| MockUSD | `0x36f5486ADcFC3Cd1076F2aFaFC720E24EdFf23B1` |
+| ResolverRegistry | `0x61f13f0c0DAaC2802EeD3Cd4DD9FD67c93d0ce30` |
+| LeaseFactory | `0x6ed49Bf8EE5E9ba2cbE2977fe100342Fe2999a7E` |
+| Mera V2 DepositEscrow | `0x352d1eb19ebb706ea4fe008358f395666a68987e` |
+
+历史部署资料见 [deployments](deployments/README.md)，Mera V2 演示以[对应验证记录](tests/reports/2026-10-13-mera-testnet-funding.md)中的地址、交易和区块为准。
+
+## 测试与验证
+
+代码基线 `f656e74` 的 [CI](https://github.com/Jenny-qi/RentBond/actions/runs/38344423260) 和 [Scaffold checks](https://github.com/Jenny-qi/RentBond/actions/runs/38344423487) 全部通过：
+
+| 测试范围 | 结果 |
+| --- | --- |
+| Web / 后端 | 92 项通过，0 失败、0 跳过 |
+| 合约 | 41 项通过，0 失败、0 跳过 |
+| 跨模块集成 | IT-01 至 IT-09 全部通过 |
+| 浏览器端到端 | E2E-01 至 E2E-08 全部通过 |
+| 环境、类型与文档完整性 | 全部通过 |
+
+本地浏览器测试覆盖邀请、接受条款、授权、入金、逐项争议、850/150 裁决结算、900/100 超时退出、取消、拒签和重复领取保护。其测试钱包与本地链不替代真实 Passkey、跨设备或公网验收；公网已完成范围见上方交易证据。
+
+### 当前范围
+
+项目是使用无现金价值资产的测试网原型，双方须在入金前同意使用，不能追回此前已经付给房东的押金。Mera 账户的完整结算与提现、跨设备同址恢复、公网主备裁决者实际裁决和独立资金审查仍待完成。Mera 专项演示视频及公开 HTTPS 视频链接正在整理，尚未作为最终材料发布。
 
 ## 本地运行
 
-### 前置要求
-
-- Node.js 24.x（建议 24.14.0）
-- pnpm 12.8.1
-- Git
-
-### 安装
+需要 Node.js 24.x、pnpm 12.8.1 和 Git。完整版本以 [package.json](package.json) 和 [pnpm-lock.yaml](pnpm-lock.yaml) 为准。
 
 ```sh
 git clone https://github.com/Jenny-qi/RentBond.git
 cd RentBond
-pnpm install --allow-build=esbuild --allow-build=core-js
-```
-
-### 初始化
-
-```sh
+pnpm install --frozen-lockfile --allow-build=esbuild --allow-build=core-js
 npm run backend:abi --prefix apps/web
 npm run backend:init --prefix apps/web
 npm run db:migrate --prefix apps/web
@@ -116,126 +145,41 @@ npm run backend:seed --prefix apps/web
 npm run dev --prefix apps/web
 ```
 
-访问 `http://localhost:3000`。
+打开 `http://localhost:3000`。初始化会生成本地配置；链上操作还需要匹配的 RPC、网络、Factory 和有效服务方案。种子数据创建的是测试草稿，不会模拟已存入押金。环境配置见 [Web README](apps/web/README.md) 和[后端运行说明](apps/web/src/server/README.md)。
 
-这会启动网页与后端；实际交易还需配置本地链或已核验的测试网 RPC、Factory 和服务方案。环境变量见 [Web 运行说明](apps/web/README.md)，数据库、扫描和 Worker 见 [后端说明](apps/web/src/server/README.md)。可自动启动临时本地链与网页的完整演练见 [tests/README.md](tests/README.md)；历史测试网地址并非已验收的 DEMO_SHORT 环境。
-
-### 完整测试
+运行测试：
 
 ```sh
+pnpm --filter @rentbond/web run test
+pnpm --filter @rentbond/web run typecheck
+npm run test:contracts
 pnpm --filter @rentbond/web exec playwright install --with-deps chromium
 node tests/runner.mjs integration
 node tests/runner.mjs e2e
-npm run test:contracts
 ```
 
-### Windows 开发注意事项
+端到端测试会启动临时本地链、数据库和页面，无需真实账户或测试网资产。详细前置条件、测试替身与验证范围见 [tests/README.md](tests/README.md)。
 
-pnpm 首次安装需要显式允许构建脚本（esbuild 和 core-js 的 postinstall）：
+## 项目结构与文档
 
-```sh
-pnpm install --allow-build=esbuild --allow-build=core-js
-```
-
-确认 Node 版本为 24.x：`node --version`。
-
----
-
-## Monad 集成
-
-RentBond 运行于 **Monad 测试网（chainId: 10143）**，使用 EVM 兼容执行环境。
-
-### 已部署合约
-
-| 合约 | 地址 |
+| 路径 | 内容 |
 | --- | --- |
-| MockUSD（测试资产） | `0x36f5486ADcFC3Cd1076F2aFaFC720E24EdFf23B1` |
-| ResolverRegistry | `0x61f13f0c0DAaC2802EeD3Cd4DD9FD67c93d0ce30` |
-| DepositEscrowDeployer | `0x7E717703E2bf6cF0b7562DA8cdEb718e65A4f13f` |
-| LeaseFactory | `0x6ed49Bf8EE5E9ba2cbE2977fe100342Fe2999a7E` |
-| 示例 DepositEscrow | `0x80753a6Dd914177fE8AD8cE28B325Fe1B677C479` |
+| [apps/web](apps/web/README.md) | 页面、Mera 账户、后端 API 与私有材料 |
+| [apps/worker](apps/worker/README.md) | 链上事件同步与到期任务 |
+| [contracts](contracts/README.md) | Solidity 合约及测试 |
+| [packages/shared](packages/shared/README.md) | 共享类型、金额和网络配置 |
+| [deployments](deployments/README.md) | 合约 ABI、部署与历史链上证据 |
+| [tests](tests/README.md) | 集成、端到端测试及报告 |
+| [产品规格](docs/MVP-SPEC.md) | 用户、业务范围与结算规则 |
+| [架构](docs/architecture.md) | 系统组件及数据边界 |
+| [验收清单](docs/acceptance.md) | 验证进度、证据与待完成项 |
+| [演示脚本](docs/contest/demo.md) | 完整产品演示场景 |
+| [部署与恢复](docs/runbooks/deployment.md) | 部署配置与恢复操作 |
 
-### 链上证据
+## AI 辅助与许可证
 
-- 创建租约：`0x70f948a33e3af390cf53458b192ab6276ae5cac4a60414121bee8c40fcb8cafe`
-- 入金 1,000 MockUSD：`0xf7e1cfef92efa9ba94fcffc94a7d66e5dde6c53ba19eedadce2ff1e1590286fa`
-- [链上快照与核验记录](deployments/monad-testnet-2026-09-26.chain-evidence.json)
+团队使用 Claude Code、GitHub Copilot 和 OpenAI Codex 辅助代码实现、测试及文档编写。AI 不参与产品内的争议裁决；自动化测试不能替代人工复核和独立资金审查。
 
-以上为 2026-09-26 历史部署和入金记录；快照 `readyForFrontend: false`，不能据此宣称已完成公网 850/150、900/100 分配及领取。Mera 是客户端签名账户实现；本项目没有因此实现 ERC-4337、Paymaster 或法币支付，测试手续费采用受限 MON 补给。
-
-### 为什么选择 Monad
-
-- **EVM 兼容**：无需学习新语言，现有 Solidity 工具链直接迁移
-- **低 Gas 成本**：多阶段结算（创建→申索→确认→领取）需要多次链上操作，低 Gas 可行
-- **测试网可用**：公开测试网已上线，合约可自由部署和验证
-
----
-
-## 项目结构
-
-```
-RentBond/
-├── apps/
-│   ├── web/          # Next.js 前端 + 后端 API
-│   └── worker/       # 独立 Node.js 事件同步与到期任务 Worker
-├── contracts/        # Solidity 合约源码 + Foundry 测试
-├── packages/
-│   └── shared/       # 共享类型、金额处理、网络配置
-├── deployments/      # 链上部署记录与核验快照
-├── tests/
-│   ├── integration/  # 集成测试
-│   └── e2e/          # Playwright 浏览器端到端测试
-├── scripts/          # 开发与运维脚本
-└── docs/             # 架构、接口、验收、比赛文档
-```
-
----
-
-## 外部依赖
-
-| 库 | 用途 | 许可证 |
-| --- | --- | --- |
-| OpenZeppelin Contracts 5.0.2 | ReentrancyGuard 等组件 | MIT |
-| Next.js 15 / React 19 | Web 框架 | MIT |
-| viem 2.56.9 | EVM 交互 | MIT |
-| @category-labs/mera | Passkey 账户接入 | MIT |
-| Foundry | 合约编译与测试 | MIT |
-| Playwright | 浏览器自动化测试 | Apache-2.0 |
-| jsPDF 4.2.1 | PDF 导出 | Apache-2.0 |
-| Zod 4.6.5 | 运行时类型校验 | MIT |
-
-第三方代码保留各自许可证，不因本项目采用 MIT 而重新授权。完整依赖及传递依赖见 [pnpm-lock.yaml](pnpm-lock.yaml)。
-
----
-
-## AI 辅助说明
-
-本项目使用 AI 编码工具辅助开发：
-
-| 工具 | 使用范围 | 成员 |
-| --- | --- | --- |
-| Claude Code (Anthropic) | 代码生成、重构、调试、技术文档 | E |
-| GitHub Copilot | 代码补全 | C/D |
-| OpenAI Codex | README 与提交文档编辑；D 后端、权限、扫描、测试与修复；本次账户恢复、会话及赛道证据完善 | A/D |
-
-AI 不参与产品内的争议裁决。各成员仍需确认自身工具使用范围、既有组件和实际人工复核记录；自动化通过不代表已经完成全量人工审核或独立资金审查。
-
----
-
-## 许可证
-
-本项目原创代码采用 [MIT License](LICENSE)。
+项目原创代码采用 [MIT License](LICENSE)。OpenZeppelin、Next.js、React、viem、Mera、Foundry、Playwright 等第三方组件保留各自许可证，完整依赖见锁文件。
 
 Copyright (c) 2026 RentBond contributors.
-
----
-
-## 文档
-
-- [产品范围与规格](docs/MVP-SPEC.md)
-- [架构设计](docs/architecture.md)
-- [验收清单](docs/acceptance.md)
-- [合约接口](docs/interfaces/contracts.md)
-- [比赛提交要求](docs/contest/contest-requirements.md)
-- [演示脚本](docs/contest/demo.md)
-- [部署与恢复](docs/runbooks/deployment.md)

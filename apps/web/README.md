@@ -1,10 +1,10 @@
 # Web 页面与账户
 
-## 2026-10-13 Mera 签名修复与真实入金
+## Mera 账户与真实入金
 
-修复 `simulateContract` 使用纯地址而覆盖 Mera 本地签名账户的问题：`simulateAction` 保留 `wallet.account ?? wallet.address`，再由 `writeContract` 处理用户确认的交易。真实 Mera SDK 回归验证签名发送人、chainId、目标、calldata 和原生币金额，外部钱包仍通过自己的 provider 签名。修复在 `90e2593`，官网已包含该实现。
+Mera 提供 Passkey 账户与客户端签名，用户确认操作后，通过 viem 完成合约模拟、签名、广播和回执核查。真实 Mera SDK 回归验证签名发送人、chainId、目标、calldata 和原生币金额；外部钱包作为兼容入口，通过自己的 provider 签名。
 
-用户使用既有 Passkey 账户在 Monad Testnet 完成接受条款、授权及 1,000 MockUSD 入金，三笔成功回执和合约余额已独立读取核对。见[真实测试网记录](../../tests/reports/2026-10-13-mera-testnet-funding.md)。`f656e74` 的完整 CI 通过；其本地浏览器测试不代替真机或公网验收。
+已完成既有 Passkey 账户在 Monad Testnet 上的接受条款、授权及 1,000 MockUSD 入金，三笔成功回执和合约余额已独立读取核对。见[真实测试网记录](../../tests/reports/2026-10-13-mera-testnet-funding.md)。`f656e74` 的完整 CI 通过；其本地浏览器测试不代替真机或公网验收。面向评委的产品介绍和体验入口见[项目 README](../../README.md)。
 
 本次没有验证 Mera 全程结算、提现或跨设备同址恢复。现有录屏只覆盖接受条款和授权，登录与入金成功画面、最终视频公开链接仍待补齐。以下各日期记录保留为历史进展。
 
