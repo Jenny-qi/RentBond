@@ -1,143 +1,128 @@
-# RentBond — Programmable Rental Deposit Settlement
+# RentBond
 
-> **Dispute 200, not your entire 1,000 deposit.**
+### A little more certainty, a long way from home.
 
-RentBond 是面向跨境租客与小型房东的租房押金结算应用。房东逐项提出扣款，租客逐项接受或争议；申索窗口结束后，无争议款项可以先分配、领取，让局部争议不再拖住整笔押金。
+**Rental deposit settlement on Monad — built for Monad Metropolis Hackathon 2026.**
 
-[在线体验](https://rentbond.vercel.app/) · [公开结算演示](https://rentbond.vercel.app/demo) · [Mera 链上操作证据](#mera-账户与真实链上操作) · [本地运行](#本地运行)
+[Explore the prototype](https://rentbond.vercel.app) · [Watch the pitch](https://youtu.be/h71RmMy1oiY) · [Watch the technical demo](https://youtu.be/bVPK5qdfrH8) · [Watch the Mera demo](https://youtu.be/N4KVgY5eHyY)
 
-**赛道：Consumer Products & Payments**
+Leaving home takes courage. But courage shouldn't mean facing every uncertainty alone.
 
-**拟申报赞助商奖项：Best Mera-Powered UX on Monad — Monad Foundation**
+For someone moving abroad to study, work, or build a new life, a rental deposit can mean months of living expenses, a family's support, and a small sense of security far from home. When a single deduction puts the whole deposit on hold, that uncertainty becomes personal.
 
-**网络：Monad Testnet（chainId 10143）。MockUSD 和 test MON 均为测试资产，无现金价值。**
+We built RentBond around a simple belief:
 
-## 为什么做 RentBond
+> **One disputed charge shouldn't hold up an entire deposit.**
 
-作为中外合作大学的学生，我们也可能在未来独自去到一个陌生的国家。租房往往是抵达后要面对的第一道难题，而一笔押金可能是几个月的生活费，是家人的支持，也是异国生活里的一份安全感。
+RentBond helps tenants and landlords agree on clear rules before funding, review deductions individually, and settle undisputed amounts once the claim window has closed and allocation is confirmed. Contested claims follow the review process both sides accepted in advance.
 
-**如果只有一部分扣款存在争议，为什么要让整笔押金都陷入等待？**
+**Human reviewers assess the evidence. Smart contracts enforce the agreed payment rules.**
 
-RentBond 希望用清楚的条款、逐项回应和可核查的资金记录，让租客与房东都知道：钱在哪里、下一步谁来操作、什么时候可以领取。勇敢走向世界的人，值得被这个世界温柔以待。
+The aim is clarity for both sides: tenants can understand and respond to each deduction, while landlords can present evidence and receive accepted or awarded amounts.
 
-## 已完成的产品能力
+> **Prototype note:** RentBond uses MockUSD, a test token with no cash value. The settlement example below illustrates the intended workflow. Public-testnet operations, real-device recovery, and production readiness require separate verification. See the [acceptance record](docs/acceptance.md) for current evidence and remaining checks.
 
-| 能力 | 用户可以做什么 |
-| --- | --- |
-| Mera / Passkey 账户 | 创建账户或使用已有通行密钥登录，用同一账户确认并签署链上操作 |
-| 租约与邀请 | 房东建立草稿、邀请指定租客，双方查看条款，由房东部署合约、租客确认 |
-| 押金存入 | 分别确认条款、精确授权 MockUSD、存入约定金额，查看链上确认结果 |
-| 逐项扣款与争议 | 房东提交扣款清单，租客逐项接受或争议，查看无争议金额与待处理金额 |
-| 结算与领取 | 按合约期限分配款项，由固定受益人领取；支持主备处理期限和最终超时退出 |
-| 私有材料与导出 | 按租约和案件权限上传、扫描、查看版本与导出资料 |
-| 事件同步与历史 | 将链上事件同步到工作区，显示交易记录和已确认余额 |
+## Watch RentBond in action
 
-账户、租约、材料与资金流程已接入真实 API 和合约。以下分别列出已经完成的公网操作和自动化验证范围。
+Start with the pitch for the story, the technical demo for the settlement walkthrough, or the Mera demo for the account experience. Click a thumbnail or title to watch on YouTube.
 
-## 已完成的 Monad 测试网演示
-
-| 演示 | 已确认结果 | 证据 |
+| Pitch · 1:58 | Technical demo · 2:03 | Mera demo · 1:21 |
 | --- | --- | --- |
-| Mera 租客入金 | 同一 Mera 账户完成接受条款、授权和存入 1,000 MockUSD | [三笔交易及验证记录](tests/reports/2026-10-13-mera-testnet-funding.md) |
-| 团队钱包全额退款 | 租客领取 1,000 MockUSD，未分配及待领取余额归零 | [公开演示与交易记录](https://rentbond.vercel.app/demo) |
-| 团队钱包部分争议、超时退出 | 接受 100、争议 200；无争议款项先领取，超时退出后累计租客领取 900、房东领取 100，余额归零 | [公开结算快照](https://rentbond.vercel.app/demo/settlement-snapshot.json) |
+| [![RentBond pitch video](https://img.youtube.com/vi/h71RmMy1oiY/hqdefault.jpg)](https://youtu.be/h71RmMy1oiY) | [![RentBond technical demo](https://img.youtube.com/vi/bVPK5qdfrH8/hqdefault.jpg)](https://youtu.be/bVPK5qdfrH8) | [![RentBond Mera integration demo](https://img.youtube.com/vi/N4KVgY5eHyY/hqdefault.jpg)](https://youtu.be/N4KVgY5eHyY) |
+| [**A Little More Certainty, a Long Way from Home**](https://youtu.be/h71RmMy1oiY) | [**One Dispute Shouldn't Freeze an Entire Deposit**](https://youtu.be/bVPK5qdfrH8) | [**Familiar Access, Explicit Control**](https://youtu.be/N4KVgY5eHyY) |
+| Why we built RentBond and who we hope to help. | A walkthrough of itemized deductions and partial-dispute settlement. | Passkey access, terms confirmation, and explicit token approval. |
 
-后两项是团队钱包完成的结算演示，与 Mera 入金演示分开取证。900/100 的结果来自主备服务超时退出，不是人工裁决结果。公开演示页提供历史证据，不提供共享钱包或接管既有租约的权限。
+The Mera recording shows the approval step; token approval alone does not mean the deposit has been funded. Videos accompany the project evidence and do not replace transaction receipts or acceptance checks.
 
-## Mera 账户与真实链上操作
+## How it works
 
-Mera 构成 RentBond 的用户账户和客户端签名层。用户在支持 WebAuthn PRF 的设备上，通过系统 Passkey 验证创建或重新进入账户，无需为这条账户路径安装钱包扩展或抄写助记词。账户签署 SIWE 登录消息后，网站按该地址授予租约与材料访问权限。
+1. **Agree before funding.** Tenant and landlord confirm the same terms, deposit amount, deadlines, and primary and fallback reviewers. Both reviewers must have authorized the selected service profile before funding.
+2. **Review deductions individually.** The landlord submits an itemized claim list with evidence references. The tenant accepts or disputes each item; silence is not acceptance.
+3. **Separate what can be settled.** After the claim window closes and allocation is confirmed, unclaimed funds become claimable by the tenant and accepted deductions by the landlord. The disputed portion stays in the agreed process.
+4. **Resolve the remaining claims.** Human review, a challenge to the fallback reviewer, or mutual settlement can determine the remaining allocation. Fixed deadlines and a final exit rule keep unresolved funds from being held indefinitely.
+5. **Withdraw allocated funds.** Each party receives funds at their fixed beneficiary address. A withdrawal is complete only after its transaction is confirmed.
 
-每笔资金操作仍需用户在页面明确确认；登录不等于同意扣款或付款。签名会话保存在客户端内存中，有效期为 15 分钟，退出或到期后需要重新验证。使用已有通行密钥会按固定域名与派生规则恢复账户；跨设备同址恢复仍待真机验证，也不承诺丢失全部凭证后的恢复。
+RentBond is designed for people renting abroad and the private landlords or small property managers who serve them. Both parties must agree to use it **before the deposit is funded**; it cannot recover a deposit already paid outside the contract. Adoption by these users remains a hypothesis to validate.
 
-在 Monad Testnet 上，租客账户 `0x2E7547C21254b0F4457fef91Ceec847c43cD29dF` 已完成以下操作，三笔交易回执均为成功：
+---
 
-| 操作 | 链上交易 |
-| --- | --- |
-| 接受完整条款 | [acceptTerms](https://testnet.monadexplorer.com/tx/0x397f9b109baaa3527bce1b9c97b06f860ba6fa5e8f82a2aabb29bf10abaee855) |
-| 精确授权 1,000 MockUSD | [approve](https://testnet.monadexplorer.com/tx/0x481402ab781bc08e68ca5a17981f679b0f46be3b6b2c408adab33e426ca31a51) |
-| 存入 1,000 MockUSD | [fund](https://testnet.monadexplorer.com/tx/0x0a495f9f622d84c7e1c1f24698419f040f51d6ff6463463576e085a32a18b3a8) |
+## One deposit. Two deductions. Only one dispute.
 
-对应 [V2 租约](https://rentbond.vercel.app/leases/3308e820-c577-4041-9797-c7f837b732d0)仅限参与者登录查看；第三方可直接查看公开交易证据。授权和入金是两笔独立交易，只有成功入金后才显示 Funded。
+Alice deposits **1,000 MockUSD**. At move-out, her landlord claims **100 MockUSD** for cleaning and **200 MockUSD** for damage. Alice accepts the cleaning charge and disputes the damage claim.
 
-实现入口：[Passkey 账户](apps/web/src/features/live/wallet.ts) · [登录与交易确认](apps/web/src/features/live/LiveProvider.tsx) · [合约交互](apps/web/src/features/live/client.ts)。
+| After the claim window closes and allocation is confirmed | Amount (MockUSD) | Status |
+| --- | ---: | --- |
+| Unclaimed portion → Alice | 700 | Claimable |
+| Accepted cleaning charge → landlord | 100 | Claimable |
+| Disputed damage claim | 200 | Awaiting resolution |
 
-## 押金如何结算
+If the primary reviewer awards 50 of the disputed 200 MockUSD to the landlord and returns 150 to Alice, the final allocation is **850 MockUSD to Alice and 150 MockUSD to the landlord**, once the challenge window ends without a challenge and the result is finalized.
 
-以 1,000 MockUSD 押金为例：房东申报清洁费 100、损坏费 200，租客接受 100、争议 200。在申索窗口结束并完成链上分配后：
+If neither reviewer produces an effective result within the agreed deadlines, the fixed timeout path returns the remaining disputed amount to Alice: **900 MockUSD to Alice and 100 MockUSD to the landlord** in total. Previously allocated amounts remain intact.
 
-| 金额 | 去向 |
-| ---: | --- |
-| 700 MockUSD | 租客可领取 |
-| 100 MockUSD | 房东可领取 |
-| 200 MockUSD | 等待争议处理 |
+Before the claim window closes, any split is an estimate. **Allocated, claimable, and withdrawn are distinct states**; funds count as withdrawn only after each withdrawal transaction confirms. All amounts in this example are test assets with no cash value.
 
-如果争议款中最终裁决 150 给租客、50 给房东，累计分配为 **850/150**，各自领取后才算到账。该裁决路径已通过本地自动化测试，公网人工裁决仍待实测。
+[Demo script](docs/contest/demo.md) · [Deployment and chain evidence](deployments/README.md)
 
-如果主备服务均未在期限内处理，则按双方事先确认的超时规则退出。团队已在测试网上完成 **900/100** 的超时退出与领取。
+## Familiar access with Mera
 
-**预计金额、可领取金额和已领取金额分别展示。** 合约执行约定的权限、期限和金额规则，不判断材料真伪，也不保证裁决公正。
+RentBond integrates **Mera passkey accounts** into its account and transaction flows: account creation and same-address recovery, Sign-In with Ethereum (SIWE), and signing transactions the user explicitly confirms. Recovery no longer depends on cached browser data or a manually entered wallet address.
 
-## 评委如何体验
+Token approval and deposit funding are displayed as separate steps. A pending transaction is not shown as a completed payment, and creating a different passkey does not recover the original account or its lease permissions.
 
-1. 无需登录，可先打开[公开演示页](https://rentbond.vercel.app/demo)，查看已经完成的结算结果及交易记录。
-2. 需要实际操作时，在[登录页](https://rentbond.vercel.app/login)创建自己的 Passkey 账户，或使用已有通行密钥登录。
-3. 将公开账户地址提供给项目团队，通过赛事提交页的团队联系方式协调有效租约邀请和 MockUSD 发放。MockUSD 是项目测试代币，不能从 Monad 官方 Faucet 领取。
-4. test MON 用于手续费，可通过 [Monad Faucet](https://faucet.monad.xyz/)申请。团队协助房东等其他角色，评委本人确认租客端交易。
+Real-device prompt counts, compatible cross-device recovery, and the complete Monad testnet settlement flow remain subject to acceptance checks. Mera provides the client-side signing account; this project does not implement ERC-4337, a Paymaster, or fiat payments. Test transaction fees use a limited MON top-up service.
 
-既有演示租约的参与地址已经固定；新的体验者需要新的有效邀请或租约。当前公开演示不能保证自动补给 Gas，已完成的 Mera 操作使用了账户中预先准备的 test MON。
+**Track:** Consumer Products & Payments. **Sponsor award target:** Best Mera-Powered UX on Monad / Monad Foundation. See the [track and evidence mapping](docs/contest/track-fit.md) for implementation details and outstanding verification.
 
-## 技术架构
+## The people behind RentBond
 
-| 层 | 实现 |
-| --- | --- |
-| 前端与 API | Next.js 15、React 19、TypeScript |
-| 账户与签名 | Mera 0.2.0、WebAuthn Passkey/PRF、SIWE、viem 2.56.9 |
-| 押金合约 | Solidity 0.8.24、Foundry、OpenZeppelin |
-| 数据与私有材料 | PostgreSQL；本地 PGlite；按租约授权的私有存储、ClamAV 扫描与隔离 |
-| 后台任务 | 独立 Node.js Worker、事件同步、任务持久化与回滚处理 |
-| 部署 | Vercel 前端、Azure 后端与 Worker、Monad Testnet 合约 |
-| 验证 | Node.js 测试、Foundry 合约测试、Playwright 浏览器测试 |
+We're a team of **six students and working professionals**, brought together by different backgrounds and a shared purpose: making an unfamiliar journey feel a little less uncertain.
 
-Monad 提供 EVM 兼容的合约执行环境，租约接受、押金存入、扣款回应和领取均可通过公开回执核查。私有租约正文和材料保留在访问受控的链下存储中。
+Technology cannot remove every fear that comes with starting over. We hope RentBond can make one part of that journey clearer, fairer, and easier to navigate — for tenants and landlords alike.
 
-### 当前演示合约
+**To everyone brave enough to begin again, far from home: you deserve peace of mind, too.**
 
-| 合约 | Monad Testnet 地址 |
-| --- | --- |
-| MockUSD | `0x36f5486ADcFC3Cd1076F2aFaFC720E24EdFf23B1` |
-| ResolverRegistry | `0x61f13f0c0DAaC2802EeD3Cd4DD9FD67c93d0ce30` |
-| LeaseFactory | `0x6ed49Bf8EE5E9ba2cbE2977fe100342Fe2999a7E` |
-| Mera V2 DepositEscrow | `0x352d1eb19ebb706ea4fe008358f395666a68987e` |
+---
 
-历史部署资料见 [deployments](deployments/README.md)，Mera V2 演示以[对应验证记录](tests/reports/2026-10-13-mera-testnet-funding.md)中的地址、交易和区块为准。
+## Technology stack
 
-## 测试与验证
+| Layer | Technology | Version |
+| --- | --- | --- |
+| Smart contracts | Solidity + Foundry | solc 0.8.24 / Forge 1.7.1 |
+| Web3 client | viem | 2.56.9 |
+| Frontend | Next.js + React | 15.5.26 / 19.1.4 |
+| Type checking | TypeScript | 5.9.2 |
+| Workspace management | pnpm | 12.8.1 |
+| Runtime | Node.js | 24.14.0 |
+| Database | PostgreSQL + PGlite | 16 / 0.5.8 |
+| Passkey-derived EVM signing accounts | @category-labs/mera | 0.2.0 |
+| End-to-end testing | Playwright | 1.62.1 |
+| PDF generation | jsPDF | 4.2.1 |
+| Runtime schema validation | Zod | 4.6.5 |
 
-代码基线 `f656e74` 的 [CI](https://github.com/Jenny-qi/RentBond/actions/runs/38344423260) 和 [Scaffold checks](https://github.com/Jenny-qi/RentBond/actions/runs/38344423487) 全部通过：
+See [pnpm-lock.yaml](pnpm-lock.yaml) for the full dependency tree.
 
-| 测试范围 | 结果 |
-| --- | --- |
-| Web / 后端 | 92 项通过，0 失败、0 跳过 |
-| 合约 | 41 项通过，0 失败、0 跳过 |
-| 跨模块集成 | IT-01 至 IT-09 全部通过 |
-| 浏览器端到端 | E2E-01 至 E2E-08 全部通过 |
-| 环境、类型与文档完整性 | 全部通过 |
+---
 
-本地浏览器测试覆盖邀请、接受条款、授权、入金、逐项争议、850/150 裁决结算、900/100 超时退出、取消、拒签和重复领取保护。其测试钱包与本地链不替代真实 Passkey、跨设备或公网验收；公网已完成范围见上方交易证据。
+## Run locally
 
-### 当前范围
+### Prerequisites
 
-项目是使用无现金价值资产的测试网原型，双方须在入金前同意使用，不能追回此前已经付给房东的押金。Mera 账户的完整结算与提现、跨设备同址恢复、公网主备裁决者实际裁决和独立资金审查仍待完成。Mera 专项演示视频及公开 HTTPS 视频链接正在整理，尚未作为最终材料发布。
+- Node.js 24.x (24.14.0 recommended)
+- pnpm 12.8.1
+- Git
 
-## 本地运行
-
-需要 Node.js 24.x、pnpm 12.8.1 和 Git。完整版本以 [package.json](package.json) 和 [pnpm-lock.yaml](pnpm-lock.yaml) 为准。
+### Install
 
 ```sh
 git clone https://github.com/Jenny-qi/RentBond.git
 cd RentBond
-pnpm install --frozen-lockfile --allow-build=esbuild --allow-build=core-js
+pnpm install --allow-build=esbuild --allow-build=core-js
+```
+
+### Initialize and start
+
+```sh
 npm run backend:abi --prefix apps/web
 npm run backend:init --prefix apps/web
 npm run db:migrate --prefix apps/web
@@ -145,41 +130,135 @@ npm run backend:seed --prefix apps/web
 npm run dev --prefix apps/web
 ```
 
-打开 `http://localhost:3000`。初始化会生成本地配置；链上操作还需要匹配的 RPC、网络、Factory 和有效服务方案。种子数据创建的是测试草稿，不会模拟已存入押金。环境配置见 [Web README](apps/web/README.md) 和[后端运行说明](apps/web/src/server/README.md)。
+Open `http://localhost:3000`.
 
-运行测试：
+These commands start the web application and backend. Transactions also require a local chain or verified testnet RPC, Factory, and service profile. See the [Web setup guide](apps/web/README.md) for environment variables and the [backend guide](apps/web/src/server/README.md) for the database, file scanning, and Worker. The [test guide](tests/README.md) covers a walkthrough that starts a temporary local chain and web server; historical testnet addresses are not an accepted DEMO_SHORT environment.
+
+The root scripts `infra:up`, `chain:local`, `contracts:deploy:local`, `dev`, and `build` remain explicit failing placeholders. Use the module commands above and the linked setup guides.
+
+### Test commands
 
 ```sh
-pnpm --filter @rentbond/web run test
-pnpm --filter @rentbond/web run typecheck
-npm run test:contracts
 pnpm --filter @rentbond/web exec playwright install --with-deps chromium
 node tests/runner.mjs integration
 node tests/runner.mjs e2e
+npm run test:contracts
 ```
 
-端到端测试会启动临时本地链、数据库和页面，无需真实账户或测试网资产。详细前置条件、测试替身与验证范围见 [tests/README.md](tests/README.md)。
+These are commands to run, not a claim that the current checkout passes every test. Consult the [acceptance record](docs/acceptance.md) and [blocker log](docs/blocker-log.md) for dated results and unresolved checks.
 
-## 项目结构与文档
+### Windows setup notes
 
-| 路径 | 内容 |
+The first pnpm installation needs explicit permission for the esbuild and core-js build scripts:
+
+```sh
+pnpm install --allow-build=esbuild --allow-build=core-js
+```
+
+Check that Node is 24.x with `node --version`.
+
+---
+
+## Monad integration and evidence
+
+RentBond targets **Monad testnet (chain ID: 10143)** using its EVM-compatible execution environment.
+
+### Historical deployment · September 26, 2026
+
+| Contract | Address |
 | --- | --- |
-| [apps/web](apps/web/README.md) | 页面、Mera 账户、后端 API 与私有材料 |
-| [apps/worker](apps/worker/README.md) | 链上事件同步与到期任务 |
-| [contracts](contracts/README.md) | Solidity 合约及测试 |
-| [packages/shared](packages/shared/README.md) | 共享类型、金额和网络配置 |
-| [deployments](deployments/README.md) | 合约 ABI、部署与历史链上证据 |
-| [tests](tests/README.md) | 集成、端到端测试及报告 |
-| [产品规格](docs/MVP-SPEC.md) | 用户、业务范围与结算规则 |
-| [架构](docs/architecture.md) | 系统组件及数据边界 |
-| [验收清单](docs/acceptance.md) | 验证进度、证据与待完成项 |
-| [演示脚本](docs/contest/demo.md) | 完整产品演示场景 |
-| [部署与恢复](docs/runbooks/deployment.md) | 部署配置与恢复操作 |
+| MockUSD (test asset) | `0x36f5486ADcFC3Cd1076F2aFaFC720E24EdFf23B1` |
+| ResolverRegistry | `0x61f13f0c0DAaC2802EeD3Cd4DD9FD67c93d0ce30` |
+| DepositEscrowDeployer | `0x7E717703E2bf6cF0b7562DA8cdEb718e65A4f13f` |
+| LeaseFactory | `0x6ed49Bf8EE5E9ba2cbE2977fe100342Fe2999a7E` |
+| Example DepositEscrow | `0x80753a6Dd914177fE8AD8cE28B325Fe1B677C479` |
 
-## AI 辅助与许可证
+### Chain evidence
 
-团队使用 Claude Code、GitHub Copilot 和 OpenAI Codex 辅助代码实现、测试及文档编写。AI 不参与产品内的争议裁决；自动化测试不能替代人工复核和独立资金审查。
+- Lease creation: `0x70f948a33e3af390cf53458b192ab6276ae5cac4a60414121bee8c40fcb8cafe`
+- Funding of 1,000 MockUSD: `0xf7e1cfef92efa9ba94fcffc94a7d66e5dde6c53ba19eedadce2ff1e1590286fa`
+- [Chain snapshot and verification record](deployments/monad-testnet-2026-09-26.chain-evidence.json)
 
-项目原创代码采用 [MIT License](LICENSE)。OpenZeppelin、Next.js、React、viem、Mera、Foundry、Playwright 等第三方组件保留各自许可证，完整依赖见锁文件。
+These are historical deployment and funding records from September 26, 2026. The snapshot reports `readyForFrontend: false`; it does not establish completion of the public-testnet 850/150 or 900/100 allocation and withdrawal flows, or verify the current hosted prototype's configuration.
+
+### Why Monad
+
+- **EVM compatibility:** Solidity contracts and familiar development tools fit the project's settlement rules.
+- **Consumer transaction flow:** Creating a lease, submitting claims, confirming allocations, and withdrawing funds require multiple transactions, making transaction cost and responsiveness relevant to the experience.
+- **Testnet prototyping:** MockUSD lets the team demonstrate the workflow without putting real rental deposits at risk.
+
+---
+
+## Project structure
+
+```
+RentBond/
+├── apps/
+│   ├── web/          # Next.js frontend and backend API
+│   └── worker/       # Standalone event sync and deadline Worker
+├── contracts/        # Solidity contracts and Foundry tests
+├── packages/
+│   └── shared/       # Shared types, amount utilities, network config
+├── deployments/      # Deployment records and verification snapshots
+├── tests/
+│   ├── integration/  # Integration tests
+│   └── e2e/          # Playwright browser tests
+├── scripts/          # Development and operations scripts
+└── docs/             # Architecture, interfaces, acceptance, submission
+```
+
+---
+
+## Third-party components
+
+| Component | Purpose | License |
+| --- | --- | --- |
+| OpenZeppelin Contracts 5.0.2 | Contract utilities, including ReentrancyGuard | MIT |
+| Next.js 15 / React 19 | Web framework | MIT |
+| viem 2.56.9 | EVM interactions | MIT |
+| @category-labs/mera | Passkey account integration | MIT |
+| Foundry | Contract compilation and testing | MIT |
+| Playwright | Browser automation | Apache-2.0 |
+| jsPDF 4.2.1 | PDF exports | Apache-2.0 |
+| Zod 4.6.5 | Runtime schema validation | MIT |
+
+Third-party code retains its own license; the project's MIT license does not relicense those components. Full dependencies, including transitive dependencies, are recorded in [pnpm-lock.yaml](pnpm-lock.yaml).
+
+---
+
+## AI assistance disclosure
+
+The team used AI coding tools during development:
+
+| Tool | Scope | Contributor role |
+| --- | --- | --- |
+| Claude Code (Anthropic) | Code generation, refactoring, debugging, technical documentation | E |
+| GitHub Copilot | Code completion | C/D |
+| OpenAI Codex | README and submission documentation; backend, permissions, scanning, tests and fixes; account recovery, sessions, and track evidence | A/D |
+
+Contributor letters refer to the engineering ownership roles in [docs/team.md](docs/team.md), not the full team roster. Members still need to confirm their own tool usage, reused components, and human review records.
+
+**AI does not adjudicate disputes in RentBond.** Passing automated checks does not establish a complete human review or an independent funds audit.
+
+---
+
+## License
+
+Original project code is released under the [MIT License](LICENSE).
 
 Copyright (c) 2026 RentBond contributors.
+
+---
+
+## Documentation
+
+Detailed engineering and acceptance documents are primarily in Chinese.
+
+- [Product scope and MVP specification](docs/MVP-SPEC.md)
+- [Architecture](docs/architecture.md)
+- [Acceptance checklist](docs/acceptance.md)
+- [Known blockers](docs/blocker-log.md)
+- [Contract interfaces](docs/interfaces/contracts.md)
+- [Hackathon submission requirements](docs/contest/contest-requirements.md)
+- [Demo script](docs/contest/demo.md)
+- [Deployment and recovery](docs/runbooks/deployment.md)

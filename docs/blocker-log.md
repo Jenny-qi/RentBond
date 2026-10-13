@@ -1,51 +1,24 @@
-# 当前阻塞与验收状态
+# 当前提交与验收阻塞
 
-## 2026-10-13 Mera 签名阻塞已解除
+2026-10-14 README：用户已提供产品入口及三个托管视频，Pitch 为 `h71RmMy1oiY`、技术演示为 `bVPK5qdfrH8`、Mera 演示为 `N4KVgY5eHyY`，已用 YouTube oEmbed 核对标题并加入根 README；更新此前“待提供公网视频链接”的材料状态。网页抓取工具未能读取产品入口，本轮不宣称当前站点可用性或部署验收通过。完整视频内容／回执、真机恢复、资金及主备异常验收仍待完成。
 
-官网已包含 `90e2593` 的修复；租客本人已完成接受条款、Approve 和 1,000 MockUSD 入金，三笔成功回执独立核验。证据见[公网入金记录](../tests/reports/2026-10-13-mera-testnet-funding.md)。本页下方尚待部署、交易验收等表述为较早记录。当前仍需补齐最终视频及公开 HTTPS 链接；跨设备恢复和完整 Mera 结算/领取未由本次验证覆盖。
+文档检查：`git diff --check` 与 README 链接／视频 ID 配对检查通过；`npm run check` 修改前后均失败于相同 10 处既有链接，涉及缺失的 `tests/reports/2026-10-08-brand-refresh.md`、`artifacts/mera-demo/DELIVERY.md` 和 `artifacts/mera-demo/VOICEOVER-DELIVERY.md`。需补回原始记录或由材料负责人修正引用，不能用新写的空报告代替证据。本轮未运行业务测试，不解除其余验收阻塞。
 
-## 2026-10-13 Scaffold documentation repair
+2026-10-13 英文配音：80 秒配音成片与独立音轨已本地生成，媒体检查通过，见[交付记录](../artifacts/mera-demo/VOICEOVER-DELIVERY.md)。本轮无未解决的媒体生成阻塞；声音为本地合成女声。公网视频链接及原有真机、资金、主备处理验收仍待完成，未上传或改变业务验收状态。
 
-The Scaffold checks run for commit `90e2593` failed because the earlier document
-cleanup removed all 34 FR, 16 SC, 52 AT and 5 TS index rows. These historical
-indexes are now included alongside the current summaries, with archived evidence
-linked to immutable commit `d325de0`. The checker and its completeness gate are
-unchanged. Local doctor and scaffold checks pass; this documentation repair does
-not establish public-chain or real-device acceptance.
+2026-10-13 Mera UX 视频：本地 80 秒英文字幕成片已完成，见[交付记录](../artifacts/mera-demo/DELIVERY.md)。尚未上传，投稿表单需要用户选定托管后的 HTTPS 链接；本轮未获上传授权。录屏未显示系统通行密钥验证弹窗或完成入金，不补造这些画面。独立回执/签名核验、跨设备恢复及完整资金/主备处理验收继续保留；本次媒体制作不解除相关业务阻塞。
 
-## 2026-10-13 Mera signing blocker
+2026-10-08 最终演示就绪复查：当前本机 Worker 缺失 viem 安装，Integration 5 passed / 4 failed / 0 skipped；Playwright 安装缺失，本轮未跑 E2E。四处品牌报告引用的文件不存在，文档检查失败。先恢复锁定依赖、补原始证据并重跑，再完成 DEMO_SHORT、真机和所选环境演练、冻结录像版本。P1 邮件/短信默认提供方仍为占位，不能宣称送达。详见[命令、结果和待办](../tests/reports/2026-10-08-demo-readiness.md)；下方品牌记录为检查前已有声明，本轮未重新证明其浏览器结果。
 
-The live frontend replaces Mera's local signing account with an address-only
-simulation account, causing an unsupported RPC signing request. The source fix
-passes ten focused tests and type checking. Deployment to the site's separate
-repository and real transaction verification remain pending; current credentials
-cannot push to that deployment repository. See the
-[fix and deployment instructions](../tests/reports/2026-10-13-mera-signing-fix.md).
+2026-10-08 品牌同步：新素材已接入全部页面共用组件与全局图标，类型、素材哈希、12 路由 HTTP 和桌面/手机显示检查通过，无本轮品牌接入阻塞。本地预览及 HTTP 检查曾受 Windows 沙箱路径/连接权限限制，经批准重跑后完成；未部署公网，线上更新仍需后续发布。本次不解除下列真机、资金与部署验收阻塞。见[检查记录](../tests/reports/2026-10-08-brand-refresh.md)。
 
-## 主要阻塞
+2026-10-07 新增记录；不恢复此前已归档的历史排期。对应 [赛道/奖项核对](contest/track-fit.md) 和 [验收表](acceptance.md)。
 
-**MetaMask 安全分类** — rentbond.vercel.app 被标记为"Malicious"，原因未查明，已提交人工复核。钱包签名暂停，非流程失败。
-
-**完整公网资金流程** — 网页创建租约 → 接受条款 → 授权及入金 → 扣款与争议处理 → 领取，因 MetaMask 警告暂停，待警告解除后继续。
-
-**Worker 自动推进** — WORKER_EXECUTE=false，演示前需确认链上推进方式。
-
-**3 分钟演示视频** — pending。
-
-**第二人独立复现** — pending。
-
-**独立资金审查** — pending。
-
-## 当前已解决
-
-- 服务方案（DEMO_SHORT）已注册并导入后端 ✓
-- Tenant 账户持有 1,000 MockUSD ✓
-- 四个角色均有测试 MON ✓
-- Azure 后端 + Vercel 前端部署上线 ✓
-- 五项健康检查全部通过 ✓
-- 公网 API（SIWE、上传、扫描、导出、权限隔离）已验证 ✓
-- 依赖安全更新已完成 ✓
-
-## 赛道
-
-**Consumer Products & Payments**，赞助商候选：**Best Mera-Powered UX on Monad / Monad Foundation**
+| 项目 | 状态与影响 | 下一步 / 负责人建议 |
+| --- | --- | --- |
+| 无缓存恢复必须手填地址 | 本轮代码已修复；Mera/SIWE/ACL 本地回归通过；不等于真机验收 | C/D/E 在稳定 HTTPS 与两类真实设备验证同址及原租约访问 |
+| Mera 单次入门提示 | SDK 0.2.0 存在额外认证回退；不得保证所有设备一次提示 | C/E 记录真实系统提示数；A 核对当前奖项原文 |
+| Monad 完整押金闭环 | 已有历史部署/入金，未存证完整公网 850/150 与 900/100 领取 | B/C/E 实跑 DEMO_SHORT，由各角色本人确认并核对回执/余额 |
+| 所选部署环境 | 本机 PostgreSQL/ClamAV 历史验证不代表公众环境 ACL/TLS/Worker 已验收 | D/E 选定环境后执行已有部署验收命令并留证 |
+| 成片、采用、独立复核 | 已有脚本与本地测试；无公开成片、真实用户采用、第二人复现与独立资金审查证据 | A/C/E/B 分别补视频、首次五分钟研究、独立复现及合格资金评审 |
+| 当前正式规则与成员披露 | 公开页和历史 PDF 不能替代登录后台细则；其他成员工具/素材/人工审核需本人确认 | A 汇总原文、各成员确认及投稿回执 |
