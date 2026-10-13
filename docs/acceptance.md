@@ -1,5 +1,13 @@
 # 验收清单
 
+## 2026-10-13 Mera transaction signing
+
+Fixed loss of the local Mera signer when a simulated contract request overrides
+the wallet client account. Ten focused tests and type checking passed; the
+production frontend still requires deployment and a real confirmed transaction.
+This does not mark the Mera public-chain flow Verified. See the
+[regression report](../tests/reports/2026-10-13-mera-signing-fix.md).
+
 ## 当前状态（2026-10-12）
 
 线上部署（rentbond.vercel.app）：

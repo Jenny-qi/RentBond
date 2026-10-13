@@ -1,5 +1,14 @@
 # 当前阻塞与验收状态
 
+## 2026-10-13 Mera signing blocker
+
+The live frontend replaces Mera's local signing account with an address-only
+simulation account, causing an unsupported RPC signing request. The source fix
+passes ten focused tests and type checking. Deployment to the site's separate
+repository and real transaction verification remain pending; current credentials
+cannot push to that deployment repository. See the
+[fix and deployment instructions](../tests/reports/2026-10-13-mera-signing-fix.md).
+
 ## 主要阻塞
 
 **MetaMask 安全分类** — rentbond.vercel.app 被标记为"Malicious"，原因未查明，已提交人工复核。钱包签名暂停，非流程失败。

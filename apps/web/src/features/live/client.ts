@@ -40,6 +40,11 @@ export async function api(path: string, body?: unknown, method = body === undefi
 }
 export function actionAbi(action: Action): Abi { return action.kind === 'factory' ? factoryAbi : action.kind === 'token' ? erc20Abi : escrowAbi; }
 export function actionData(action: Action) { return encodeFunctionData({ abi: actionAbi(action), functionName: action.functionName, args: action.args }); }
+export async function simulateAction(config: LiveConfig, wallet: Wallet, action: Action) {
+  const { publicClient } = clients(config);
+  // viem carries this account into writeContract; an address alone loses the Mera signer.
+  return publicClient.simulateContract({ address: action.address, abi: actionAbi(action), functionName: action.functionName, args: action.args, account: wallet.account ?? wallet.address });
+}
 export async function checkWallet(config: LiveConfig, wallet: Wallet) {
   const { publicClient } = clients(config);
   if (await publicClient.getChainId() !== config.chainId) throw new Error('RPC network mismatch. Transactions are disabled.');

@@ -1,5 +1,13 @@
 # 需求追踪表
 
+## 2026-10-13 Mera signing regression
+
+RB-08 / Mera transaction signing: local signer preservation fixed; regression
+tests verify signed transaction sender, chain, target and calldata, plus external
+wallet compatibility (10 focused tests passed, zero skipped). Public deployment
+and real Mera transaction acceptance remain pending, not Verified. See the
+[report](../tests/reports/2026-10-13-mera-signing-fix.md).
+
 ## 状态总览
 
 需求状态：Not started / In progress / Blocked / Verified

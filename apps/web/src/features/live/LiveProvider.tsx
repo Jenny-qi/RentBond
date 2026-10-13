@@ -2,7 +2,7 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { createSiweMessage } from 'viem/siwe';
 import type { Address, Hex, EIP1193Provider } from 'viem';
-import { actionAbi, actionData, api, ApiError, checkedConfig, checkWallet, clearRequests, clients, type Action, type LiveConfig, type Wallet } from './client';
+import { actionData, api, ApiError, checkedConfig, checkWallet, clearRequests, clients, simulateAction, type Action, type LiveConfig, type Wallet } from './client';
 import { openPasskey } from './wallet';
 import { meraErrorMessage } from '../account/mera';
 
@@ -154,8 +154,8 @@ export function LiveProvider({ config, children }: { config: LiveConfig; childre
     await checkWallet(config, active); guard();
     const session = await request('/api/auth/session'); guard();
     if (session.wallet.toLowerCase() !== active.address.toLowerCase()) throw new Error('Session address mismatch');
-    const { publicClient, walletClient } = clients(config, active);
-    const simulated = await publicClient.simulateContract({ address: action.address, abi: actionAbi(action), functionName: action.functionName, args: action.args, account: active.address }); guard();
+    const { walletClient } = clients(config, active);
+    const simulated = await simulateAction(config, active, action); guard();
     setMessage(active.provider ? 'Confirm signing on your device. Rejecting stops this operation.' : 'Signing the operation you confirmed. Waiting for submission.');
     const hash = await walletClient!.writeContract(simulated.request);
     const record: ReceiptRecord = { hash, address: active.address, chainId: config.chainId, to: action.address, data: actionData(action), title: action.title, leaseId: action.leaseId, factory: action.kind === 'factory' };
